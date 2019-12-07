@@ -30,7 +30,7 @@ public class BenchmarkExecutor {
 
     public void setBenchmarkData(final BenchmarkData benchmarkData) {
         final BenchmarkDefinition definition = benchmarkData.getBenchmarkDefinitions().get(0);
-        benchClassName = "edu.benchmarkandroid.Benchmark." + definition.getBenchmarkClass();
+        benchClassName = "edu.benchmarkandroid.Benchmark.benchmarks." + definition.getBenchmarkClass();
         variants = definition.getVariants();
         Collections.sort(variants, new Comparator<Variant>() {
             @Override

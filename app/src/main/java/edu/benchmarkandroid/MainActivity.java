@@ -19,7 +19,6 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
