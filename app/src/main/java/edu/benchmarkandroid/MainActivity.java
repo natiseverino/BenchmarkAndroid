@@ -127,6 +127,7 @@ public class MainActivity extends Activity {
             }
         }
     };
+
     //cb for error on benchmarks started
     final Cb<String> onErrorBS = new Cb<String>() {
         @Override
@@ -136,6 +137,7 @@ public class MainActivity extends Activity {
             evaluating = false;
         }
     };
+
     //Suscriber to battery notifications from the OS
     private BroadcastReceiver batteryInfoReceiver;
     //receiver for updates from the benchmark run
@@ -319,6 +321,7 @@ public class MainActivity extends Activity {
         }
     }
 
+
     //L&F related
     private void bindInputToDisplayText(final EditText input, final TextView display) {
         input.addTextChangedListener(new TextWatcher() {
@@ -335,6 +338,7 @@ public class MainActivity extends Activity {
                                      }
         );
     }
+
 
     private void startBenchmark() {
         synchronized (evaluating) {
@@ -356,6 +360,8 @@ public class MainActivity extends Activity {
         PollingIntentService.setShouldContinue(false);
     }
 
+
+
     //unregister the battery monitor
     @Override
     protected void onDestroy() {
@@ -364,6 +370,8 @@ public class MainActivity extends Activity {
         this.unregisterReceiver(this.prcv);
         this.unregisterReceiver(this.batteryInfoReceiver);
     }
+
+
 
     public class PollingReceiver extends BroadcastReceiver {
         @Override
@@ -388,6 +396,7 @@ public class MainActivity extends Activity {
      * }
      * }
      */
+
 
     public class ProgressReceiver extends BroadcastReceiver {
 

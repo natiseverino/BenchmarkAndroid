@@ -7,7 +7,7 @@ import java.io.RandomAccessFile;
 public class CPUUtils {
     private static final String TAG = "CPUUtils";
 
-    public static float readUsage() {
+    public static double readUsage() {
 
         String dir = "/sdcard/Download/cpu-usage-sample-1.txt";
         String dir2 = "/sdcard/Download/cpu-usage-sample-2.txt";
@@ -28,7 +28,7 @@ public class CPUUtils {
         long cpu2 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[4])
                 + Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
 
-        return (float) (cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
+        return (double) (cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
 
     }
 

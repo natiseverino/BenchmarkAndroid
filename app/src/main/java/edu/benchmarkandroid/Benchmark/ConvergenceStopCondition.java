@@ -17,5 +17,8 @@ public class ConvergenceStopCondition implements StopCondition {
         return convergenceThreshold > level && level > -(convergenceThreshold);
     }
 
+    public void updateLevel(double level){
+        this.thresholdNotificator.updateThresholdLevel(level);
+    }
 
 }
