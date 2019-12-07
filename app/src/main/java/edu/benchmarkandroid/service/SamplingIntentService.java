@@ -2,11 +2,13 @@ package edu.benchmarkandroid.service;
 
 import android.app.IntentService;
 import android.content.Intent;
+
 import androidx.annotation.Nullable;
 
 import edu.benchmarkandroid.Benchmark.Benchmark;
 import edu.benchmarkandroid.Benchmark.ConvergenceStopCondition;
 import edu.benchmarkandroid.Benchmark.Variant;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -32,7 +34,9 @@ public class SamplingIntentService extends IntentService {
             e.printStackTrace();
         }
         ProgressUpdater progressUpdater = new SamplingProgressUpdater(this, PROGRESS_SAMPLING_ACTION, END_SAMPLING_ACTION, benchmark.getVariant().getVariantId());
-        benchmark.runSampling(new ConvergenceStopCondition(benchmark.getVariant().getParamsSamplingStage().getConvergenceThreshold(), thresholdNotificator), progressUpdater);
+        benchmark.runSampling(
+                new ConvergenceStopCondition(benchmark.getVariant().getParamsSamplingStage().getConvergenceThreshold(), thresholdNotificator),
+                progressUpdater);
 
     }
 }

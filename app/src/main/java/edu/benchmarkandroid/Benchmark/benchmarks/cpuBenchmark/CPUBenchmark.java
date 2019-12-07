@@ -22,7 +22,7 @@ public class CPUBenchmark extends Benchmark {
         super(variant);
     }
 
-    private static int cpus = 4;
+    private static int cpus = Runtime.getRuntime().availableProcessors();
     private static long sleep;
 
     private float target = 0.8f;
@@ -45,13 +45,42 @@ public class CPUBenchmark extends Benchmark {
             cpuUser[i].start();
         }
 
-        boolean nowStable = true;
-
-        while (stopCondition.canContinue() && progress < 100 /*&& nowStable*/) {
+        boolean stable = false;
+        boolean nowStable;
+        float diff;
+        long sleepNew;
+        while (stopCondition.canContinue()) {
             cpuUsage = cpuUsage();
-            Log.d(TAG, "runBenchmark: cpu: " + cpuUsage);
+
+            diff = cpuUsage / target;
+            sleepNew = (long) (sleep * diff);
+
+            Log.i(TAG, "runBenchmark: CPU Usage: " + cpuUsage +
+                    " sleep: " + sleep + " diff: " + diff);
+
             nowStable = ((-threshold) < (cpuUsage - target)) && ((cpuUsage - target) < (threshold));
-            Log.d(TAG, "runBenchmark: nowStable: "+ nowStable);
+
+            if ((sleep == sleepNew) && !nowStable) {
+                if (diff > 1)
+                    sleep++;
+                else
+                    sleep--;
+            } else sleep = sleepNew;
+
+            if (!stable && nowStable) {
+                stable = true;
+                Log.d(TAG, "runBenchmark: CPU Usage: "+ cpuUsage+" nowStable: "+ nowStable);
+                //TODO preguntar si solo guardar cuando esta estable
+            }
+            if (stable && !nowStable) {
+                stable = false;
+                Log.d(TAG, "runBenchmark: no esta estable");
+
+            }
+
+
+            nowStable = ((-threshold) < (cpuUsage - target)) && ((cpuUsage - target) < (threshold));
+
             progress += 5;
             progressUpdater.update(progress);
         }
@@ -61,6 +90,7 @@ public class CPUBenchmark extends Benchmark {
 
         progressUpdater.end(EMPTY_PAYLOAD);
     }
+
 
     public void runSampling(StopCondition stopCondition, ProgressUpdater progressUpdater) { //  CONVERGENCE
         int progress = 0;
@@ -78,14 +108,16 @@ public class CPUBenchmark extends Benchmark {
         boolean nowStable;
         float diff;
         long sleepNew;
-        while (stopCondition.canContinue() && progress < 100) {
+        while (stopCondition.canContinue() && progress < 100) { //var "progress" to avoid early convergence
             cpuUsage = cpuUsage();
 
             diff = cpuUsage / target;
+            sleepNew = (long) (sleep * diff);
+
             Log.i(TAG, "runConvergence: CPU Usage: " + cpuUsage +
                     " sleep: " + sleep + " diff: " + diff);
-            sleepNew = (long) (sleep * diff);
-            nowStable = ((-threshold) < (cpuUsage - target)) && ((cpuUsage - target) < (threshold));
+
+            nowStable = stopCondition.canContinue();
 
             if ((sleep == sleepNew) && !nowStable) {
                 if (diff > 1)

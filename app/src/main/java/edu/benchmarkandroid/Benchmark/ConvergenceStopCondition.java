@@ -13,6 +13,9 @@ public class ConvergenceStopCondition implements StopCondition {
 
     @Override
     public boolean canContinue() {
-        return convergenceThreshold > thresholdNotificator.getCurrentLevel();
+        double level = thresholdNotificator.getCurrentLevel();
+        return convergenceThreshold > level && level > -(convergenceThreshold);
     }
+
+
 }

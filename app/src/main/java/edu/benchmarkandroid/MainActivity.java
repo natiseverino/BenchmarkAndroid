@@ -340,6 +340,7 @@ public class MainActivity extends Activity {
         synchronized (evaluating) {
             if (!evaluating && !running) {
                 evaluating = true;
+                Log.d(TAG, "MainActivity - startBenchmark: CAN START");
                 serverConnection.startBenchmarck(benchmarkCanStartSucess, onErrorBS, getApplicationContext(), stateOfCharge);
             }
         }

@@ -1,4 +1,4 @@
-package edu.benchmarkandroid.Benchmark.benchmarks.JGrande;
+package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.runner;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -6,6 +6,7 @@ import java.io.PrintStream;
 
 import android.os.Environment;
 
+import edu.benchmarkandroid.Benchmark.benchmarks.JGrande.Runner;
 import  edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.DHPC_AllSizeA;
 
 public class CBenchmark4Ever implements Runner {
