@@ -2,6 +2,7 @@ package edu.benchmarkandroid.service;
 
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.widget.Toast;
 
 public abstract class ProgressUpdater {
     private ContextWrapper contextWrapper;

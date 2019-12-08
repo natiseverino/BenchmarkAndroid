@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,16 +24,15 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import org.json.JSONObject;
+
 import edu.benchmarkandroid.Benchmark.BenchmarkData;
 import edu.benchmarkandroid.model.UpdateData;
 import edu.benchmarkandroid.service.BatteryNotificator;
 import edu.benchmarkandroid.service.BenchmarkExecutor;
 import edu.benchmarkandroid.service.PollingIntentService;
 import edu.benchmarkandroid.service.ServerConnection;
-//import edu.benchmarkandroid.service.ToastIntentService;
 import edu.benchmarkandroid.utils.Cb;
-
-import org.json.JSONObject;
 
 import static android.Manifest.permission.INTERNET;
 import static edu.benchmarkandroid.service.BenchmarkIntentService.END_BENCHMARK_ACTION;
@@ -40,60 +40,66 @@ import static edu.benchmarkandroid.service.BenchmarkIntentService.PROGRESS_BENCH
 import static edu.benchmarkandroid.service.PollingIntentService.POLLING_ACTION;
 import static edu.benchmarkandroid.service.SamplingIntentService.END_SAMPLING_ACTION;
 import static edu.benchmarkandroid.service.SamplingIntentService.PROGRESS_SAMPLING_ACTION;
-//import static edu.benchmarkandroid.service.ToastIntentService.TOAST_ACTION;
+
 
 public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
 
-    //CHANGE THIS CONSTANT TO THE VALUE OF YOUR PREFERENCE
+    // CHANGE THIS CONSTANT TO THE VALUE OF YOUR PREFERENCE
     public static final int INTERVAL_OFF_BATTERY_UPDATES = 5000;
     public static final int POLLING_INTERVAL = 5000;
     public static final String NOT_DEFINED = "notdefined";
     private static final int MY_PERMISSIONS_REQUEST_INTERNET = 53;
+
+
+    //TODO averiguar como pedir estas cosas
     public static int THIS_DEVICE_CPU_MHZ = 2000;
     public static int THIS_DEVICE_BATTERY_MAH = 2600;
     public static double THIS_DEVICE_BATTERY_MIN_START_BATTERY_LEVEL = 1d;
-    //callbacks for errors
+
+
+    // Callbacks for errors
     final Cb<String> onError = new Cb<String>() {
         @Override
         public void run(String error) {
-//            ToastIntentService.createToasts(error);
             Toast.makeText(MainActivity.this, error, Toast.LENGTH_SHORT).show();
         }
     };
-    //callbacks for battery updates
+
+    // Callbacks for battery updates
     final Cb<JSONObject> batteryUpdateOnSucess = new Cb<JSONObject>() {
         @Override
         public void run(JSONObject jsonObject) {
-//            ToastIntentService.createToasts("Battery Update Complete :)");
             Toast.makeText(MainActivity.this, "Battery Update Complete :)", Toast.LENGTH_SHORT).show();
             requestBenchmarksButton.setEnabled(true);
         }
     };
-    //condicions for postInitPayload
+
+    // Condicions for postInitPayload
     public double minBatteryLevel = THIS_DEVICE_BATTERY_MIN_START_BATTERY_LEVEL;
     public String stateOfCharge = NOT_DEFINED;
-    //services
+
+    // Services
     private ServerConnection serverConnection;
     private BatteryNotificator batteryNotificator;
 
-    //callbacks for results send
+    // Callbacks for results send
     final Cb<String> resultSendCb = new Cb<String>() {
         @Override
         public void run(String useless) {
-//            ToastIntentService.createToasts("Results send");
             Toast.makeText(MainActivity.this, "send", Toast.LENGTH_SHORT).show();
             serverConnection.postUpdate(new UpdateData(THIS_DEVICE_CPU_MHZ, THIS_DEVICE_BATTERY_MAH, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
         }
     };
     private long timeOfLastBatteryUpdate;
     private BenchmarkExecutor benchmarkExecutor;
-    //callbacks for benchmarks received
+
+
+    // Callbacks for benchmarks received
     final Cb<BenchmarkData> benchmarkReceivedOnSucess = new Cb<BenchmarkData>() {
         @Override
         public void run(BenchmarkData benchmarkData) {
-//            ToastIntentService.createToasts("Benchmarks received :)");
             Toast.makeText(MainActivity.this, "Benchmarks received :)", Toast.LENGTH_SHORT).show();
             benchmarkExecutor.setBenchmarkData(benchmarkData);
             minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
@@ -103,16 +109,17 @@ public class MainActivity extends Activity {
             aSwitch.setEnabled(true);
         }
     };
+
     //mutex
     private Boolean running = false;
     private Boolean evaluating = false;
-    //callbacks for benchmarks started
+
+    // Callbacks for benchmarks started
     final Cb<Object> benchmarkCanStartSucess = new Cb<Object>() {
         @Override
         public void run(Object useless) {
             synchronized (evaluating) {
                 if (!running) {
-//                    ToastIntentService.createToasts("Benchmark can start :)");
                     Toast.makeText(MainActivity.this, "Benchmark can start :)", Toast.LENGTH_SHORT).show();
                     if (benchmarkExecutor.hasMoreToExecute()) {
                         running = true;
@@ -120,7 +127,6 @@ public class MainActivity extends Activity {
                         minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
                         serverConnection.postUpdate(new UpdateData(THIS_DEVICE_CPU_MHZ, THIS_DEVICE_BATTERY_MAH, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
                     } else
-//                        ToastIntentService.createToasts("There is no more benchmark");
                         Toast.makeText(MainActivity.this, "There is no more benchmark", Toast.LENGTH_SHORT).show();
                     evaluating = false;
                 }
@@ -128,25 +134,26 @@ public class MainActivity extends Activity {
         }
     };
 
-    //cb for error on benchmarks started
+    // Callbacks for error on benchmarks started
     final Cb<String> onErrorBS = new Cb<String>() {
         @Override
         public void run(String error) {
-//            ToastIntentService.createToasts(error);
             Toast.makeText(MainActivity.this, error, Toast.LENGTH_SHORT).show();
             evaluating = false;
         }
     };
 
-    //Suscriber to battery notifications from the OS
+    // Suscriber to battery notifications from the OS
     private BroadcastReceiver batteryInfoReceiver;
-    //receiver for updates from the benchmark run
-    private ProgressReceiver rcv;
-    //TODO receiver for toasts
-//    private ToastReceiver trcv;
-    //receiver for updates from the polling service
-    private PollingReceiver prcv;
-    //view components
+
+    // Receiver for updates from the benchmark run
+    private ProgressReceiver progressReceiver;
+
+
+    // Receiver for updates from the polling service
+    private PollingReceiver pollingReceiver;
+
+    // View components
     private EditText ipEditText;
     private EditText portEditText;
     private EditText modelEditText;
@@ -175,11 +182,6 @@ public class MainActivity extends Activity {
         //set service to interact with the server
         serverConnection = ServerConnection.getService();
 
-        //set service to render toasts
-        //TODO init ToastIntentService
-//        Intent intent3 = new Intent(this, ToastIntentService.class);
-//        this.startService(intent3);
-
         //initialize battery intents receiver
         this.batteryNotificator = BatteryNotificator.getInstance();
         batteryInfoReceiver = new BroadcastReceiver() {
@@ -202,20 +204,14 @@ public class MainActivity extends Activity {
         filter.addAction(END_BENCHMARK_ACTION);
         filter.addAction(PROGRESS_SAMPLING_ACTION);
         filter.addAction(END_SAMPLING_ACTION);
-        rcv = new ProgressReceiver();
-        registerReceiver(rcv, filter);
+        progressReceiver = new ProgressReceiver();
+        registerReceiver(progressReceiver, filter);
 
         //set receiver for polling service's updates to the main thread
         IntentFilter filter2 = new IntentFilter();
         filter2.addAction(POLLING_ACTION);
-        prcv = new PollingReceiver();
-        registerReceiver(prcv, filter2);
-
-        //TODO set receiver for toats service to the main thread
-//        IntentFilter filter3 = new IntentFilter();
-//        filter3.addAction(TOAST_ACTION);
-//        trcv = new ToastReceiver();
-//        registerReceiver(trcv, filter3);
+        pollingReceiver = new PollingReceiver();
+        registerReceiver(pollingReceiver, filter2);
 
         //initialize benchmark service
         this.benchmarkExecutor = new BenchmarkExecutor();
@@ -236,7 +232,8 @@ public class MainActivity extends Activity {
 
         ipTextView.setText(ipEditText.getText());
         portTextView.setText(portEditText.getText());
-        modelTextView.setText(modelEditText.getText());
+        //modelTextView.setText(modelEditText.getText());
+        modelTextView.setText(Build.MANUFACTURER + "-" + Build.MODEL);
 
         //set onChangeListener to display the complete formater url to the user
         bindInputToDisplayText(ipEditText, ipTextView);
@@ -266,34 +263,42 @@ public class MainActivity extends Activity {
                     modelEditText.setEnabled(false);
                     ipEditText.setEnabled(false);
                     portEditText.setEnabled(false);
-                    manuaBatteryUpdateButton.setEnabled(true);
+                    //manuaBatteryUpdateButton.setEnabled(true);
+                    //THIS_DEVICE_BATTERY_MAH =;
+                    //THIS_DEVICE_CPU_MHZ =;
+                    serverConnection.postUpdate(new UpdateData(THIS_DEVICE_CPU_MHZ, THIS_DEVICE_BATTERY_MAH, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
+
                 }
             }
         });
-        manuaBatteryUpdateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                serverConnection.postUpdate(new UpdateData(THIS_DEVICE_CPU_MHZ, THIS_DEVICE_BATTERY_MAH, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
-            }
-        });
+
+//        manuaBatteryUpdateButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                serverConnection.postUpdate(new UpdateData(THIS_DEVICE_CPU_MHZ, THIS_DEVICE_BATTERY_MAH, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
+//            }
+//        });
+
         requestBenchmarksButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 serverConnection.getBenchmarks(benchmarkReceivedOnSucess, onError, getApplicationContext());
             }
         });
+
         startBenchmarksButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startBenchmark();
             }
         });
+
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     startPolling();
                 } else {
-                    stoptPolling();
+                    stopPolling();
                 }
             }
         });
@@ -324,18 +329,19 @@ public class MainActivity extends Activity {
 
     //L&F related
     private void bindInputToDisplayText(final EditText input, final TextView display) {
-        input.addTextChangedListener(new TextWatcher() {
+        input.addTextChangedListener(
+                new TextWatcher() {
 
-                                         public void afterTextChanged(Editable s) {
-                                             display.setText(input.getText());
-                                         }
+                    public void afterTextChanged(Editable s) {
+                        display.setText(input.getText());
+                    }
 
-                                         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                                         }
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
 
-                                         public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                         }
-                                     }
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    }
+                }
         );
     }
 
@@ -356,21 +362,19 @@ public class MainActivity extends Activity {
         this.startService(intent);
     }
 
-    private void stoptPolling() {
+    private void stopPolling() {
         PollingIntentService.setShouldContinue(false);
     }
-
 
 
     //unregister the battery monitor
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        this.unregisterReceiver(this.rcv);
-        this.unregisterReceiver(this.prcv);
+        this.unregisterReceiver(this.progressReceiver);
+        this.unregisterReceiver(this.pollingReceiver);
         this.unregisterReceiver(this.batteryInfoReceiver);
     }
-
 
 
     public class PollingReceiver extends BroadcastReceiver {
@@ -383,68 +387,63 @@ public class MainActivity extends Activity {
         }
     }
 
-    /**
-     * TODO ToastReceiver
-     * <p>
-     * public class ToastReceiver extends BroadcastReceiver {
-     *
-     * @Override public void onReceive(Context context, Intent intent) {
-     * //polling try
-     * if (intent.getAction().equals(TOAST_ACTION)) {
-     * Toast.makeText(context, intent.getStringExtra("msg"), Toast.LENGTH_SHORT).show();
-     * }
-     * }
-     * }
-     */
-
 
     public class ProgressReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+
             //benchmarck run stage report
             if (intent.getAction().equals(PROGRESS_BENCHMARK_ACTION)) {
                 String prog = intent.getStringExtra("progress");
-//                ToastIntentService.createToasts(prog);
                 Toast.makeText(context, prog, Toast.LENGTH_SHORT).show();
                 minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-            } else if (intent.getAction().equals(END_BENCHMARK_ACTION)) {
-//                ToastIntentService.createToasts("Run stage finished");
-                Toast.makeText(context, "Run stage finished", Toast.LENGTH_SHORT).show();
-                String result = intent.getStringExtra("payload");
-                String variant = intent.getStringExtra("variant");
-                serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result.getBytes(), "run", variant);
-                running = false;
-                if (benchmarkExecutor.hasMoreToExecute()) {
-                    stateOfCharge = benchmarkExecutor.getNeededBatteryState();
-                    minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-                    startBenchmark();
-                } else
-//                    ToastIntentService.createToasts("There is no more benchmark");
-                    Toast.makeText(context, "There is no more benchmark", Toast.LENGTH_SHORT).show();
+            } else {
+                if (intent.getAction().equals(END_BENCHMARK_ACTION)) {
+                    Toast.makeText(context, "Run stage finished", Toast.LENGTH_SHORT).show();
+                    String result = intent.getStringExtra("payload");
+                    String variant = intent.getStringExtra("variant");
+                    serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result.getBytes(), "run", variant);
+                    running = false;
+                    if (benchmarkExecutor.hasMoreToExecute()) {
+                        stateOfCharge = benchmarkExecutor.getNeededBatteryState();
+                        minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
+                        startBenchmark();
+                    } else
+                        Toast.makeText(context, "There is no more benchmark", Toast.LENGTH_SHORT).show();
+                }
             }
+
+
             //benchmarck sampling stage report
             if (intent.getAction().equals(PROGRESS_SAMPLING_ACTION)) {
                 String prog = intent.getStringExtra("progress");
-//                ToastIntentService.createToasts(prog);
-
                 Toast.makeText(context, prog, Toast.LENGTH_SHORT).show();
                 minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-            } else if (intent.getAction().equals(END_SAMPLING_ACTION)) {
-//                ToastIntentService.createToasts("Sampling finished");
-                Toast.makeText(context, "Sampling finished", Toast.LENGTH_SHORT).show();
-                String result = intent.getStringExtra("payload");
-                String variant = intent.getStringExtra("variant");
-                serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result.getBytes(), "sampling", variant);
-                running = false;
-                if (benchmarkExecutor.hasMoreToExecute()) {
-                    stateOfCharge = benchmarkExecutor.getNeededBatteryState();
-                    minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-                    startBenchmark();
-                } else
-//                    ToastIntentService.createToasts("There is no more benchmark");
-                    Toast.makeText(context, "There is no more benchmark", Toast.LENGTH_SHORT).show();
+            } else {
+
+                if (intent.getAction().equals(END_SAMPLING_ACTION)) {
+                    Toast.makeText(context, "Sampling finished", Toast.LENGTH_SHORT).show();
+                    String result = intent.getStringExtra("payload");
+                    String variant = intent.getStringExtra("variant");
+                    serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result.getBytes(), "sampling", variant);
+                    running = false;
+                    if (benchmarkExecutor.hasMoreToExecute()) {
+                        stateOfCharge = benchmarkExecutor.getNeededBatteryState();
+                        minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
+                        startBenchmark();
+                    } else
+                        Toast.makeText(context, "There is no more benchmark", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
+
+
+
+
+
+
+
+
 }

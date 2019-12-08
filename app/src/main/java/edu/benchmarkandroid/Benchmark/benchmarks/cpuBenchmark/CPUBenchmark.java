@@ -51,6 +51,8 @@ public class CPUBenchmark extends Benchmark {
         boolean nowStable;
         double diff;
         long sleepNew;
+
+        Log.d(TAG, "runBenchmark: target: "+ target+ "threshold: "+ threshold);
         while (stopCondition.canContinue()) {
             cpuUsage = cpuUsage();
 
@@ -71,16 +73,16 @@ public class CPUBenchmark extends Benchmark {
             } else
                 sleep = sleepNew;
 
-            if (!stable && nowStable) {
-                stable = true;
+            for (int i = 0; i < this.cpus; i++)
+                cpuUser[i].setSleep(sleep);
+
+            if (nowStable) {
                 Log.d(TAG, "runBenchmark: CPU Usage: " + cpuUsage + " nowStable: " + nowStable);
                 //logger
                 //TODO preguntar si solo guardar cuando esta estable
             }
-            if (stable && !nowStable) {
-                stable = false;
+            else {
                 Log.d(TAG, "runBenchmark: no esta estable");
-
             }
 
             progress += 5;
@@ -96,7 +98,7 @@ public class CPUBenchmark extends Benchmark {
 
 
     public void runSampling(StopCondition stopCondition, ProgressUpdater progressUpdater) { //  CONVERGENCE
-        int progress = 0;
+        int iterations = 0;
         double cpuUsage;
         sleep = 1;
 
@@ -111,7 +113,12 @@ public class CPUBenchmark extends Benchmark {
         boolean nowStable;
         double diff;
         long sleepNew;
-        while (stopCondition.canContinue() && progress < 100) { //var "progress" to avoid early convergence
+
+        Log.d(TAG, "runConvergence: target: "+ target+ " threshold: "+ threshold);
+
+        ((ConvergenceStopCondition)stopCondition).updateLevel(1d);
+
+        while (stopCondition.canContinue() || iterations < 10) { //var "progress" to avoid early convergence
             cpuUsage = cpuUsage();
 
             diff = cpuUsage / target;
@@ -122,7 +129,7 @@ public class CPUBenchmark extends Benchmark {
 
             ((ConvergenceStopCondition) stopCondition).updateLevel(cpuUsage - target);
 
-            if ((sleep == sleepNew) && !stopCondition.canContinue()) {
+            if ((sleep == sleepNew) && stopCondition.canContinue()) { //canContinue checks if is not stable yet
                 if (diff > 1)
                     sleep++;
                 else
@@ -134,8 +141,8 @@ public class CPUBenchmark extends Benchmark {
             for (int i = 0; i < this.cpus; i++)
                 cpuUser[i].setSleep(sleep);
 
-            progress += 5;
-            progressUpdater.update(progress);
+            iterations += 1;
+            progressUpdater.update(iterations);
         }
 
         Log.d(TAG, "runConvergence: END");

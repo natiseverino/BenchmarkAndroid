@@ -18,7 +18,6 @@ public class BatteryNotificator {
     }
 
     public double getCurrentLevel() {
-        //return currentLevel;
-        return 1d;
+        return currentLevel;
     }
 }

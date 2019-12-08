@@ -117,6 +117,7 @@ public class ServerConnection {
 
     public void startBenchmarck(final Cb<Object> onSucessCb, final Cb<String> onErrorCb, Context context, String stateOfCharge) {
         String newurl = stateOfCharge.equals(NOT_DEFINED) ? url + "?stage=postinit" : url + "?stage=postinit&requiredBatteryState=" + stateOfCharge;
+        Log.d(TAG, "startBenchmarck: url: "+ newurl);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, newurl, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -125,6 +126,7 @@ public class ServerConnection {
                             if (response.get("message").equals(true)) {
                                 onSucessCb.run("NO_PARAM");
                             } else {
+                                Log.d(TAG, "ServerConnection - onResponse: cant't start the benchmarks yet");
                                 onErrorCb.run("cant't start the benchmarks yet");
                             }
                         } catch (JSONException e) {
