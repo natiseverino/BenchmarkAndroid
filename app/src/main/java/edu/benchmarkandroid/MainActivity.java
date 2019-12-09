@@ -32,6 +32,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import edu.benchmarkandroid.Benchmark.BenchmarkData;
+import edu.benchmarkandroid.Benchmark.benchmarks.cpuBenchmark.CPUUtils;
 import edu.benchmarkandroid.model.UpdateData;
 import edu.benchmarkandroid.service.BatteryNotificator;
 import edu.benchmarkandroid.service.BenchmarkExecutor;
@@ -58,11 +59,9 @@ public class MainActivity extends Activity {
     private static final int MY_PERMISSIONS_REQUEST_INTERNET = 53;
 
 
-    //TODO averiguar como pedir estas cosas
-    public static int THIS_DEVICE_CPU_MHZ = 2000;
-    public static int THIS_DEVICE_BATTERY_MAH = 2600;
     public static double THIS_DEVICE_BATTERY_MIN_START_BATTERY_LEVEL = 1d;
-
+    public int deviceCpuMhz;
+    public int deviceBatteryMah;
 
     // Callbacks for errors
     final Cb<String> onError = new Cb<String>() {
@@ -94,7 +93,7 @@ public class MainActivity extends Activity {
         @Override
         public void run(String useless) {
             Toast.makeText(MainActivity.this, "send", Toast.LENGTH_SHORT).show();
-            serverConnection.postUpdate(new UpdateData(THIS_DEVICE_CPU_MHZ, THIS_DEVICE_BATTERY_MAH, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
+            serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
         }
     };
     private long timeOfLastBatteryUpdate;
@@ -109,7 +108,7 @@ public class MainActivity extends Activity {
             benchmarkExecutor.setBenchmarkData(benchmarkData);
             minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
             stateOfCharge = benchmarkExecutor.getNeededBatteryState();
-            serverConnection.postUpdate(new UpdateData(THIS_DEVICE_CPU_MHZ, THIS_DEVICE_BATTERY_MAH, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
+            serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
             startBenchmarksButton.setEnabled(true);
             aSwitch.setEnabled(true);
         }
@@ -130,7 +129,7 @@ public class MainActivity extends Activity {
                         running = true;
                         benchmarkExecutor.execute(getApplicationContext());
                         minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-                        serverConnection.postUpdate(new UpdateData(THIS_DEVICE_CPU_MHZ, THIS_DEVICE_BATTERY_MAH, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
+                        serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
                     } else
                         Toast.makeText(MainActivity.this, "There is no more benchmark", Toast.LENGTH_SHORT).show();
                     evaluating = false;
@@ -176,6 +175,10 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        deviceBatteryMah = getBatteryCapacity();
+        deviceCpuMhz = CPUUtils.getMaxCPUFreqMHz();
+
+
         //check for permission to use internet on the device
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), INTERNET)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -197,7 +200,7 @@ public class MainActivity extends Activity {
                 batteryNotificator.updateBatteryLevel((level / (double) scale));
                 if ((System.currentTimeMillis() - timeOfLastBatteryUpdate) > INTERVAL_OFF_BATTERY_UPDATES) {
                     timeOfLastBatteryUpdate = System.currentTimeMillis();
-                    serverConnection.postUpdate(new UpdateData(THIS_DEVICE_CPU_MHZ, THIS_DEVICE_BATTERY_MAH, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
+                    serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
                 }
             }
         };
@@ -269,9 +272,9 @@ public class MainActivity extends Activity {
                     ipEditText.setEnabled(false);
                     portEditText.setEnabled(false);
                     //manuaBatteryUpdateButton.setEnabled(true);
-                    //THIS_DEVICE_BATTERY_MAH =;
-                    //THIS_DEVICE_CPU_MHZ =;
-                    serverConnection.postUpdate(new UpdateData(THIS_DEVICE_CPU_MHZ, THIS_DEVICE_BATTERY_MAH, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
+                    //deviceBatteryMah =;
+                    //deviceCpuMhz =;
+                    serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
 
                 }
             }
@@ -280,7 +283,7 @@ public class MainActivity extends Activity {
 //        manuaBatteryUpdateButton.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
-//                serverConnection.postUpdate(new UpdateData(THIS_DEVICE_CPU_MHZ, THIS_DEVICE_BATTERY_MAH, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
+//                serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
 //            }
 //        });
 
@@ -308,12 +311,26 @@ public class MainActivity extends Activity {
             }
         });
 
+
+        Button testButton = findViewById(R.id.testButton);
+        testButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int maxCPUFreqMHz = CPUUtils.getMaxCPUFreqMHz();
+                Log.d(TAG, "onClick: " + "maxCPUFreqMHz: " + maxCPUFreqMHz);
+
+
+                double batteryCapacity =  getBatteryCapacity();
+                Log.d(TAG, "onClick: " + "batteryCapacity: " + batteryCapacity);
+
+            }
+        });
+
     }
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_INTERNET: {
                 // If request is cancelled, the result arrays are empty.
@@ -471,5 +488,37 @@ public class MainActivity extends Activity {
         }
     }
 
+
+    public int getBatteryCapacity() {
+
+        Object mPowerProfile_ = null;
+        double batteryCapacity = 0;
+        final String POWER_PROFILE_CLASS = "com.android.internal.os.PowerProfile";
+        try {
+            mPowerProfile_ = Class.forName(POWER_PROFILE_CLASS)
+                    .getConstructor(Context.class).newInstance(this);
+
+        } catch (Exception e) {
+
+            // Class not found?
+            e.printStackTrace();
+        }
+
+        try {
+
+            // Invoke PowerProfile method "getAveragePower" with param
+            // "battery.capacity"
+            batteryCapacity = (Double) Class.forName(POWER_PROFILE_CLASS)
+                    .getMethod("getAveragePower", java.lang.String.class)
+                    .invoke(mPowerProfile_, "battery.capacity");
+
+        } catch (Exception e) {
+
+            // Something went wrong
+            e.printStackTrace();
+        }
+
+        return (int) batteryCapacity;
+    }
 
 }
