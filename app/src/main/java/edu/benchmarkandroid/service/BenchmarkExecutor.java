@@ -22,6 +22,8 @@ public class BenchmarkExecutor {
     private double neededBatteryLevelNextStep = 0d;
     private String neededBatteryState = "";
     private String benchmarkName = "";
+    private boolean keepScreenOn = true;
+
 
 
     public String getNeededBatteryState() {
@@ -47,6 +49,12 @@ public class BenchmarkExecutor {
         currentBenchmark = 0;
         this.neededBatteryLevelNextStep = variants.get(0).getEnergyPreconditionSamplingStage().getMinStartBatteryLevel();
         this.neededBatteryState = variants.get(0).getEnergyPreconditionSamplingStage().getRequiredBatteryState();
+        String screenState = variants.get(0).getParamsRunStage().getScreenState();
+        if(screenState.equalsIgnoreCase("on"))
+            keepScreenOn = true;
+        else if (screenState.equalsIgnoreCase("off"))
+            keepScreenOn = false;
+
     }
 
     public boolean hasMoreToExecute() {
@@ -73,7 +81,20 @@ public class BenchmarkExecutor {
                 this.neededBatteryLevelNextStep = variants.get(currentBenchmark).getEnergyPreconditionSamplingStage().getMinStartBatteryLevel();
                 this.neededBatteryState = variants.get(currentBenchmark).getEnergyPreconditionSamplingStage().getRequiredBatteryState();
                 sampling = true;
+                String screenState = variants.get(0).getParamsRunStage().getScreenState();
+                if(screenState.equalsIgnoreCase("on"))
+                    keepScreenOn = true;
+                else if (screenState.equalsIgnoreCase("off"))
+                    keepScreenOn = false;
             }
         }
+    }
+
+    public boolean isKeepScreenOn() {
+        return keepScreenOn;
+    }
+
+    public void setKeepScreenOn(boolean keepScreenOn) {
+        this.keepScreenOn = keepScreenOn;
     }
 }
