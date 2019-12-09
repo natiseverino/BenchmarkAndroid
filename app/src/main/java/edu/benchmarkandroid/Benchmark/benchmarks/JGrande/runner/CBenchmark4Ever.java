@@ -9,7 +9,7 @@ import android.os.Environment;
 import edu.benchmarkandroid.Benchmark.benchmarks.JGrande.Runner;
 import  edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.DHPC_AllSizeA;
 
-public class CBenchmark4Ever implements Runner {
+public class CBenchmark4Ever implements Runner { //TODO Change runner for benchmark
 
     @Override
     public void execute() {

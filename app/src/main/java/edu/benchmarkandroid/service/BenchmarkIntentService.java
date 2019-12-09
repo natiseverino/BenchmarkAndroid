@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import edu.benchmarkandroid.Benchmark.BatteryStopCondition;
 import edu.benchmarkandroid.Benchmark.Benchmark;
 import edu.benchmarkandroid.Benchmark.Variant;
+import edu.benchmarkandroid.utils.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -33,7 +34,8 @@ public class BenchmarkIntentService extends IntentService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ProgressUpdater progressUpdater = new BenchMarckProgressUpdater(this, PROGRESS_BENCHMARK_ACTION, END_BENCHMARK_ACTION, benchmark.getVariant().getVariantId());
+        Logger logger = Logger.getInstance();
+        ProgressUpdater progressUpdater = new BenchMarckProgressUpdater(this, PROGRESS_BENCHMARK_ACTION, END_BENCHMARK_ACTION, benchmark.getVariant().getVariantId(), logger);
         benchmark.runBenchmark(
                 new BatteryStopCondition(benchmark.getVariant().getEnergyPreconditionRunStage().getMinEndBatteryLevel(), batteryNotificator),
                 progressUpdater);

@@ -187,6 +187,8 @@ public class ServerConnection {
         private void buildMultipartEntity() {
             try {
                 FileOutputStream outputStreamWriter = context.openFileOutput("filetosend", Context.MODE_PRIVATE);
+                Log.d(TAG, "buildMultipartEntity: WRITE CONTENT");
+                Log.d(TAG, "buildMultipartEntity: "+ content.toString());
                 outputStreamWriter.write(content);
                 outputStreamWriter.close();
             } catch (IOException e) {

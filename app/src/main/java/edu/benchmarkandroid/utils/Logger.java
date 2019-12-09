@@ -1,4 +1,4 @@
-package edu.benchmarkandroid.Benchmark.benchmarks.cpuBenchmark;
+package edu.benchmarkandroid.utils;
 
 
 import java.io.BufferedWriter;
@@ -8,23 +8,43 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 public class Logger {
+
+    private static Logger INSTANCE;
+
 
     private static final String TAG = "Logger";
 
     private BufferedWriter bw;
 
     private int counter = 0;
+    private static String fname = null;
 
-    public Logger(String fname) {
+    private Logger(String fname) {
         try {
             this.bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(fname))));
         } catch (FileNotFoundException e) {
             Log.e(TAG, "Error creating file", e);
-            System.exit(1);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Error invalid file name", e);
         }
+    }
+
+    public static void init(String fname) {
+        Logger.fname = "/sdcard/Download/"+fname;
+    }
+
+    public synchronized static Logger getInstance() {
+        if (INSTANCE == null) INSTANCE = new Logger(fname);
+        return INSTANCE;
+    }
+
+    public String getFileName() {
+        return fname;
     }
 
     public void write(String s) {
@@ -46,16 +66,14 @@ public class Logger {
             bw.flush();
         } catch (IOException e) {
             Log.e(TAG, "Error writting file", e);
-            System.exit(1);
         }
     }
 
     @Override
-    protected void finalize() throws Throwable {
+    public void finalize() throws Throwable {
         super.finalize();
         this.flush();
         bw.close();
-        //TODO mandar al servidor mendiante serverConnection???
     }
 
 

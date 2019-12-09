@@ -3,10 +3,10 @@ package edu.benchmarkandroid.Benchmark.benchmarks.cpuBenchmark;
 import android.util.Log;
 
 import edu.benchmarkandroid.Benchmark.Benchmark;
-import edu.benchmarkandroid.Benchmark.ConvergenceStopCondition;
 import edu.benchmarkandroid.Benchmark.StopCondition;
 import edu.benchmarkandroid.Benchmark.Variant;
 import edu.benchmarkandroid.service.ProgressUpdater;
+import edu.benchmarkandroid.service.ThresholdNotificator;
 
 
 public class CPUBenchmark extends Benchmark {
@@ -35,7 +35,7 @@ public class CPUBenchmark extends Benchmark {
 
     @Override
     public void runBenchmark(StopCondition stopCondition, ProgressUpdater progressUpdater) {
-        int progress = 0;
+        String progress;
         double cpuUsage;
 
         Log.i(TAG, "runBenchmark: sleep: " + sleep);
@@ -53,7 +53,7 @@ public class CPUBenchmark extends Benchmark {
         long sleepNew;
 
         Log.d(TAG, "runBenchmark: target: "+ target+ "threshold: "+ threshold);
-        while (stopCondition.canContinue()) {
+        while (stopCondition.canContinue() && stable) {
             cpuUsage = cpuUsage();
 
             diff = cpuUsage / target;
@@ -76,16 +76,14 @@ public class CPUBenchmark extends Benchmark {
             for (int i = 0; i < this.cpus; i++)
                 cpuUser[i].setSleep(sleep);
 
+
             if (nowStable) {
                 Log.d(TAG, "runBenchmark: CPU Usage: " + cpuUsage + " nowStable: " + nowStable);
-                //logger
-                //TODO preguntar si solo guardar cuando esta estable
             }
             else {
                 Log.d(TAG, "runBenchmark: no esta estable");
             }
-
-            progress += 5;
+            progress = "CPUUsage: "+ cpuUsage+ "Sleep: "+sleep;
             progressUpdater.update(progress);
         }
         Log.d(TAG, "runBenchmark: END");
@@ -99,6 +97,7 @@ public class CPUBenchmark extends Benchmark {
 
     public void runSampling(StopCondition stopCondition, ProgressUpdater progressUpdater) { //  CONVERGENCE
         int iterations = 0;
+        String progress;
         double cpuUsage;
         sleep = 1;
 
@@ -116,7 +115,7 @@ public class CPUBenchmark extends Benchmark {
 
         Log.d(TAG, "runConvergence: target: "+ target+ " threshold: "+ threshold);
 
-        ((ConvergenceStopCondition)stopCondition).updateLevel(1d);
+        ThresholdNotificator thresholdNotificator = ThresholdNotificator.getInstance();
 
         while (stopCondition.canContinue() || iterations < 10) { //var "progress" to avoid early convergence
             cpuUsage = cpuUsage();
@@ -127,7 +126,7 @@ public class CPUBenchmark extends Benchmark {
             Log.i(TAG, "runConvergence: CPU Usage: " + cpuUsage +
                     " sleep: " + sleep + " diff: " + diff);
 
-            ((ConvergenceStopCondition) stopCondition).updateLevel(cpuUsage - target);
+            thresholdNotificator.updateThresholdLevel(cpuUsage - target);
 
             if ((sleep == sleepNew) && stopCondition.canContinue()) { //canContinue checks if is not stable yet
                 if (diff > 1)
@@ -142,7 +141,8 @@ public class CPUBenchmark extends Benchmark {
                 cpuUser[i].setSleep(sleep);
 
             iterations += 1;
-            progressUpdater.update(iterations);
+            progress = "CPUUsage: "+ cpuUsage+ "Sleep: "+sleep;
+            progressUpdater.update(progress);
         }
 
         Log.d(TAG, "runConvergence: END");

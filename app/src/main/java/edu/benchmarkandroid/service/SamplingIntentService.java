@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import edu.benchmarkandroid.Benchmark.Benchmark;
 import edu.benchmarkandroid.Benchmark.ConvergenceStopCondition;
 import edu.benchmarkandroid.Benchmark.Variant;
+import edu.benchmarkandroid.utils.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -33,7 +34,9 @@ public class SamplingIntentService extends IntentService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ProgressUpdater progressUpdater = new SamplingProgressUpdater(this, PROGRESS_SAMPLING_ACTION, END_SAMPLING_ACTION, benchmark.getVariant().getVariantId());
+        Logger.init(intent.getStringExtra("benchmarkName")+benchmark.getVariant().getVariantId()+".txt");
+        Logger logger = Logger.getInstance();
+        ProgressUpdater progressUpdater = new SamplingProgressUpdater(this, PROGRESS_SAMPLING_ACTION, END_SAMPLING_ACTION, benchmark.getVariant().getVariantId(), logger);
         benchmark.runSampling(
                 new ConvergenceStopCondition(benchmark.getVariant().getParamsSamplingStage().getConvergenceThreshold(), thresholdNotificator),
                 progressUpdater);

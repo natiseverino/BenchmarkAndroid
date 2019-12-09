@@ -2,10 +2,12 @@ package edu.benchmarkandroid.service;
 
 import android.content.ContextWrapper;
 
+import edu.benchmarkandroid.utils.Logger;
+
 class BenchMarckProgressUpdater extends ProgressUpdater {
 
-    BenchMarckProgressUpdater(ContextWrapper contextWrapper, String upodateAction, String endAction, String variant) {
-        super(contextWrapper, upodateAction, endAction, variant);
+    BenchMarckProgressUpdater(ContextWrapper contextWrapper, String updateAction, String endAction, String variant, Logger logger) {
+        super(contextWrapper, updateAction, endAction, variant, logger);
     }
 
     @Override

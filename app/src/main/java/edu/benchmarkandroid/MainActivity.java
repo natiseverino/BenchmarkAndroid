@@ -26,6 +26,11 @@ import androidx.core.content.ContextCompat;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import edu.benchmarkandroid.Benchmark.BenchmarkData;
 import edu.benchmarkandroid.model.UpdateData;
 import edu.benchmarkandroid.service.BatteryNotificator;
@@ -401,9 +406,21 @@ public class MainActivity extends Activity {
             } else {
                 if (intent.getAction().equals(END_BENCHMARK_ACTION)) {
                     Toast.makeText(context, "Run stage finished", Toast.LENGTH_SHORT).show();
-                    String result = intent.getStringExtra("payload");
                     String variant = intent.getStringExtra("variant");
-                    serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result.getBytes(), "run", variant);
+                    String fname = intent.getStringExtra("file");
+                    byte[] result = null;
+                    try {
+                        File file = new File(fname);
+                        FileInputStream fileInputStream = new FileInputStream(file);
+                        result = new byte[(int) file.length() + 1];
+                        fileInputStream.read(result);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if (result != null)
+                        serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result, "run", variant);
+                    else
+                        Log.d(TAG, "onReceive: SIGE EN NULL EL ARRAY DE BYTES");
                     running = false;
                     if (benchmarkExecutor.hasMoreToExecute()) {
                         stateOfCharge = benchmarkExecutor.getNeededBatteryState();
@@ -417,16 +434,31 @@ public class MainActivity extends Activity {
 
             //benchmarck sampling stage report
             if (intent.getAction().equals(PROGRESS_SAMPLING_ACTION)) {
-                String prog = intent.getStringExtra("progress");
-                Toast.makeText(context, prog, Toast.LENGTH_SHORT).show();
+//                String prog = intent.getStringExtra("progress");
+//                Toast.makeText(context, prog, Toast.LENGTH_SHORT).show();
                 minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
             } else {
 
                 if (intent.getAction().equals(END_SAMPLING_ACTION)) {
                     Toast.makeText(context, "Sampling finished", Toast.LENGTH_SHORT).show();
-                    String result = intent.getStringExtra("payload");
+                    //String result = intent.getStringExtra("payload");
                     String variant = intent.getStringExtra("variant");
-                    serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result.getBytes(), "sampling", variant);
+                    String fname = intent.getStringExtra("file");
+                    byte[] result = null;
+                    try {
+                        File file = new File(fname);
+                        FileInputStream fileInputStream = new FileInputStream(file);
+                        result = new byte[(int) file.length() + 1];
+                        fileInputStream.read(result);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (result != null) {
+                        Log.d(TAG, "onReceive: "+ result.toString());
+                        serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result, "sampling", variant);
+                    } else
+                        Log.d(TAG, "onReceive: SIGE EN NULL EL ARRAY DE BYTES");
                     running = false;
                     if (benchmarkExecutor.hasMoreToExecute()) {
                         stateOfCharge = benchmarkExecutor.getNeededBatteryState();
@@ -438,12 +470,6 @@ public class MainActivity extends Activity {
             }
         }
     }
-
-
-
-
-
-
 
 
 }

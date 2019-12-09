@@ -2,15 +2,16 @@ package edu.benchmarkandroid.service;
 
 
 public class ThresholdNotificator {
-    private static ThresholdNotificator instance;
+
+    private static ThresholdNotificator INSTANCE;
     private double currentLevel;
 
     private ThresholdNotificator() {
     }
 
-    synchronized static ThresholdNotificator getInstance() {
-        if (instance == null) instance = new ThresholdNotificator();
-        return instance;
+    public synchronized static ThresholdNotificator getInstance() {
+        if (INSTANCE == null) INSTANCE = new ThresholdNotificator();
+        return INSTANCE;
     }
 
     public synchronized void updateThresholdLevel(double level) {
@@ -19,5 +20,9 @@ public class ThresholdNotificator {
 
     public double getCurrentLevel() {
         return currentLevel;
+    }
+
+    public static void destroyInstance(){
+        INSTANCE = null;
     }
 }

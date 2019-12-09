@@ -6,6 +6,8 @@ import android.content.Intent;
 import edu.benchmarkandroid.Benchmark.BenchmarkData;
 import edu.benchmarkandroid.Benchmark.BenchmarkDefinition;
 import edu.benchmarkandroid.Benchmark.Variant;
+import edu.benchmarkandroid.utils.Logger;
+
 import com.google.gson.GsonBuilder;
 
 import java.util.Collections;
@@ -19,6 +21,8 @@ public class BenchmarkExecutor {
     private boolean sampling = true;
     private double neededBatteryLevelNextStep = 0d;
     private String neededBatteryState = "";
+    private String benchmarkName = "";
+
 
     public String getNeededBatteryState() {
         return neededBatteryState;
@@ -30,7 +34,8 @@ public class BenchmarkExecutor {
 
     public void setBenchmarkData(final BenchmarkData benchmarkData) {
         final BenchmarkDefinition definition = benchmarkData.getBenchmarkDefinitions().get(0);
-        benchClassName = "edu.benchmarkandroid.Benchmark.benchmarks." + definition.getBenchmarkClass();
+        benchmarkName = definition.getBenchmarkClass();
+        benchClassName = "edu.benchmarkandroid.Benchmark.benchmarks." + benchmarkName;
         variants = definition.getVariants();
         Collections.sort(variants, new Comparator<Variant>() {
             @Override
@@ -52,6 +57,7 @@ public class BenchmarkExecutor {
         if (sampling) {
             Intent intent = new Intent(context, SamplingIntentService.class);
             intent.putExtra("samplingName", benchClassName);
+            intent.putExtra("benchmarkName", benchmarkName);
             intent.putExtra("benchmarkVariant", new GsonBuilder().create().toJson(variants.get(currentBenchmark)));
             context.startService(intent);
             sampling = false;
