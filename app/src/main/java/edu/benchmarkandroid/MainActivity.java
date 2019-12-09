@@ -458,7 +458,7 @@ public class MainActivity extends Activity {
                     try {
                         File file = new File(fname);
                         FileInputStream fileInputStream = new FileInputStream(file);
-                        result = new byte[(int) file.length() + 1];
+                        result = new byte[(int) file.length()];
                         fileInputStream.read(result);
                     } catch (IOException e) {
                         e.printStackTrace();

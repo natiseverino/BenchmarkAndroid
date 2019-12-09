@@ -69,8 +69,11 @@ public class CPUBenchmark extends Benchmark {
             if ((sleep == sleepNew) && !nowStable) {
                 if (diff > 1)
                     sleep++;
-                else
+                else {
                     sleep--;
+                    if (sleep < 0) sleep = 0;
+                }
+
             } else
                 sleep = sleepNew;
 
@@ -132,8 +135,11 @@ public class CPUBenchmark extends Benchmark {
             if ((sleep == sleepNew) && stopCondition.canContinue()) { //canContinue checks if is not stable yet
                 if (diff > 1)
                     sleep++;
-                else
+                else {
                     sleep--;
+                    if (sleep < 0) sleep = 0;
+                }
+
             } else
                 sleep = sleepNew;
 
