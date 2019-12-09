@@ -17,7 +17,6 @@ public class CPUUtils {
 
 
         File f1 = new File(dir);
-        Log.d(TAG, "readUsage: "+ f1.exists());
 
         File f2 = new File(dir2);
 
@@ -26,8 +25,6 @@ public class CPUUtils {
         long idle1 = Long.parseLong(toks[5]);
         long cpu1 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[4])
                 + Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
-
-        Log.d(TAG, "readUsage: cpu1: "+ cpu1);
 
 
         toks = readFile(f2);

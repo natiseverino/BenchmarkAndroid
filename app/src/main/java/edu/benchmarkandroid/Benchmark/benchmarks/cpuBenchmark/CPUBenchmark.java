@@ -63,19 +63,22 @@ public class CPUBenchmark extends Benchmark {
             Log.i(TAG, "runBenchmark: CPU Usage: " + cpuUsage +
                     " sleep: " + sleep + " diff: " + diff);
 
+            msg = "CPUUsage: "+ cpuUsage+ " Sleep: "+sleep;
 
             nowStable = ((-threshold) < (cpuUsage - target)) && ((cpuUsage - target) < (threshold));
 
             if ((sleep == sleepNew) && !nowStable) {
-                if (diff > 1)
+                if (diff > 1) {
                     sleep++;
+                }
                 else {
                     sleep--;
                     if (sleep < 0) sleep = 0;
                 }
 
-            } else
+            } else {
                 sleep = sleepNew;
+            }
 
             for (int i = 0; i < this.cpus; i++)
                 cpuUser[i].setSleep(sleep);
@@ -87,7 +90,6 @@ public class CPUBenchmark extends Benchmark {
             else {
                 Log.d(TAG, "runBenchmark: no esta estable");
             }
-            msg = "CPUUsage: "+ cpuUsage+ " Sleep: "+sleep;
             progressUpdater.update(msg);
         }
         Log.d(TAG, "runBenchmark: END");

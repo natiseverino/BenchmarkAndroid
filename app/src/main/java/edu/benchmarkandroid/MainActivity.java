@@ -174,7 +174,6 @@ public class MainActivity extends Activity {
     // View components
     private EditText ipEditText;
     private EditText portEditText;
-    private EditText modelEditText;
     private TextView ipTextView;
     private TextView portTextView;
     private TextView modelTextView;
@@ -278,7 +277,6 @@ public class MainActivity extends Activity {
         //find the view component by their id
         ipEditText = findViewById(R.id.IpText);
         portEditText = findViewById(R.id.portText);
-        modelEditText = findViewById(R.id.modelText);
         portTextView = findViewById(R.id.textViewPort);
         ipTextView = findViewById(R.id.textViewIP);
         modelTextView = findViewById(R.id.modelTextView);
@@ -292,13 +290,11 @@ public class MainActivity extends Activity {
 
         ipTextView.setText(ipEditText.getText());
         portTextView.setText(portEditText.getText());
-        //modelTextView.setText(modelEditText.getText());
         modelTextView.setText(Build.MANUFACTURER + "-" + Build.MODEL);
 
         //set onChangeListener to display the complete formater url to the user
         bindInputToDisplayText(ipEditText, ipTextView);
         bindInputToDisplayText(portEditText, portTextView);
-        bindInputToDisplayText(modelEditText, modelTextView);
 
 
         //bind button actions
@@ -307,7 +303,6 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 if (setServerButton.getText().equals("Edit Server Url")) {
                     setServerButton.setText("Set Server Url");
-                    modelEditText.setEnabled(true);
                     ipEditText.setEnabled(true);
                     portEditText.setEnabled(true);
                     manuaBatteryUpdateButton.setEnabled(false);
@@ -320,7 +315,6 @@ public class MainActivity extends Activity {
                     Log.d(TAG, "onClick: " + serverUrl);
                     serverConnection.registerServerUrl(serverUrl);
                     setServerButton.setText("Edit Server Url");
-                    modelEditText.setEnabled(false);
                     ipEditText.setEnabled(false);
                     portEditText.setEnabled(false);
                     //manuaBatteryUpdateButton.setEnabled(true);
