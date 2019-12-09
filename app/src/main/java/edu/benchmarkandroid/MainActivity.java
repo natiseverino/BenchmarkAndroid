@@ -264,7 +264,7 @@ public class MainActivity extends Activity {
                     aSwitch.setEnabled(false);
 
                 } else {
-                    String serverUrl = String.format("http://%s:%s/dewsim/%s", ipTextView.getText(), portTextView.getText(), modelEditText.getText());
+                    String serverUrl = String.format("http://%s:%s/dewsim/%s", ipTextView.getText(), portTextView.getText(), modelTextView.getText());
                     Log.d(TAG, "onClick: " + serverUrl);
                     serverConnection.registerServerUrl(serverUrl);
                     setServerButton.setText("Edit Server Url");
