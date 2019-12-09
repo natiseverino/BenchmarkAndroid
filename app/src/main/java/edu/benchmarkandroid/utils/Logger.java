@@ -64,11 +64,15 @@ public class Logger {
     }
 
     @Override
-    public synchronized void finalize() throws Throwable {
-        super.finalize();
-        this.flush();
-        bw.close();
-        Log.d(TAG, "finalize logger");
+    public synchronized void finalize() {
+        try {
+            super.finalize();
+            this.flush();
+            bw.close();
+        } catch (Throwable throwable) {
+            Log.d(TAG, "no logger initiated");
+        }
+
         Logger.fname = "";
         INSTANCE = null;
     }
