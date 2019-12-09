@@ -13,6 +13,8 @@ import edu.benchmarkandroid.utils.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.FileNotFoundException;
+
 public class BenchmarkIntentService extends IntentService {
 
     public static final String PROGRESS_BENCHMARK_ACTION = "progressBenchmark";
@@ -34,7 +36,13 @@ public class BenchmarkIntentService extends IntentService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Logger logger = Logger.getInstance();
+        Logger.init("run-" +benchmark.getVariant().getVariantId()+".txt");
+        Logger logger = null;
+        try {
+            logger = Logger.getInstance();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         ProgressUpdater progressUpdater = new BenchMarckProgressUpdater(this, PROGRESS_BENCHMARK_ACTION, END_BENCHMARK_ACTION, benchmark.getVariant().getVariantId(), logger);
         benchmark.runBenchmark(
                 new BatteryStopCondition(benchmark.getVariant().getEnergyPreconditionRunStage().getMinEndBatteryLevel(), batteryNotificator),

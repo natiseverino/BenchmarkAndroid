@@ -26,6 +26,11 @@ import androidx.core.content.ContextCompat;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import edu.benchmarkandroid.Benchmark.BenchmarkData;
 import edu.benchmarkandroid.utils.BatteryUtils;
 import edu.benchmarkandroid.utils.CPUUtils;
@@ -35,6 +40,7 @@ import edu.benchmarkandroid.service.BenchmarkExecutor;
 import edu.benchmarkandroid.service.PollingIntentService;
 import edu.benchmarkandroid.service.ServerConnection;
 import edu.benchmarkandroid.utils.Cb;
+import edu.benchmarkandroid.utils.Logger;
 
 import static android.Manifest.permission.INTERNET;
 import static edu.benchmarkandroid.service.BenchmarkIntentService.END_BENCHMARK_ACTION;
@@ -53,6 +59,9 @@ public class MainActivity extends Activity {
     public static final int POLLING_INTERVAL = 5000;
     public static final String NOT_DEFINED = "notdefined";
     private static final int MY_PERMISSIONS_REQUEST_INTERNET = 53;
+
+    private static String CHARGING = "Charging";
+    private static String DISCHARGING = "Discharging";
 
 
     public static double THIS_DEVICE_BATTERY_MIN_START_BATTERY_LEVEL = 1d;
@@ -198,6 +207,25 @@ public class MainActivity extends Activity {
                     timeOfLastBatteryUpdate = System.currentTimeMillis();
                     serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
                 }
+
+
+                StringBuffer st = new StringBuffer();
+                st.append(System.currentTimeMillis());
+                st.append(',');
+                String status = null;
+                if (intent.getExtras().getInt(BatteryManager.EXTRA_STATUS) == BatteryManager.BATTERY_STATUS_CHARGING)
+                    status = CHARGING;
+                if (intent.getExtras().getInt(BatteryManager.EXTRA_STATUS) == BatteryManager.BATTERY_STATUS_DISCHARGING)
+                    status = DISCHARGING;
+                st.append(status);
+                st.append(',');
+                st.append(intent.getExtras().get(BatteryManager.EXTRA_LEVEL));
+
+                try {
+                    Logger.getInstance().write(st.toString());
+                } catch (FileNotFoundException e) {
+                    Log.d(TAG, "battery: Logger not found ");
+                }
             }
         };
         this.registerReceiver(this.batteryInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
@@ -317,7 +345,7 @@ public class MainActivity extends Activity {
                 Log.d(TAG, "onClick: " + "maxCPUFreqMHz: " + maxCPUFreqMHz);
 
 
-                double batteryCapacity =  BatteryUtils.getBatteryCapacity(MainActivity.this);
+                double batteryCapacity = BatteryUtils.getBatteryCapacity(MainActivity.this);
                 Log.d(TAG, "onClick: " + "batteryCapacity: " + batteryCapacity);
 
             }
@@ -420,9 +448,21 @@ public class MainActivity extends Activity {
             } else {
                 if (intent.getAction().equals(END_BENCHMARK_ACTION)) {
                     Toast.makeText(context, "Run stage finished", Toast.LENGTH_SHORT).show();
-                    String result = intent.getStringExtra("payload");
                     String variant = intent.getStringExtra("variant");
-                    serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result.getBytes(), "run", variant);
+                    String fname = intent.getStringExtra("file");
+                    byte[] result = null;
+                    try {
+                        File file = new File(fname);
+                        FileInputStream fileInputStream = new FileInputStream(file);
+                        result = new byte[(int) file.length() + 1];
+                        fileInputStream.read(result);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if (result != null)
+                        serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result, "run", variant);
+                    else
+                        Log.d(TAG, "onReceive: SIGE EN NULL EL ARRAY DE BYTES");
                     running = false;
                     if (benchmarkExecutor.hasMoreToExecute()) {
                         stateOfCharge = benchmarkExecutor.getNeededBatteryState();
@@ -436,16 +476,31 @@ public class MainActivity extends Activity {
 
             //benchmarck sampling stage report
             if (intent.getAction().equals(PROGRESS_SAMPLING_ACTION)) {
-                String prog = intent.getStringExtra("progress");
-                Toast.makeText(context, prog, Toast.LENGTH_SHORT).show();
+//                String prog = intent.getStringExtra("progress");
+//                Toast.makeText(context, prog, Toast.LENGTH_SHORT).show();
                 minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
             } else {
 
                 if (intent.getAction().equals(END_SAMPLING_ACTION)) {
                     Toast.makeText(context, "Sampling finished", Toast.LENGTH_SHORT).show();
-                    String result = intent.getStringExtra("payload");
+                    //String result = intent.getStringExtra("payload");
                     String variant = intent.getStringExtra("variant");
-                    serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result.getBytes(), "sampling", variant);
+                    String fname = intent.getStringExtra("file");
+                    byte[] result = null;
+                    try {
+                        File file = new File(fname);
+                        FileInputStream fileInputStream = new FileInputStream(file);
+                        result = new byte[(int) file.length() + 1];
+                        fileInputStream.read(result);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (result != null) {
+                        Log.d(TAG, "onReceive: " + result.toString());
+                        serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result, "sampling", variant);
+                    } else
+                        Log.d(TAG, "onReceive: SIGE EN NULL EL ARRAY DE BYTES");
                     running = false;
                     if (benchmarkExecutor.hasMoreToExecute()) {
                         stateOfCharge = benchmarkExecutor.getNeededBatteryState();

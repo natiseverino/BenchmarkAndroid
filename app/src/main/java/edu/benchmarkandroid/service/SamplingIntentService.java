@@ -13,6 +13,8 @@ import edu.benchmarkandroid.utils.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.FileNotFoundException;
+
 public class SamplingIntentService extends IntentService {
 
     public static final String PROGRESS_SAMPLING_ACTION = "progressSampling";
@@ -34,8 +36,13 @@ public class SamplingIntentService extends IntentService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Logger.init(intent.getStringExtra("benchmarkName")+benchmark.getVariant().getVariantId()+".txt");
-        Logger logger = Logger.getInstance();
+        Logger.init("sampling-" +benchmark.getVariant().getVariantId()+".txt");
+        Logger logger = null;
+        try {
+            logger = Logger.getInstance();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         ProgressUpdater progressUpdater = new SamplingProgressUpdater(this, PROGRESS_SAMPLING_ACTION, END_SAMPLING_ACTION, benchmark.getVariant().getVariantId(), logger);
         benchmark.runSampling(
                 new ConvergenceStopCondition(benchmark.getVariant().getParamsSamplingStage().getConvergenceThreshold(), thresholdNotificator),

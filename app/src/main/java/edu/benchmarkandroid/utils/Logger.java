@@ -22,23 +22,17 @@ public class Logger {
     private BufferedWriter bw;
 
     private int counter = 0;
-    private static String fname = null;
+    private static String fname = "";
 
-    private Logger(String fname) {
-        try {
-            this.bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(fname))));
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, "Error creating file", e);
-        } catch (NullPointerException e) {
-            Log.e(TAG, "Error invalid file name", e);
-        }
+    private Logger(String fname) throws FileNotFoundException{
+        this.bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(fname))));
     }
 
     public static void init(String fname) {
         Logger.fname = "/sdcard/Download/"+fname;
     }
 
-    public synchronized static Logger getInstance() {
+    public synchronized static Logger getInstance() throws FileNotFoundException {
         if (INSTANCE == null) INSTANCE = new Logger(fname);
         return INSTANCE;
     }
