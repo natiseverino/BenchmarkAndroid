@@ -44,6 +44,8 @@ import edu.benchmarkandroid.utils.Cb;
 import edu.benchmarkandroid.utils.Logger;
 
 import static android.Manifest.permission.INTERNET;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static edu.benchmarkandroid.service.BenchmarkIntentService.END_BENCHMARK_ACTION;
 import static edu.benchmarkandroid.service.BenchmarkIntentService.PROGRESS_BENCHMARK_ACTION;
 import static edu.benchmarkandroid.service.PollingIntentService.POLLING_ACTION;
@@ -60,6 +62,8 @@ public class MainActivity extends Activity {
     public static final int POLLING_INTERVAL = 5000;
     public static final String NOT_DEFINED = "notdefined";
     private static final int MY_PERMISSIONS_REQUEST_INTERNET = 53;
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2;
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 3;
 
     private static String CHARGING = "Charging";
     private static String DISCHARGING = "Discharging";
@@ -81,7 +85,7 @@ public class MainActivity extends Activity {
     final Cb<JSONObject> batteryUpdateOnSucess = new Cb<JSONObject>() {
         @Override
         public void run(JSONObject jsonObject) {
-            Toast.makeText(MainActivity.this, "Battery Update Complete :)", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, "Battery Update Complete :)", Toast.LENGTH_SHORT).show();
             requestBenchmarksButton.setEnabled(true);
         }
     };
@@ -196,6 +200,22 @@ public class MainActivity extends Activity {
                     new String[]{Manifest.permission.INTERNET},
                     MY_PERMISSIONS_REQUEST_INTERNET);
         }
+
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(), READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{READ_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+        }
+
+
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(), WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+        }
+
 
         //set service to interact with the server
         serverConnection = ServerConnection.getService();
@@ -455,16 +475,22 @@ public class MainActivity extends Activity {
                     String variant = intent.getStringExtra("variant");
                     String fname = intent.getStringExtra("file");
                     byte[] result = null;
+
                     try {
                         File file = new File(fname);
                         FileInputStream fileInputStream = new FileInputStream(file);
                         result = new byte[(int) file.length()];
                         fileInputStream.read(result);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        Toast.makeText(context, "file not found", Toast.LENGTH_SHORT).show();
                     }
-                    if (result != null)
+
+                    if (result != null){
+                        Toast.makeText(context, "Send Results run", Toast.LENGTH_SHORT).show();
                         serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result, "run", variant);
+                    }
+                    else
+                        Toast.makeText(context, "no results", Toast.LENGTH_SHORT).show();
 
                     running = false;
                     if (benchmarkExecutor.hasMoreToExecute()) {
@@ -479,8 +505,8 @@ public class MainActivity extends Activity {
 
             //benchmarck sampling stage report
             if (intent.getAction().equals(PROGRESS_SAMPLING_ACTION)) {
-//                String prog = intent.getStringExtra("progress");
-//                Toast.makeText(context, prog, Toast.LENGTH_SHORT).show();
+                String prog = intent.getStringExtra("progress");
+                Toast.makeText(context, prog, Toast.LENGTH_SHORT).show();
                 minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
             } else {
 
@@ -496,13 +522,17 @@ public class MainActivity extends Activity {
                         result = new byte[(int) file.length()];
                         fileInputStream.read(result);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        Toast.makeText(context, "file not found", Toast.LENGTH_SHORT).show();
                     }
 
                     if (result != null) {
                         Log.d(TAG, "onReceive: " + result.length);
+                        Toast.makeText(context, "Send Results Sampling", Toast.LENGTH_SHORT).show();
                         serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result, "sampling", variant);
                     }
+                    else
+                        Toast.makeText(context, "no results", Toast.LENGTH_SHORT).show();
+
                     running = false;
                     if (benchmarkExecutor.hasMoreToExecute()) {
                         stateOfCharge = benchmarkExecutor.getNeededBatteryState();

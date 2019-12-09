@@ -11,7 +11,7 @@ class SamplingProgressUpdater extends ProgressUpdater {
     }
 
     @Override
-    String specificUpdateMessage(int value) {
-        return ("sampling stage: " + value + "%");
+    String specificUpdateMessage(String value) {
+        return ("sampling stage: " + value);
     }
 }
