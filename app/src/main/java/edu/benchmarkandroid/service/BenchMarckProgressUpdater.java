@@ -11,7 +11,7 @@ class BenchMarckProgressUpdater extends ProgressUpdater {
     }
 
     @Override
-    String specificUpdateMessage(String value) {
-        return ("run stage: " + value);
+    String specificUpdateMessage(String msg) {
+        return ("Run stage: \n" + msg);
     }
 }

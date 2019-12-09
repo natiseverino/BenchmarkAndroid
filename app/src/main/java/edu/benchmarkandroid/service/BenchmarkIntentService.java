@@ -43,7 +43,13 @@ public class BenchmarkIntentService extends IntentService {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        ProgressUpdater progressUpdater = new BenchMarckProgressUpdater(this, PROGRESS_BENCHMARK_ACTION, END_BENCHMARK_ACTION, benchmark.getVariant().getVariantId(), logger);
+        ProgressUpdater progressUpdater = new BenchMarckProgressUpdater(
+                this,
+                PROGRESS_BENCHMARK_ACTION,
+                END_BENCHMARK_ACTION,
+                benchmark.getVariant().getVariantId(),
+                logger);
+
         benchmark.runBenchmark(
                 new BatteryStopCondition(benchmark.getVariant().getEnergyPreconditionRunStage().getMinEndBatteryLevel(), batteryNotificator),
                 progressUpdater);

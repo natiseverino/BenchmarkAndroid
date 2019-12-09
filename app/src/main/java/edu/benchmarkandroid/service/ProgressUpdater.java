@@ -22,13 +22,13 @@ public abstract class ProgressUpdater {
         this.fname = logger.getFileName();
     }
 
-    public void update(String progress) {
+    public void update(String msg) {
         Intent intent = new Intent();
         intent.setAction(updateAction);
-        String message = specificUpdateMessage(progress);
-        intent.putExtra("progress", message);
+        String message = specificUpdateMessage(msg);
+        intent.putExtra("msg", message);
         contextWrapper.sendBroadcast(intent);
-        logger.write(progress);
+        logger.write(msg);
     }
 
     public void end(String payload) {

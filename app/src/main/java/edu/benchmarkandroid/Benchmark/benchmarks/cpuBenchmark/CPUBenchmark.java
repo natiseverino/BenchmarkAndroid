@@ -36,7 +36,7 @@ public class CPUBenchmark extends Benchmark {
 
     @Override
     public void runBenchmark(StopCondition stopCondition, ProgressUpdater progressUpdater) {
-        String progress;
+        String msg;
         double cpuUsage;
 
         Log.i(TAG, "runBenchmark: sleep: " + sleep);
@@ -87,8 +87,8 @@ public class CPUBenchmark extends Benchmark {
             else {
                 Log.d(TAG, "runBenchmark: no esta estable");
             }
-            progress = "CPUUsage: "+ cpuUsage+ " Sleep: "+sleep;
-            progressUpdater.update(progress);
+            msg = "CPUUsage: "+ cpuUsage+ " Sleep: "+sleep;
+            progressUpdater.update(msg);
         }
         Log.d(TAG, "runBenchmark: END");
 
@@ -101,7 +101,7 @@ public class CPUBenchmark extends Benchmark {
 
     public void runSampling(StopCondition stopCondition, ProgressUpdater progressUpdater) { //  CONVERGENCE
         int iterations = 0;
-        String progress;
+        String msg;
         double cpuUsage;
         sleep = 1;
 
@@ -130,26 +130,29 @@ public class CPUBenchmark extends Benchmark {
             Log.i(TAG, "runConvergence: CPU Usage: " + cpuUsage +
                     " sleep: " + sleep + " diff: " + diff);
 
+            msg = "CPUUsage: "+ cpuUsage+ " Sleep: "+sleep;
+
             thresholdNotificator.updateThresholdLevel(cpuUsage - target);
 
             if ((sleep == sleepNew) && stopCondition.canContinue()) { //canContinue checks if is not stable yet
-                if (diff > 1)
+                if (diff > 1) {
                     sleep++;
+                }
                 else {
                     sleep--;
                     if (sleep < 0) sleep = 0;
                 }
 
-            } else
+            } else {
                 sleep = sleepNew;
+            }
 
 
             for (int i = 0; i < this.cpus; i++)
                 cpuUser[i].setSleep(sleep);
 
             iterations += 1;
-            progress = "CPUUsage: "+ cpuUsage+ " Sleep: "+sleep;
-            progressUpdater.update(progress);
+            progressUpdater.update(msg);
         }
 
         Log.d(TAG, "runConvergence: END");

@@ -183,6 +183,7 @@ public class MainActivity extends Activity {
     private Button requestBenchmarksButton;
     private Button startBenchmarksButton;
     private Switch aSwitch;
+    private TextView stateTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -286,6 +287,7 @@ public class MainActivity extends Activity {
         setServerButton = findViewById(R.id.setServerButton);
         startBenchmarksButton = findViewById(R.id.startBenchmarksButton);
         aSwitch = findViewById(R.id.aSwitch);
+        stateTextView = findViewById(R.id.stateTextView);
 
 
         ipTextView.setText(ipEditText.getText());
@@ -466,12 +468,14 @@ public class MainActivity extends Activity {
 
             //benchmarck run stage report
             if (intent.getAction().equals(PROGRESS_BENCHMARK_ACTION)) {
-                String prog = intent.getStringExtra("progress");
-                Toast.makeText(context, prog, Toast.LENGTH_SHORT).show();
+                String prog = intent.getStringExtra("msg");
+//                Toast.makeText(context, prog, Toast.LENGTH_SHORT).show();
+                stateTextView.setText(prog);
                 minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
             } else {
                 if (intent.getAction().equals(END_BENCHMARK_ACTION)) {
                     Toast.makeText(context, "Run stage finished", Toast.LENGTH_SHORT).show();
+                    stateTextView.setText("Run stage finished");
                     String variant = intent.getStringExtra("variant");
                     String fname = intent.getStringExtra("file");
                     byte[] result = null;
@@ -484,9 +488,8 @@ public class MainActivity extends Activity {
                     } catch (IOException e) {
                         Toast.makeText(context, "file not found", Toast.LENGTH_SHORT).show();
                     }
-
                     if (result != null){
-                        Toast.makeText(context, "Send Results run", Toast.LENGTH_SHORT).show();
+                        stateTextView.setText("send results");
                         serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result, "run", variant);
                     }
                     else
@@ -505,13 +508,15 @@ public class MainActivity extends Activity {
 
             //benchmarck sampling stage report
             if (intent.getAction().equals(PROGRESS_SAMPLING_ACTION)) {
-                String prog = intent.getStringExtra("progress");
-                Toast.makeText(context, prog, Toast.LENGTH_SHORT).show();
+                String prog = intent.getStringExtra("msg");
+//                Toast.makeText(context, prog, Toast.LENGTH_SHORT).show();
+                stateTextView.setText(prog);
                 minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
             } else {
 
                 if (intent.getAction().equals(END_SAMPLING_ACTION)) {
                     Toast.makeText(context, "Sampling finished", Toast.LENGTH_SHORT).show();
+                    stateTextView.setText("Sampling finished");
                     //String result = intent.getStringExtra("payload");
                     String variant = intent.getStringExtra("variant");
                     String fname = intent.getStringExtra("file");
