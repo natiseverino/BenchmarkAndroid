@@ -176,7 +176,7 @@ public class CPUBenchmark extends Benchmark {
             try {
                 wait(WAITING);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Log.d(TAG, "cpuUsage: error waiting");
             }
         }
         return result / READING_TIMES;

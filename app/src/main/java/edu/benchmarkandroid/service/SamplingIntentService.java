@@ -47,7 +47,13 @@ public class SamplingIntentService extends IntentService {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        ProgressUpdater progressUpdater = new SamplingProgressUpdater(this, PROGRESS_SAMPLING_ACTION, END_SAMPLING_ACTION, benchmark.getVariant().getVariantId(), logger);
+        ProgressUpdater progressUpdater = new SamplingProgressUpdater(
+                this,
+                PROGRESS_SAMPLING_ACTION,
+                END_SAMPLING_ACTION,
+                benchmark.getVariant().getVariantId(),
+                logger);
+
         Log.d(TAG, "Start convergence");
         benchmark.runSampling(
                 new ConvergenceStopCondition(benchmark.getVariant().getParamsSamplingStage().getConvergenceThreshold(), thresholdNotificator),

@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -62,8 +63,7 @@ public class MainActivity extends Activity {
     public static final int POLLING_INTERVAL = 5000;
     public static final String NOT_DEFINED = "notdefined";
     private static final int MY_PERMISSIONS_REQUEST_INTERNET = 53;
-    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2;
-    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 3;
+    private static final int MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE = 3;
 
     private static String CHARGING = "Charging";
     private static String DISCHARGING = "Discharging";
@@ -177,12 +177,15 @@ public class MainActivity extends Activity {
     private TextView ipTextView;
     private TextView portTextView;
     private TextView modelTextView;
-    private Button manuaBatteryUpdateButton;
     private Button setServerButton;
     private Button requestBenchmarksButton;
     private Button startBenchmarksButton;
     private Switch aSwitch;
     private TextView stateTextView;
+
+    private PowerManager.WakeLock powerManagerWakeLock;
+    private static final String POWER_MANAGER_TAG = "MainActivity:PowerManagerTag";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -204,17 +207,17 @@ public class MainActivity extends Activity {
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{READ_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                    new String[]{READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE);
         }
 
 
-        if (ContextCompat.checkSelfPermission(this.getApplicationContext(), WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{WRITE_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-        }
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        powerManagerWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, POWER_MANAGER_TAG);
+
+        if (powerManagerWakeLock.isHeld())
+            powerManagerWakeLock.release();
+        powerManagerWakeLock.acquire();
 
 
         //set service to interact with the server
@@ -280,7 +283,6 @@ public class MainActivity extends Activity {
         portTextView = findViewById(R.id.textViewPort);
         ipTextView = findViewById(R.id.textViewIP);
         modelTextView = findViewById(R.id.modelTextView);
-        manuaBatteryUpdateButton = findViewById(R.id.manualStateUpdateButton);
         requestBenchmarksButton = findViewById(R.id.requestBenchmarksButton);
         setServerButton = findViewById(R.id.setServerButton);
         startBenchmarksButton = findViewById(R.id.startBenchmarksButton);
@@ -305,7 +307,6 @@ public class MainActivity extends Activity {
                     setServerButton.setText("Set Server Url");
                     ipEditText.setEnabled(true);
                     portEditText.setEnabled(true);
-                    manuaBatteryUpdateButton.setEnabled(false);
                     requestBenchmarksButton.setEnabled(false);
                     startBenchmarksButton.setEnabled(false);
                     aSwitch.setEnabled(false);
@@ -317,7 +318,6 @@ public class MainActivity extends Activity {
                     setServerButton.setText("Edit Server Url");
                     ipEditText.setEnabled(false);
                     portEditText.setEnabled(false);
-                    //manuaBatteryUpdateButton.setEnabled(true);
 
                     serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
 
@@ -388,8 +388,20 @@ public class MainActivity extends Activity {
                             new String[]{Manifest.permission.INTERNET},
                             MY_PERMISSIONS_REQUEST_INTERNET);
                 }
-                return;
             }
+
+            case MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "STORAGE Permission Granted", Toast.LENGTH_SHORT).show();
+                    recreate();
+                } else {
+                    Toast.makeText(this, "We need this permission", Toast.LENGTH_SHORT).show();
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE},
+                            MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE);
+                }
         }
     }
 

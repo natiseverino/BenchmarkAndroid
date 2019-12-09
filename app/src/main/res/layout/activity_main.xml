@@ -96,13 +96,6 @@
 
 
     <Button
-        android:id="@+id/manualStateUpdateButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:enabled="false"
-        android:text="Send Battery Update" />
-
-    <Button
         android:id="@+id/setServerButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

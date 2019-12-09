@@ -11,7 +11,6 @@ public class CPUUtils {
 
     public static double readUsage() {
 
-        Log.d(TAG, "readUsage: ");
         String dir = "/sdcard/Download/cpu-usage-sample-1.txt";
         String dir2 = "/sdcard/Download/cpu-usage-sample-2.txt";
 
@@ -26,12 +25,15 @@ public class CPUUtils {
         long cpu1 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[4])
                 + Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
 
+        Log.d(TAG, "readUsage: cpu1: "+ cpu1);
 
         toks = readFile(f2);
 
         long idle2 = Long.parseLong(toks[5]);
         long cpu2 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[4])
                 + Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
+
+        Log.d(TAG, "readUsage: cpu2: "+ cpu2);
 
         return (double) (cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
 
