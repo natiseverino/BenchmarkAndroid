@@ -7,6 +7,7 @@ import edu.benchmarkandroid.Benchmark.StopCondition;
 import edu.benchmarkandroid.Benchmark.Variant;
 import edu.benchmarkandroid.service.ProgressUpdater;
 import edu.benchmarkandroid.service.ThresholdNotificator;
+import edu.benchmarkandroid.utils.CPUUtils;
 
 
 public class CPUBenchmark extends Benchmark {

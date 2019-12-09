@@ -26,10 +26,9 @@ import androidx.core.content.ContextCompat;
 
 import org.json.JSONObject;
 
-import java.io.File;
-
 import edu.benchmarkandroid.Benchmark.BenchmarkData;
-import edu.benchmarkandroid.Benchmark.benchmarks.cpuBenchmark.CPUUtils;
+import edu.benchmarkandroid.utils.BatteryUtils;
+import edu.benchmarkandroid.utils.CPUUtils;
 import edu.benchmarkandroid.model.UpdateData;
 import edu.benchmarkandroid.service.BatteryNotificator;
 import edu.benchmarkandroid.service.BenchmarkExecutor;
@@ -172,7 +171,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        deviceBatteryMah = getBatteryCapacity();
+        deviceBatteryMah = BatteryUtils.getBatteryCapacity(this);
         deviceCpuMhz = CPUUtils.getMaxCPUFreqMHz();
 
 
@@ -318,7 +317,7 @@ public class MainActivity extends Activity {
                 Log.d(TAG, "onClick: " + "maxCPUFreqMHz: " + maxCPUFreqMHz);
 
 
-                double batteryCapacity =  getBatteryCapacity();
+                double batteryCapacity =  BatteryUtils.getBatteryCapacity(MainActivity.this);
                 Log.d(TAG, "onClick: " + "batteryCapacity: " + batteryCapacity);
 
             }
@@ -457,39 +456,6 @@ public class MainActivity extends Activity {
                 }
             }
         }
-    }
-
-
-    public int getBatteryCapacity() {
-
-        Object mPowerProfile_ = null;
-        double batteryCapacity = 0;
-        final String POWER_PROFILE_CLASS = "com.android.internal.os.PowerProfile";
-        try {
-            mPowerProfile_ = Class.forName(POWER_PROFILE_CLASS)
-                    .getConstructor(Context.class).newInstance(this);
-
-        } catch (Exception e) {
-
-            // Class not found?
-            e.printStackTrace();
-        }
-
-        try {
-
-            // Invoke PowerProfile method "getAveragePower" with param
-            // "battery.capacity"
-            batteryCapacity = (Double) Class.forName(POWER_PROFILE_CLASS)
-                    .getMethod("getAveragePower", java.lang.String.class)
-                    .invoke(mPowerProfile_, "battery.capacity");
-
-        } catch (Exception e) {
-
-            // Something went wrong
-            e.printStackTrace();
-        }
-
-        return (int) batteryCapacity;
     }
 
 }

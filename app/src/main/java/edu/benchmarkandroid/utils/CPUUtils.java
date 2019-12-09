@@ -1,4 +1,4 @@
-package edu.benchmarkandroid.Benchmark.benchmarks.cpuBenchmark;
+package edu.benchmarkandroid.utils;
 
 import java.io.File;
 import java.io.IOException;
