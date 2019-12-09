@@ -2,6 +2,7 @@ package edu.benchmarkandroid.service;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -19,6 +20,8 @@ public class SamplingIntentService extends IntentService {
 
     public static final String PROGRESS_SAMPLING_ACTION = "progressSampling";
     public static final String END_SAMPLING_ACTION = "endSampling";
+
+    private static final String TAG = "SamplingIntentService";
 
     public SamplingIntentService() {
         super("SamplingIntentService");
@@ -40,6 +43,7 @@ public class SamplingIntentService extends IntentService {
         Logger logger = null;
         try {
             logger = Logger.getInstance();
+            Log.d(TAG, "onHandleIntent: "+logger.getFileName());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

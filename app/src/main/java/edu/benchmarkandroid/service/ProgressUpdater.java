@@ -36,12 +36,11 @@ public abstract class ProgressUpdater {
         intent.putExtra("file", logger.getFileName());
         intent.setAction(endAction);
         contextWrapper.sendBroadcast(intent);
-        if (endAction.equals(BenchmarkIntentService.END_BENCHMARK_ACTION))
-            try {
-                logger.finalize();
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
+        try {
+            logger.finalize();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
 
     }
 

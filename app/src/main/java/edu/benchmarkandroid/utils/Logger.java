@@ -30,6 +30,7 @@ public class Logger {
 
     public static void init(String fname) {
         Logger.fname = "/sdcard/Download/"+fname;
+        Log.d(TAG, "init: "+fname);
     }
 
     public synchronized static Logger getInstance() throws FileNotFoundException {
@@ -41,7 +42,7 @@ public class Logger {
         return fname;
     }
 
-    public void write(String s) {
+    public synchronized void write(String s) {
         try {
             bw.write(Long.toString(System.currentTimeMillis()) + "," + s + "\n");
             counter++;
@@ -51,11 +52,10 @@ public class Logger {
             }
         } catch (IOException e) {
             Log.e(TAG, "Error adding line", e);
-            System.exit(1);
         }
     }
 
-    public void flush() {
+    public synchronized void flush() {
         try {
             bw.flush();
         } catch (IOException e) {
@@ -64,10 +64,13 @@ public class Logger {
     }
 
     @Override
-    public void finalize() throws Throwable {
+    public synchronized void finalize() throws Throwable {
         super.finalize();
         this.flush();
         bw.close();
+        Log.d(TAG, "finalize logger");
+        Logger.fname = "";
+        INSTANCE = null;
     }
 
 

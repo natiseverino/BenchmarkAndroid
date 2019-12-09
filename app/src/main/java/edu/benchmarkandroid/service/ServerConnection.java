@@ -13,9 +13,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+
 import edu.benchmarkandroid.Benchmark.BenchmarkData;
 import edu.benchmarkandroid.model.UpdateData;
 import edu.benchmarkandroid.utils.Cb;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -63,7 +65,6 @@ public class ServerConnection {
     public void registerServerUrl(String serverUrl) {
         this.url = serverUrl;
     }
-
 
 
     public synchronized void postUpdate(final UpdateData data, final Cb<JSONObject> onSucessCb, final Cb<String> onErrorCb, Context context) {
@@ -117,7 +118,7 @@ public class ServerConnection {
 
     public void startBenchmarck(final Cb<Object> onSucessCb, final Cb<String> onErrorCb, Context context, String stateOfCharge) {
         String newurl = stateOfCharge.equals(NOT_DEFINED) ? url + "?stage=postinit" : url + "?stage=postinit&requiredBatteryState=" + stateOfCharge;
-        Log.d(TAG, "startBenchmarck: url: "+ newurl);
+        Log.d(TAG, "startBenchmarck: url: " + newurl);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, newurl, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -140,7 +141,7 @@ public class ServerConnection {
 
     public void sendResult(final Cb<String> onSuccesCb, Cb<String> onErrorCb, Context context, byte[] result, String stage, String variant) {
 
-        MultipartRequest multipartRequest = new MultipartRequest(url + "?fileName=" + stage + "-" + variant, new MyErrorListener(onErrorCb), new Response.Listener<String>() {
+        MultipartRequest multipartRequest = new MultipartRequest(url + "?fileName=" + stage + "-" + variant + ".txt", new MyErrorListener(onErrorCb), new Response.Listener<String>() {
             @Override
             public void onResponse(String useless) {
                 onSuccesCb.run("useless");
@@ -186,15 +187,16 @@ public class ServerConnection {
 
         private void buildMultipartEntity() {
             try {
-                FileOutputStream outputStreamWriter = context.openFileOutput("filetosend", Context.MODE_PRIVATE);
+                FileOutputStream outputStreamWriter = context.openFileOutput(name, Context.MODE_PRIVATE);
                 Log.d(TAG, "buildMultipartEntity: WRITE CONTENT");
-                Log.d(TAG, "buildMultipartEntity: "+ content.toString());
+                Log.d(TAG, "buildMultipartEntity: " + content.length);
                 outputStreamWriter.write(content);
+                outputStreamWriter.flush();
                 outputStreamWriter.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            entity.addPart("data", new FileBody(context.getFileStreamPath("filetosend")));
+            entity.addPart("data", new FileBody(context.getFileStreamPath(name)));
         }
 
         @Override

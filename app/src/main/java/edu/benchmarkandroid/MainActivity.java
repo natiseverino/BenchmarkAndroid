@@ -302,8 +302,7 @@ public class MainActivity extends Activity {
                     ipEditText.setEnabled(false);
                     portEditText.setEnabled(false);
                     //manuaBatteryUpdateButton.setEnabled(true);
-                    //deviceBatteryMah =;
-                    //deviceCpuMhz =;
+
                     serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
 
                 }
@@ -466,8 +465,7 @@ public class MainActivity extends Activity {
                     }
                     if (result != null)
                         serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result, "run", variant);
-                    else
-                        Log.d(TAG, "onReceive: SIGE EN NULL EL ARRAY DE BYTES");
+
                     running = false;
                     if (benchmarkExecutor.hasMoreToExecute()) {
                         stateOfCharge = benchmarkExecutor.getNeededBatteryState();
@@ -495,17 +493,16 @@ public class MainActivity extends Activity {
                     try {
                         File file = new File(fname);
                         FileInputStream fileInputStream = new FileInputStream(file);
-                        result = new byte[(int) file.length() + 1];
+                        result = new byte[(int) file.length()];
                         fileInputStream.read(result);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
 
                     if (result != null) {
-                        Log.d(TAG, "onReceive: " + result.toString());
+                        Log.d(TAG, "onReceive: " + result.length);
                         serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result, "sampling", variant);
-                    } else
-                        Log.d(TAG, "onReceive: SIGE EN NULL EL ARRAY DE BYTES");
+                    }
                     running = false;
                     if (benchmarkExecutor.hasMoreToExecute()) {
                         stateOfCharge = benchmarkExecutor.getNeededBatteryState();
