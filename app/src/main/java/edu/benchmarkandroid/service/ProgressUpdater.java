@@ -20,13 +20,13 @@ public abstract class ProgressUpdater {
         this.logger = logger;
     }
 
-    public void update(String progress) {
+    public void update(String msg) {
         Intent intent = new Intent();
         intent.setAction(updateAction);
-//        String message = specificUpdateMessage(progress);
-//        intent.putExtra("progress", message);
+        String message = specificUpdateMessage(msg);
+        intent.putExtra("msg", message);
         contextWrapper.sendBroadcast(intent);
-        logger.write(progress);
+        logger.write(msg);
     }
 
     public void end(String payload) {
@@ -44,5 +44,5 @@ public abstract class ProgressUpdater {
 
     }
 
-    abstract String specificUpdateMessage(int value);
+    abstract String specificUpdateMessage(String value);
 }
