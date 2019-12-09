@@ -8,9 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
+
+import edu.benchmarkandroid.MainActivity;
 
 public class Logger {
 
@@ -29,7 +29,7 @@ public class Logger {
     }
 
     public static void init(String fname) {
-        Logger.fname = "/sdcard/Download/"+fname;
+        Logger.fname = MainActivity.PATH +fname;
         Log.d(TAG, "init: "+fname);
     }
 
@@ -42,7 +42,7 @@ public class Logger {
         return fname;
     }
 
-    public synchronized void write(String s) {
+    public void write(String s) {
         try {
             bw.write(Long.toString(System.currentTimeMillis()) + "," + s + "\n");
             counter++;
@@ -55,7 +55,7 @@ public class Logger {
         }
     }
 
-    public synchronized void flush() {
+    public void flush() {
         try {
             bw.flush();
         } catch (IOException e) {

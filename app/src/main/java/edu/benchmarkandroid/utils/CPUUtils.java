@@ -6,13 +6,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import edu.benchmarkandroid.MainActivity;
+
 public class CPUUtils {
     private static final String TAG = "CPUUtils";
 
     public static double readUsage() {
 
-        String dir = "/sdcard/Download/cpu-usage-sample-1.txt";
-        String dir2 = "/sdcard/Download/cpu-usage-sample-2.txt";
+        String dir = MainActivity.PATH +"cpu-usage-sample-1.txt";
+        String dir2 = MainActivity.PATH+"cpu-usage-sample-2.txt";
 
 
         File f1 = new File(dir);
@@ -25,7 +27,6 @@ public class CPUUtils {
         long cpu1 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[4])
                 + Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
 
-        Log.d(TAG, "readUsage: cpu1: "+ cpu1);
 
         toks = readFile(f2);
 
@@ -33,7 +34,6 @@ public class CPUUtils {
         long cpu2 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[4])
                 + Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
 
-        Log.d(TAG, "readUsage: cpu2: "+ cpu2);
 
         return (double) (cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
 

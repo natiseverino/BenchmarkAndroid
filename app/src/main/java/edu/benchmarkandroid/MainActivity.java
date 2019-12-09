@@ -57,6 +57,7 @@ import static edu.benchmarkandroid.service.SamplingIntentService.PROGRESS_SAMPLI
 public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
+    public static final String PATH = "/sdcard/Download/";
 
     // CHANGE THIS CONSTANT TO THE VALUE OF YOUR PREFERENCE
     public static final int INTERVAL_OFF_BATTERY_UPDATES = 5000;
@@ -72,6 +73,7 @@ public class MainActivity extends Activity {
     public static double THIS_DEVICE_BATTERY_MIN_START_BATTERY_LEVEL = 1d;
     public int deviceCpuMhz;
     public int deviceBatteryMah;
+
 
     // Callbacks for errors
     final Cb<String> onError = new Cb<String>() {
