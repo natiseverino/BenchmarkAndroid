@@ -41,63 +41,84 @@ public class CPUBenchmark extends Benchmark {
 
         Log.i(TAG, "runBenchmark: sleep: " + sleep);
 
-        cpuUser = new CPUUserThread[this.cpus];
-        for (int i = 0; i < this.cpus; i++) {
-            cpuUser[i] = new CPUUserThread();
-            cpuUser[i].setSleep(sleep);
-            cpuUser[i].start();
-        }
+        if (target == 0.0) {
+            runBenchmarkZero(stopCondition, progressUpdater);
+        } else {
 
-        boolean stable = false;
-        boolean nowStable;
-        double diff;
-        long sleepNew;
-
-        Log.d(TAG, "runBenchmark: target: "+ target+ "threshold: "+ threshold);
-        while (stopCondition.canContinue()) {
-            cpuUsage = cpuUsage();
-
-            diff = cpuUsage / target;
-            sleepNew = (long) (sleep * diff);
-
-            Log.i(TAG, "runBenchmark: CPU Usage: " + cpuUsage +
-                    " sleep: " + sleep + " diff: " + diff);
-
-            msg = "CPUUsage: "+ cpuUsage+ " Sleep: "+sleep;
-
-            nowStable = ((-threshold) < (cpuUsage - target)) && ((cpuUsage - target) < (threshold));
-
-            if ((sleep == sleepNew) && !nowStable) {
-                if (diff > 1) {
-                    sleep++;
-                }
-                else {
-                    sleep--;
-                    if (sleep < 0) sleep = 0;
-                }
-
-            } else {
-                sleep = sleepNew;
+            cpuUser = new CPUUserThread[this.cpus];
+            for (int i = 0; i < this.cpus; i++) {
+                cpuUser[i] = new CPUUserThread();
+                cpuUser[i].setSleep(sleep);
+                cpuUser[i].start();
             }
+
+            boolean stable = false;
+            boolean nowStable;
+            double diff;
+            long sleepNew;
+
+            Log.d(TAG, "runBenchmark: target: " + target + "threshold: " + threshold);
+            while (stopCondition.canContinue()) {
+                cpuUsage = cpuUsage();
+
+                diff = cpuUsage / target;
+                sleepNew = (long) (sleep * diff);
+
+                Log.i(TAG, "runBenchmark: CPU Usage: " + cpuUsage +
+                        " sleep: " + sleep + " diff: " + diff);
+
+                msg = "CPUUsage: " + cpuUsage + " Sleep: " + sleep;
+
+                nowStable = ((-threshold) < (cpuUsage - target)) && ((cpuUsage - target) < (threshold));
+
+                if ((sleep == sleepNew) && !nowStable) {
+                    if (diff > 1) {
+                        sleep++;
+                    } else {
+                        sleep--;
+                        if (sleep < 0) sleep = 0;
+                    }
+
+                } else {
+                    sleep = sleepNew;
+                }
+
+                for (int i = 0; i < this.cpus; i++)
+                    cpuUser[i].setSleep(sleep);
+
+
+                if (nowStable) {
+                    Log.d(TAG, "runBenchmark: CPU Usage: " + cpuUsage + " nowStable: " + nowStable);
+                } else {
+                    Log.d(TAG, "runBenchmark: no esta estable");
+                }
+                progressUpdater.update(msg);
+            }
+            Log.d(TAG, "runBenchmark: END");
 
             for (int i = 0; i < this.cpus; i++)
-                cpuUser[i].setSleep(sleep);
-
-
-            if (nowStable) {
-                Log.d(TAG, "runBenchmark: CPU Usage: " + cpuUsage + " nowStable: " + nowStable);
-            }
-            else {
-                Log.d(TAG, "runBenchmark: no esta estable");
-            }
-            progressUpdater.update(msg);
+                cpuUser[i].kill();
         }
-        Log.d(TAG, "runBenchmark: END");
-
-        for (int i = 0; i < this.cpus; i++)
-            cpuUser[i].kill();
-
         progressUpdater.end(EMPTY_PAYLOAD);
+    }
+
+    private void runBenchmarkZero(StopCondition stopCondition, ProgressUpdater progressUpdater) {
+        while (stopCondition.canContinue()) {
+            synchronized (this) {
+                try {
+                    this.wait(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                double cpuUsage = cpuUsage();
+                Log.i(TAG, "CPU Usage: " + cpuUsage);
+
+                String msg = "CPUUsage: " + cpuUsage + " Sleep: 0";
+
+                progressUpdater.update(msg);
+            }
+        }
     }
 
 
@@ -106,6 +127,11 @@ public class CPUBenchmark extends Benchmark {
         String msg;
         double cpuUsage;
         sleep = 1;
+
+        if (target == 0.0) {
+            progressUpdater.end(EMPTY_PAYLOAD);
+            return;
+        }
 
         cpuUser = new CPUUserThread[this.cpus];
         //creates as many cpu consumers as available cores
@@ -119,7 +145,7 @@ public class CPUBenchmark extends Benchmark {
         double diff;
         long sleepNew;
 
-        Log.d(TAG, "runConvergence: target: "+ target+ " threshold: "+ threshold);
+        Log.d(TAG, "runConvergence: target: " + target + " threshold: " + threshold);
 
         ThresholdNotificator thresholdNotificator = ThresholdNotificator.getInstance();
 
@@ -132,15 +158,14 @@ public class CPUBenchmark extends Benchmark {
             Log.i(TAG, "runConvergence: CPU Usage: " + cpuUsage +
                     " sleep: " + sleep + " diff: " + diff);
 
-            msg = "CPUUsage: "+ cpuUsage+ " Sleep: "+sleep;
+            msg = "CPUUsage: " + cpuUsage + " Sleep: " + sleep;
 
             thresholdNotificator.updateThresholdLevel(cpuUsage - target);
 
             if ((sleep == sleepNew) && stopCondition.canContinue()) { //canContinue checks if is not stable yet
                 if (diff > 1) {
                     sleep++;
-                }
-                else {
+                } else {
                     sleep--;
                     if (sleep < 0) sleep = 0;
                 }
