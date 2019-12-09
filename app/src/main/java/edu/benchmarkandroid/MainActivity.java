@@ -44,6 +44,8 @@ import edu.benchmarkandroid.utils.Cb;
 import edu.benchmarkandroid.utils.Logger;
 
 import static android.Manifest.permission.INTERNET;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static edu.benchmarkandroid.service.BenchmarkIntentService.END_BENCHMARK_ACTION;
 import static edu.benchmarkandroid.service.BenchmarkIntentService.PROGRESS_BENCHMARK_ACTION;
 import static edu.benchmarkandroid.service.PollingIntentService.POLLING_ACTION;
@@ -197,6 +199,22 @@ public class MainActivity extends Activity {
                     new String[]{Manifest.permission.INTERNET},
                     MY_PERMISSIONS_REQUEST_INTERNET);
         }
+
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(), READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{READ_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_INTERNET);
+        }
+
+
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(), WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_INTERNET);
+        }
+
 
         //set service to interact with the server
         serverConnection = ServerConnection.getService();
@@ -468,6 +486,7 @@ public class MainActivity extends Activity {
                         e.printStackTrace();
                     }
                     if (result != null)
+                        stateTextView.setText("send results");
                         serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result, "run", variant);
 
                     running = false;

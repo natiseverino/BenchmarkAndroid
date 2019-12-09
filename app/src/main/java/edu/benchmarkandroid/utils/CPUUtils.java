@@ -1,5 +1,7 @@
 package edu.benchmarkandroid.utils;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -9,10 +11,14 @@ public class CPUUtils {
 
     public static double readUsage() {
 
+        Log.d(TAG, "readUsage: ");
         String dir = "/sdcard/Download/cpu-usage-sample-1.txt";
         String dir2 = "/sdcard/Download/cpu-usage-sample-2.txt";
 
+
         File f1 = new File(dir);
+        Log.d(TAG, "readUsage: "+ f1.exists());
+
         File f2 = new File(dir2);
 
         String[] toks = readFile(f1);
@@ -20,6 +26,8 @@ public class CPUUtils {
         long idle1 = Long.parseLong(toks[5]);
         long cpu1 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[4])
                 + Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
+
+        Log.d(TAG, "readUsage: cpu1: "+ cpu1);
 
 
         toks = readFile(f2);
@@ -44,13 +52,12 @@ public class CPUUtils {
                         if (load != null) {
                             toks = load.split(" ");
                         } else {
-                            reader.seek(0); //TODO TEST
-                            //throw new FileNotFoundException();
+                            reader.seek(0);
                         }
                     }
                     reader.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.d(TAG, "readFile: error al leer el archivo");
                 }
 
             }

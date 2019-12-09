@@ -130,25 +130,28 @@ public class CPUBenchmark extends Benchmark {
             Log.i(TAG, "runConvergence: CPU Usage: " + cpuUsage +
                     " sleep: " + sleep + " diff: " + diff);
 
+            msg = "CPUUsage: "+ cpuUsage+ " Sleep: "+sleep;
+
             thresholdNotificator.updateThresholdLevel(cpuUsage - target);
 
             if ((sleep == sleepNew) && stopCondition.canContinue()) { //canContinue checks if is not stable yet
-                if (diff > 1)
+                if (diff > 1) {
                     sleep++;
+                }
                 else {
                     sleep--;
                     if (sleep < 0) sleep = 0;
                 }
 
-            } else
+            } else {
                 sleep = sleepNew;
+            }
 
 
             for (int i = 0; i < this.cpus; i++)
                 cpuUser[i].setSleep(sleep);
 
             iterations += 1;
-            msg = "CPUUsage: "+ cpuUsage+ " Sleep: "+sleep;
             progressUpdater.update(msg);
         }
 
