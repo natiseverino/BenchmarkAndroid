@@ -251,10 +251,11 @@ public class MainActivity extends Activity {
                 st.append(',');
                 st.append(intent.getExtras().get(BatteryManager.EXTRA_LEVEL));
 
+
                 try {
                     Logger.getInstance().write(st.toString());
                 } catch (FileNotFoundException e) {
-                    Log.d(TAG, "battery: Logger not found ");
+                    Log.d(TAG, "battery: Logger not found - fname: "+Logger.fname);
                 }
             }
         };

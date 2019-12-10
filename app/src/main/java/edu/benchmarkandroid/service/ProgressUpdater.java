@@ -39,7 +39,7 @@ public abstract class ProgressUpdater {
         intent.setAction(endAction);
 
         try {
-            logger.finalize();
+            logger.finish();
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }

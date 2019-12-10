@@ -22,7 +22,7 @@ public class Logger {
     private BufferedWriter bw;
 
     private int counter = 0;
-    private static String fname = "";
+    public static String fname = "";
 
     private Logger(String fname) throws FileNotFoundException{
         this.bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(fname))));
@@ -33,7 +33,7 @@ public class Logger {
         Log.d(TAG, "init: "+fname);
     }
 
-    public synchronized static Logger getInstance() throws FileNotFoundException {
+    public static Logger getInstance() throws FileNotFoundException {
         if (INSTANCE == null) INSTANCE = new Logger(fname);
         return INSTANCE;
     }
@@ -63,17 +63,16 @@ public class Logger {
         }
     }
 
-    @Override
-    public synchronized void finalize() {
+
+    public void finish() {
         try {
-            super.finalize();
             this.flush();
             bw.close();
         } catch (Throwable throwable) {
             Log.d(TAG, "no logger initiated");
         }
 
-        Logger.fname = "";
+
         INSTANCE = null;
     }
 
