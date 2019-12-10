@@ -122,7 +122,6 @@ public class MainActivity extends Activity {
             stateOfCharge = benchmarkExecutor.getNeededBatteryState();
             serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
             startBenchmark();
-            aSwitch.setEnabled(true);
             if (benchmarkExecutor.isKeepScreenOn())
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             else
@@ -302,6 +301,7 @@ public class MainActivity extends Activity {
         bindInputToDisplayText(portEditText, portTextView);
 
 
+
         //bind button actions
         setServerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -321,7 +321,7 @@ public class MainActivity extends Activity {
                     setServerButton.setText("Edit Server Url");
                     ipEditText.setEnabled(false);
                     portEditText.setEnabled(false);
-
+                    aSwitch.setEnabled(true);
                     serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
 
                 }
