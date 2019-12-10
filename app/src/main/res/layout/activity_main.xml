@@ -108,14 +108,6 @@
         android:enabled="false"
         android:text="Request Benchmarks" />
 
-    <Button
-        android:id="@+id/startBenchmarksButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-
-        android:enabled="false"
-        android:text="Start Benchmarks" />
 
     <Switch
         android:id="@+id/aSwitch"

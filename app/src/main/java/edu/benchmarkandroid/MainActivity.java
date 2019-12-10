@@ -121,7 +121,7 @@ public class MainActivity extends Activity {
             minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
             stateOfCharge = benchmarkExecutor.getNeededBatteryState();
             serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
-            startBenchmarksButton.setEnabled(true);
+            startBenchmark();
             aSwitch.setEnabled(true);
             if (benchmarkExecutor.isKeepScreenOn())
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -181,7 +181,7 @@ public class MainActivity extends Activity {
     private TextView modelTextView;
     private Button setServerButton;
     private Button requestBenchmarksButton;
-    private Button startBenchmarksButton;
+    //private Button startBenchmarksButton;
     private Switch aSwitch;
     private TextView stateTextView;
 
@@ -288,7 +288,7 @@ public class MainActivity extends Activity {
         modelTextView = findViewById(R.id.modelTextView);
         requestBenchmarksButton = findViewById(R.id.requestBenchmarksButton);
         setServerButton = findViewById(R.id.setServerButton);
-        startBenchmarksButton = findViewById(R.id.startBenchmarksButton);
+        //startBenchmarksButton = findViewById(R.id.startBenchmarksButton);
         aSwitch = findViewById(R.id.aSwitch);
         stateTextView = findViewById(R.id.stateTextView);
 
@@ -311,7 +311,7 @@ public class MainActivity extends Activity {
                     ipEditText.setEnabled(true);
                     portEditText.setEnabled(true);
                     requestBenchmarksButton.setEnabled(false);
-                    startBenchmarksButton.setEnabled(false);
+                    //startBenchmarksButton.setEnabled(false);
                     aSwitch.setEnabled(false);
 
                 } else {
@@ -328,26 +328,21 @@ public class MainActivity extends Activity {
             }
         });
 
-//        manuaBatteryUpdateButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
-//            }
-//        });
 
         requestBenchmarksButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 serverConnection.getBenchmarks(benchmarkReceivedOnSucess, onError, getApplicationContext());
+                //startBenchmark();
             }
         });
 
-        startBenchmarksButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startBenchmark();
-            }
-        });
+//        startBenchmarksButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
 
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
