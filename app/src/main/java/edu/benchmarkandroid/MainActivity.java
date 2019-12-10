@@ -121,7 +121,11 @@ public class MainActivity extends Activity {
             minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
             stateOfCharge = benchmarkExecutor.getNeededBatteryState();
             serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), batteryUpdateOnSucess, onError, getApplicationContext());
-            startBenchmark();
+            if (doPolling)
+                startPolling();
+            else
+                startBenchmark();
+
             if (benchmarkExecutor.isKeepScreenOn())
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             else
@@ -186,6 +190,7 @@ public class MainActivity extends Activity {
 
     private PowerManager.WakeLock powerManagerWakeLock;
     private static final String POWER_MANAGER_TAG = "MainActivity:PowerManagerTag";
+    private boolean doPolling = false;
 
 
     @Override
@@ -208,7 +213,7 @@ public class MainActivity extends Activity {
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE},
+                    new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE);
         }
 
@@ -254,7 +259,7 @@ public class MainActivity extends Activity {
                 try {
                     Logger.getInstance().write(st.toString());
                 } catch (FileNotFoundException e) {
-                    Log.d(TAG, "battery: Logger not found - fname: "+Logger.fname);
+                    Log.d(TAG, "battery: Logger not found - fname: " + Logger.fname);
                 }
             }
         };
@@ -299,7 +304,6 @@ public class MainActivity extends Activity {
         //set onChangeListener to display the complete formater url to the user
         bindInputToDisplayText(ipEditText, ipTextView);
         bindInputToDisplayText(portEditText, portTextView);
-
 
 
         //bind button actions
@@ -347,7 +351,8 @@ public class MainActivity extends Activity {
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    startPolling();
+//                    startPolling();
+                    doPolling = true;
                 } else {
                     stopPolling();
                 }
@@ -397,7 +402,7 @@ public class MainActivity extends Activity {
                 } else {
                     Toast.makeText(this, "We need this permission", Toast.LENGTH_SHORT).show();
                     ActivityCompat.requestPermissions(this,
-                            new String[]{READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE},
+                            new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE},
                             MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE);
                 }
         }
@@ -441,6 +446,7 @@ public class MainActivity extends Activity {
 
     private void stopPolling() {
         PollingIntentService.setShouldContinue(false);
+        doPolling = false;
     }
 
 
@@ -492,11 +498,10 @@ public class MainActivity extends Activity {
                     } catch (IOException e) {
                         Toast.makeText(context, "file not found", Toast.LENGTH_SHORT).show();
                     }
-                    if (result != null){
+                    if (result != null) {
                         stateTextView.setText("send results");
                         serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result, "run", variant);
-                    }
-                    else
+                    } else
                         Toast.makeText(context, "no results", Toast.LENGTH_SHORT).show();
 
                     running = false;
@@ -538,8 +543,7 @@ public class MainActivity extends Activity {
                         Log.d(TAG, "onReceive: " + result.length);
                         Toast.makeText(context, "Send Results Sampling", Toast.LENGTH_SHORT).show();
                         serverConnection.sendResult(resultSendCb, onError, getApplicationContext(), result, "sampling", variant);
-                    }
-                    else
+                    } else
                         Toast.makeText(context, "no results", Toast.LENGTH_SHORT).show();
 
                     running = false;
