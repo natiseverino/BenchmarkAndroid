@@ -290,6 +290,7 @@ public class MainActivity extends Activity {
         //startBenchmarksButton = findViewById(R.id.startBenchmarksButton);
         aSwitch = findViewById(R.id.aSwitch);
         stateTextView = findViewById(R.id.stateTextView);
+        stateTextView.setText("Build.VERSION.SDK_INT: "+Build.VERSION.SDK_INT);
 
 
         ipTextView.setText(ipEditText.getText());

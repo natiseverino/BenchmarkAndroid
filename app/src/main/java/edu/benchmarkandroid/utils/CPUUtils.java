@@ -1,5 +1,6 @@
 package edu.benchmarkandroid.utils;
 
+import android.os.Build;
 import android.util.Log;
 
 import java.io.File;
@@ -11,7 +12,18 @@ import edu.benchmarkandroid.MainActivity;
 public class CPUUtils {
     private static final String TAG = "CPUUtils";
 
+
     public static double readUsage() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            return readUsageFromCpuUsageSample();
+        else
+            return readUsageFromProcStat();
+    }
+
+
+
+    private static double readUsageFromCpuUsageSample() {
 
         String dir = MainActivity.PATH +"cpu-usage-sample-1.txt";
         String dir2 = MainActivity.PATH+"cpu-usage-sample-2.txt";
@@ -63,22 +75,42 @@ public class CPUUtils {
         return toks;
     }
 
+    private static float readUsageFromProcStat() {
+        try {
+            RandomAccessFile reader = new RandomAccessFile("/proc/stat", "r");
+            String load = reader.readLine();
+
+            String[] toks = load.split(" ");
+
+            long idle1 = Long.parseLong(toks[5]);
+            long cpu1 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[4])
+                    + Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
+
+            try {
+                Thread.sleep(360);
+            } catch (InterruptedException e) {}
+
+            reader.seek(0);
+            load = reader.readLine();
+            reader.close();
+
+            toks = load.split(" ");
+
+            long idle2 = Long.parseLong(toks[5]);
+            long cpu2 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[4])
+                    + Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
+
+            return (float)(cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        return 0;
+    }
 
 
-    /**
-     * Get max cpu rate.
-     *
-     * This works by examining the list of CPU frequencies in the pseudo file
-     * "/sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state" and how much time has been spent
-     * in each. It finds the highest non-zero time and assumes that is the maximum frequency (note
-     * that sometimes frequencies higher than that which was designed can be reported.) So it is not
-     * impossible that this method will return an incorrect CPU frequency.
-     *
-     * Also note that (obviously) this will not reflect different CPU cores with different
-     * maximum speeds.
-     *
-     * @return cpu frequency in MHz
-     */
+
     public static int getMaxCPUFreqMHz() {
 
         int maxFreq = -1;
