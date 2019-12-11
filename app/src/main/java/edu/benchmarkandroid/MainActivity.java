@@ -252,6 +252,9 @@ public class MainActivity extends Activity {
         deviceBatteryMah = BatteryUtils.getBatteryCapacity(this);
         deviceCpuMhz = CPUUtils.getMaxCPUFreqMHz();
 
+        //set onChangeListener to display the complete formater url to the user
+        bindInputToDisplayText(ipEditText, ipTextView);
+        bindInputToDisplayText(portEditText, portTextView);
 
         try {
             Properties serverConfigProperties = new Properties();
@@ -266,9 +269,6 @@ public class MainActivity extends Activity {
             portEditText.setText(httpPort);
         }
 
-        //set onChangeListener to display the complete formater url to the user
-        bindInputToDisplayText(ipEditText, ipTextView);
-        bindInputToDisplayText(portEditText, portTextView);
 
         //set service to interact with the server
         serverConnection = ServerConnection.getService();
