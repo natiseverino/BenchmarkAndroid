@@ -579,25 +579,32 @@ public class MainActivity extends Activity {
                 serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onSuccessBatteryUpdate, onError, getApplicationContext());
             }
 
-
-            StringBuffer st = new StringBuffer();
-            st.append(System.currentTimeMillis());
-            st.append(',');
-            String status = null;
-            if (intent.getExtras().getInt(BatteryManager.EXTRA_STATUS) == BatteryManager.BATTERY_STATUS_CHARGING)
-                status = CHARGING;
-            if (intent.getExtras().getInt(BatteryManager.EXTRA_STATUS) == BatteryManager.BATTERY_STATUS_DISCHARGING)
-                status = DISCHARGING;
-            st.append(status);
-            st.append(',');
-            st.append(intent.getExtras().get(BatteryManager.EXTRA_LEVEL));
+            if (running) {
 
 
-            try {
-                Logger.getInstance().write(st.toString());
-            } catch (FileNotFoundException e) {
-                Log.d(TAG, "battery: Logger not found - fname: " + Logger.fname);
+                StringBuffer st = new StringBuffer();
+                st.append(System.currentTimeMillis());
+                st.append(',');
+                String status = null;
+                if (intent.getExtras().getInt(BatteryManager.EXTRA_STATUS) == BatteryManager.BATTERY_STATUS_CHARGING)
+                    status = CHARGING;
+                if (intent.getExtras().getInt(BatteryManager.EXTRA_STATUS) == BatteryManager.BATTERY_STATUS_DISCHARGING)
+                    status = DISCHARGING;
+                st.append(status);
+                st.append(',');
+                st.append(intent.getExtras().get(BatteryManager.EXTRA_LEVEL));
+
+
+                try {
+                    Logger.getInstance().write(st.toString());
+                } catch (FileNotFoundException e) {
+                    Log.d(TAG, "battery: Logger not found - fname: " + Logger.fname);
+                }
             }
+
+
+
+
         }
     }
 

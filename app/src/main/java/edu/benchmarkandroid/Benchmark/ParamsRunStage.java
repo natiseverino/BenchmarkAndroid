@@ -55,7 +55,7 @@ public class ParamsRunStage {
     private int[] Hanoi_datasizes;
 
     //DHPC_EP
-    @SerializedName("n")
+    @SerializedName("EP_n")
     @Expose
     private int EP_n;
     @SerializedName("X")
