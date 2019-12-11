@@ -40,6 +40,8 @@ public class ParamsRunStage {
     @Expose
     private int[] Hanoi_datasizes;
 
+
+
     //DHPC_EP
     @SerializedName("n")
     @Expose
@@ -82,6 +84,14 @@ public class ParamsRunStage {
 
     public void setN(int n) {
         this.n = n;
+    }
+
+    public int getEP_n() {
+        return EP_n;
+    }
+
+    public void setEP_n(int EP_n) {
+        this.EP_n = EP_n;
     }
 
     public double getX() {

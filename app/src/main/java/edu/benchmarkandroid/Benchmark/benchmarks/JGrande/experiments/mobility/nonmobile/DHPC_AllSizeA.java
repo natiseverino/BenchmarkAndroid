@@ -33,7 +33,7 @@ public class DHPC_AllSizeA {
                 long l = System.currentTimeMillis();
 
                 DHPC_FFTBench ffb = new DHPC_FFTBench();
-                ffb.JGFrun(size, progressUpdater);
+                ffb.JGFrun(size, progressUpdater, paramsRunStage);
                 CPUSnapshots[i] = System.currentTimeMillis() - l;
             }
             progressUpdater.update("DHPC_FFTBench\t" + Statistics.average(CPUSnapshots)
@@ -78,7 +78,7 @@ public class DHPC_AllSizeA {
             for (int i = 0; i < runs; i++) {
                 long l = System.currentTimeMillis();
                 DHPC_EPBench eb = new DHPC_EPBench();
-                eb.JGFrun(size, progressUpdater);
+                eb.JGFrun(size, progressUpdater, paramsRunStage);
                 CPUSnapshots[i] = System.currentTimeMillis() - l;
             }
             progressUpdater.update("DHPC_EPBench\t" + Statistics.average(CPUSnapshots)
