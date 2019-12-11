@@ -33,6 +33,10 @@ public class DHPC_FFTBench {
 
 		this.progressUpdater = progressUpdater;
 		this.datasizes = paramsRunStage.getFFT_datasizes();
+		this.n1 = paramsRunStage.getN1();
+		this.n2 = paramsRunStage.getN2();
+		this.n3 = paramsRunStage.getN3();
+		this.iterations = paramsRunStage.getIterations();
 		JGFsetsize(size);
 		JGFinitialise();
 		JGFkernel();
@@ -41,13 +45,13 @@ public class DHPC_FFTBench {
 
 	}
 
-	static int n1 = 64;
+	static int n1; //64
 
-	static int n2 = 64;
+	static int n2; //64
 
-	static int n3 = 64;
+	static int n3; //64
 
-	static int iterations = 60;
+	static int iterations; //60
 
 	static double data[];
 

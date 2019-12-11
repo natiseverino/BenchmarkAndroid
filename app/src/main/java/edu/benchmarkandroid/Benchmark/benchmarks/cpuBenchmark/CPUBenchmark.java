@@ -19,7 +19,6 @@ public class CPUBenchmark extends Benchmark {
     private static final int READING_TIMES = 30;
     private static final int WAITING = 300;
 
-
     public CPUBenchmark(Variant variant) {
         super(variant);
     }

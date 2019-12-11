@@ -1,5 +1,6 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.sieve;
 
+import edu.benchmarkandroid.Benchmark.ParamsRunStage;
 import edu.benchmarkandroid.service.ProgressUpdater;
 
 public class DHPC_SieveBench {
@@ -8,6 +9,8 @@ public class DHPC_SieveBench {
 
 	//TODO PARAMETROS
 	private int datasizes[] = { 1, 1, 1 };
+	private int m; //100000
+	private int n; //8192
 
 	public void JGFsetsize(int size) {
 		this.size = size;
@@ -17,7 +20,7 @@ public class DHPC_SieveBench {
 	}
 
 	public void JGFkernel() {
-		sieve(100000, 8192);
+		sieve(m, n);
 	}
 
 	public void JGFvalidate() {
@@ -28,7 +31,11 @@ public class DHPC_SieveBench {
 
 	}
 
-	public void JGFrun(int size) {
+	public void JGFrun(int size, ParamsRunStage paramsRunStage) {
+
+		this.datasizes = paramsRunStage.getSieve_datasizes();
+		this.m = paramsRunStage.getM();
+		this.n = paramsRunStage.getN();
 
 		JGFsetsize(size);
 		JGFinitialise();

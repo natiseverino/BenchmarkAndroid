@@ -1,5 +1,6 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.hanoi;
 
+import edu.benchmarkandroid.Benchmark.ParamsRunStage;
 import edu.benchmarkandroid.service.ProgressUpdater;
 
 public class DHPC_HanoiBench {
@@ -32,7 +33,8 @@ public class DHPC_HanoiBench {
 	public void JGFtidyup() {
 	}
 
-	public void JGFrun(int size, ProgressUpdater progressUpdater) {
+	public void JGFrun(int size, ProgressUpdater progressUpdater, ParamsRunStage paramsRunStage) {
+		this.datasizes = paramsRunStage.getHanoi_datasizes();
 
 		this.progressUpdater = progressUpdater;
 		JGFsetsize(size);

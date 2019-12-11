@@ -1,12 +1,14 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.prime;
 
+import edu.benchmarkandroid.Benchmark.ParamsRunStage;
+
 public class DHPC_PrimeBench {
 
 	//TODO PARAMETROS
 
 	private int size;
 
-	private int datasizes[] = { 10000000, 10000000, 10000000 };
+	private int datasizes[]/* = { 10000000, 10000000, 10000000 }*/;
 
 	public void JGFsetsize(int size) {
 		this.size = size;
@@ -29,8 +31,8 @@ public class DHPC_PrimeBench {
 	public void JGFtidyup() {
 	}
 
-	public void JGFrun(int size) {
-
+	public void JGFrun(int size , ParamsRunStage paramsRunStage) {
+		this.datasizes = paramsRunStage.getPrime_datasizes();
 		JGFsetsize(size);
 		JGFinitialise();
 		JGFkernel();

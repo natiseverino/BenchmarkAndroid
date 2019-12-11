@@ -1,10 +1,6 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande;
 
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
 import edu.benchmarkandroid.Benchmark.Benchmark;
 import edu.benchmarkandroid.Benchmark.StopCondition;
 import edu.benchmarkandroid.Benchmark.Variant;
