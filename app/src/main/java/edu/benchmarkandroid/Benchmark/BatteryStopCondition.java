@@ -13,6 +13,6 @@ public class BatteryStopCondition implements StopCondition {
 
     @Override
     public boolean canContinue() {
-        return batteryMinLevel < batteryNotificator.getCurrentLevel();
+        return batteryMinLevel <= batteryNotificator.getCurrentLevel();
     }
 }
