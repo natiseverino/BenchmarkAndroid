@@ -1,5 +1,8 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile;
 
+import edu.benchmarkandroid.service.ProgressUpdater;
+import edu.benchmarkandroid.Benchmark.ParamsRunStage;
+
 import edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.Statistics;
 import edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.ep.DHPC_EPBench;
 import edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.fft.DHPC_FFTBench;
@@ -15,27 +18,29 @@ import edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.no
  */
 public class DHPC_AllSizeA {
 
-    public static void main(String argv[]) {
+    public static void run(ProgressUpdater progressUpdater, ParamsRunStage paramsRunStage) {
 
-        int runs = 2;
-        int size = 0;
+
+        int runs = paramsRunStage.getRuns();
+        if (runs < 2)
+            runs = 2;
+        int size = paramsRunStage.getSize();
+
         double[] CPUSnapshots = new double[runs];
 
-        //ApplicationContext appContext = new FileSystemXmlApplicationContext(
-        //		"configuration/nonmobile-test.xml");
         try{
             for (int i = 0; i < runs; i++) {
                 long l = System.currentTimeMillis();
 
                 DHPC_FFTBench ffb = new DHPC_FFTBench();
-                ffb.JGFrun(size);
+                ffb.JGFrun(size, progressUpdater);
                 CPUSnapshots[i] = System.currentTimeMillis() - l;
             }
-            System.out.println("DHPC_FFTBench\t" + Statistics.average(CPUSnapshots)
+            progressUpdater.update("DHPC_FFTBench\t" + Statistics.average(CPUSnapshots)
                     + "\t" + Statistics.standardDeviation(CPUSnapshots));
         } catch (Throwable e) {
-            System.out.println("Error executing DHPC_FFTBench");
-            e.printStackTrace(System.out);
+            progressUpdater.update("Error executing DHPC_FFTBench");
+            //e.printStackTrace(System.out);
         }
 
         try{
@@ -45,27 +50,27 @@ public class DHPC_AllSizeA {
                 sb.JGFrun(size);
                 CPUSnapshots[i] = System.currentTimeMillis() - l;
             }
-            System.out.println("DHPC_SieveBench\t"
+            progressUpdater.update("DHPC_SieveBench\t"
                     + Statistics.average(CPUSnapshots) + "\t"
                     + Statistics.standardDeviation(CPUSnapshots));
         } catch (Throwable e) {
-            System.out.println("Error executing DHPC_SieveBench");
-            e.printStackTrace(System.out);
+            progressUpdater.update("Error executing DHPC_SieveBench");
+            //e.printStackTrace(System.out);
         }
 
         try{
             for (int i = 0; i < runs; i++) {
                 long l = System.currentTimeMillis();
                 DHPC_HanoiBench hb = new DHPC_HanoiBench();
-                hb.JGFrun(size);
+                hb.JGFrun(size, progressUpdater);
                 CPUSnapshots[i] = System.currentTimeMillis() - l;
             }
-            System.out.println("DHPC_HanoiBench\t"
+            progressUpdater.update("DHPC_HanoiBench\t"
                     + Statistics.average(CPUSnapshots) + "\t"
                     + Statistics.standardDeviation(CPUSnapshots));
         } catch (Throwable e) {
-            System.out.println("Error executing DHPC_HanoiBench");
-            e.printStackTrace(System.out);
+            progressUpdater.update("Error executing DHPC_HanoiBench");
+            //e.printStackTrace(System.out);
         }
 
 
@@ -73,14 +78,14 @@ public class DHPC_AllSizeA {
             for (int i = 0; i < runs; i++) {
                 long l = System.currentTimeMillis();
                 DHPC_EPBench eb = new DHPC_EPBench();
-                eb.JGFrun(size);
+                eb.JGFrun(size, progressUpdater);
                 CPUSnapshots[i] = System.currentTimeMillis() - l;
             }
-            System.out.println("DHPC_EPBench\t" + Statistics.average(CPUSnapshots)
+            progressUpdater.update("DHPC_EPBench\t" + Statistics.average(CPUSnapshots)
                     + "\t" + Statistics.standardDeviation(CPUSnapshots));
         } catch (Throwable e) {
-            System.out.println("Error executing DHPC_EPBench");
-            e.printStackTrace(System.out);
+            progressUpdater.update("Error executing DHPC_EPBench");
+            //e.printStackTrace(System.out);
         }
 
 
@@ -91,12 +96,12 @@ public class DHPC_AllSizeA {
                 kb.JGFrun(size);
                 CPUSnapshots[i] = System.currentTimeMillis() - l;
             }
-            System.out.println("DHPC_PrimeBench\t"
+            progressUpdater.update("DHPC_PrimeBench\t"
                     + Statistics.average(CPUSnapshots) + "\t"
                     + Statistics.standardDeviation(CPUSnapshots));
         } catch (Throwable e) {
-            System.out.println("Error executing DHPC_PrimeBench");
-            e.printStackTrace(System.out);
+            progressUpdater.update("Error executing DHPC_PrimeBench");
+            //e.printStackTrace(System.out);
         }
 
     }

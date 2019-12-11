@@ -27,7 +27,7 @@
 //			ps1=new PrintStream(ba);
 //			System.setOut(ps1);
 //		}
-//		JGFAll.main(null);
+//		JGFAll.run(null);
 //		System.setOut(ps);
 //		if (ba!=null) {
 //			ps1.flush();

@@ -1,9 +1,12 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.sieve;
 
+import edu.benchmarkandroid.service.ProgressUpdater;
+
 public class DHPC_SieveBench {
 
 	private int size;
 
+	//TODO PARAMETROS
 	private int datasizes[] = { 1, 1, 1 };
 
 	public void JGFsetsize(int size) {

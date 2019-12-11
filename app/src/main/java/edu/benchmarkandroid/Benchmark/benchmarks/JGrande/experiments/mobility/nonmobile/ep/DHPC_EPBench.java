@@ -1,6 +1,16 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.ep;
 
+import android.util.Log;
+
+import edu.benchmarkandroid.service.ProgressUpdater;
+
 public class DHPC_EPBench {
+
+	private static final String TAG = "DHPC_EPBench";
+
+	private ProgressUpdater progressUpdater;
+
+	//TODO PARAMETROS
 
 	static final int n = 16777216; // Number of random numbers to generate
 
@@ -35,7 +45,9 @@ public class DHPC_EPBench {
 	public void JGFtidyup() {
 	}
 
-	public void JGFrun(int size) {
+	public void JGFrun(int size, ProgressUpdater progressUpdater) {
+
+		this.progressUpdater = progressUpdater;
 		JGFsetsize(size);
 		JGFinitialise();
 		JGFkernel();
@@ -72,10 +84,10 @@ public class DHPC_EPBench {
 				Q[l]++;
 			}
 		}
-		System.out.println("Sum X:" + Xsum);
-		System.out.println("Sum Y:" + Ysum);
+		progressUpdater.update("Sum X:" + Xsum);
+		progressUpdater.update("Sum Y:" + Ysum);
 		for (l = 0; l < 10; l++)
-			System.out.println("Q[" + l + "]:" + Q[l]);
+			progressUpdater.update("Q[" + l + "]:" + Q[l]);
 	}
 
 	double next() {

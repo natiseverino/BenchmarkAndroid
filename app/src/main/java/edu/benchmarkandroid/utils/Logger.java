@@ -65,13 +65,13 @@ public class Logger {
 
 
     public void finish() {
+
         try {
             this.flush();
             bw.close();
         } catch (Throwable throwable) {
             Log.d(TAG, "no logger initiated");
         }
-
 
         INSTANCE = null;
     }

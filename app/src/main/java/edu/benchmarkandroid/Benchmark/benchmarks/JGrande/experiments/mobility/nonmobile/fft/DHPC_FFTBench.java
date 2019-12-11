@@ -1,10 +1,16 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.fft;
 
+import edu.benchmarkandroid.service.ProgressUpdater;
+
 public class DHPC_FFTBench {
+
+	private static ProgressUpdater progressUpdater;
 
 	private int size;
 
-	private int datasizes[] = { 256, 256, 256 };
+	//TODO PARAMETROS? size no
+
+	private int datasizes[];
 
 	public void JGFsetsize(int size) {
 		this.size = size;
@@ -24,8 +30,9 @@ public class DHPC_FFTBench {
 	public void JGFtidyup() {
 	}
 
-	public void JGFrun(int size) {
+	public void JGFrun(int size, ProgressUpdater progressUpdater) {
 
+		this.progressUpdater = progressUpdater;
 		JGFsetsize(size);
 		JGFinitialise();
 		JGFkernel();
@@ -95,7 +102,7 @@ public class DHPC_FFTBench {
 					pos = 2 * (k * n1 * n2 + j * n1 + i);
 					c1 += data[pos];
 					c2 += data[pos + 1];
-					System.out.println(data[pos] + "," + data[pos + 1]);
+					progressUpdater.update(data[pos] + "," + data[pos + 1]);
 				}
 			// System.out.println(c1+","+c2);
 		}
@@ -277,5 +284,9 @@ public class DHPC_FFTBench {
 		T4 = j;
 		X = T3 - T46 * T4;
 		return (X);
+	}
+
+	public void setDatasizes(int[] datasizes) {
+		this.datasizes = datasizes;
 	}
 }

@@ -32,7 +32,7 @@
 //		}
 //		Log.d(tag, "Calling SciMark20");
 //		try{
-//			commandline.main(new String[0]);
+//			commandline.run(new String[0]);
 //		} catch(Exception e){
 //			e.printStackTrace(System.out);
 //		}

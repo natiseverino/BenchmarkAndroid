@@ -1,4 +1,4 @@
-package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.runner;
+/*package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.runner;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -27,7 +27,7 @@ public class CBenchmark implements Runner {
 			ps1=new PrintStream(ba);
 			System.setOut(ps1);
 		}
-		DHPC_AllSizeA.main(null);
+		DHPC_AllSizeA.run();
 		System.setOut(ps);
 		if (ba!=null) {
 			ps1.flush();
@@ -35,4 +35,4 @@ public class CBenchmark implements Runner {
 		}
 	}
 
-}
+}*/
