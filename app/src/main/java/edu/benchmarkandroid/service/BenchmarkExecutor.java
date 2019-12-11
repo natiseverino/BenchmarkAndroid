@@ -49,6 +49,7 @@ public class BenchmarkExecutor {
         currentBenchmark = 0;
         this.neededBatteryLevelNextStep = variants.get(0).getEnergyPreconditionSamplingStage().getMinStartBatteryLevel();
         this.neededBatteryState = variants.get(0).getEnergyPreconditionSamplingStage().getRequiredBatteryState();
+
         String screenState = variants.get(0).getParamsRunStage().getScreenState();
         if(screenState.equalsIgnoreCase("on"))
             keepScreenOn = true;
@@ -63,30 +64,38 @@ public class BenchmarkExecutor {
 
     public void execute(Context context) {
         if (sampling) {
+            // Sampling stage
+
             Intent intent = new Intent(context, SamplingIntentService.class);
             intent.putExtra("samplingName", benchClassName);
             intent.putExtra("benchmarkName", benchmarkName);
             intent.putExtra("benchmarkVariant", new GsonBuilder().create().toJson(variants.get(currentBenchmark)));
             context.startService(intent);
-            sampling = false;
             this.neededBatteryLevelNextStep = variants.get(currentBenchmark).getEnergyPreconditionRunStage().getMinStartBatteryLevel();
             this.neededBatteryState = variants.get(currentBenchmark).getEnergyPreconditionRunStage().getRequiredBatteryState();
+            sampling = false;
+
         } else {
+
+            // Benchmark stage
+
             Intent intent = new Intent(context, BenchmarkIntentService.class);
             intent.putExtra("benchmarkName", benchClassName);
             intent.putExtra("benchmarkVariant", new GsonBuilder().create().toJson(variants.get(currentBenchmark)));
             context.startService(intent);
             currentBenchmark++;
             if (hasMoreToExecute()) {
+                sampling = true;
                 this.neededBatteryLevelNextStep = variants.get(currentBenchmark).getEnergyPreconditionSamplingStage().getMinStartBatteryLevel();
                 this.neededBatteryState = variants.get(currentBenchmark).getEnergyPreconditionSamplingStage().getRequiredBatteryState();
-                sampling = true;
+
                 String screenState = variants.get(0).getParamsRunStage().getScreenState();
                 if(screenState.equalsIgnoreCase("on"))
                     keepScreenOn = true;
                 else if (screenState.equalsIgnoreCase("off"))
                     keepScreenOn = false;
             }
+
         }
     }
 
