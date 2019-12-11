@@ -2,6 +2,7 @@ package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.n
 
 import android.util.Log;
 
+import edu.benchmarkandroid.Benchmark.ParamsRunStage;
 import edu.benchmarkandroid.service.ProgressUpdater;
 
 public class DHPC_EPBench {
@@ -12,11 +13,11 @@ public class DHPC_EPBench {
 
 	//TODO PARAMETROS
 
-	static final int n = 16777216; // Number of random numbers to generate
+	static int n /*= 16777216*/; // Number of random numbers to generate
 
-	static double X = 271828183.0; // Inital seed
+	static double X /*= 271828183.0*/; // Inital seed
 
-	static final double A = 1220703125.0; // Multiplier
+	static double A /*= 1220703125.0*/; // Multiplier
 
 	static int KS;
 
@@ -24,7 +25,7 @@ public class DHPC_EPBench {
 
 	private int size;
 
-	private int datasizes[] = { 1, 2, 3 }; // Only a single size (Class S) is
+	private int datasizes[] /*= { 1, 2, 3 }*/; // Only a single size (Class S) is
 
 	// supported
 
@@ -45,9 +46,14 @@ public class DHPC_EPBench {
 	public void JGFtidyup() {
 	}
 
-	public void JGFrun(int size, ProgressUpdater progressUpdater) {
+	public void JGFrun(int size, ProgressUpdater progressUpdater, ParamsRunStage paramsRunStage) {
 
 		this.progressUpdater = progressUpdater;
+		n = paramsRunStage.getEP_n();
+		X = paramsRunStage.getX();
+		A = paramsRunStage.getA();
+		datasizes = paramsRunStage.getEP_datasizes();
+
 		JGFsetsize(size);
 		JGFinitialise();
 		JGFkernel();
