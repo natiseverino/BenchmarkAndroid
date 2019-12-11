@@ -2,6 +2,8 @@ package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.n
 
 public class DHPC_PrimeBench {
 
+	//TODO PARAMETROS
+
 	private int size;
 
 	private int datasizes[] = { 10000000, 10000000, 10000000 };

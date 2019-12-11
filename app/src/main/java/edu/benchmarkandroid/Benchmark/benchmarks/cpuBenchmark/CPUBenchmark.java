@@ -12,7 +12,7 @@ import edu.benchmarkandroid.utils.CPUUtils;
 
 public class CPUBenchmark extends Benchmark {
 
-    private static final String EMPTY_PAYLOAD = "empty";
+    //private static final String EMPTY_PAYLOAD = "empty";
     private static final String TAG = "CPUBenchmark";
     private CPUUserThread[] cpuUser;
 
@@ -99,7 +99,7 @@ public class CPUBenchmark extends Benchmark {
             for (int i = 0; i < this.cpus; i++)
                 cpuUser[i].kill();
         }
-        progressUpdater.end(EMPTY_PAYLOAD);
+        progressUpdater.end();
     }
 
     private void runBenchmarkZero(StopCondition stopCondition, ProgressUpdater progressUpdater) {
@@ -129,7 +129,7 @@ public class CPUBenchmark extends Benchmark {
         sleep = 1;
 
         if (target == 0.0) {
-            progressUpdater.end(EMPTY_PAYLOAD);
+            progressUpdater.end();
             return;
         }
 
@@ -187,7 +187,7 @@ public class CPUBenchmark extends Benchmark {
         for (int i = 0; i < this.cpus; i++)
             cpuUser[i].kill();
 
-        progressUpdater.end(EMPTY_PAYLOAD);
+        progressUpdater.end();
     }
 
 

@@ -1,8 +1,13 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.hanoi;
 
+import edu.benchmarkandroid.service.ProgressUpdater;
+
 public class DHPC_HanoiBench {
 
+	private ProgressUpdater progressUpdater;
+
 	private int size;
+	//TODO PARAMETROS
 
 	private int datasizes[] = { 28, 28, 28 };
 
@@ -27,8 +32,9 @@ public class DHPC_HanoiBench {
 	public void JGFtidyup() {
 	}
 
-	public void JGFrun(int size) {
+	public void JGFrun(int size, ProgressUpdater progressUpdater) {
 
+		this.progressUpdater = progressUpdater;
 		JGFsetsize(size);
 		JGFinitialise();
 		JGFkernel();
@@ -55,9 +61,9 @@ public class DHPC_HanoiBench {
 				while (height > 0) {
 					SP++;
 					if (SP > SUB) {
-						System.out.println();
-						System.out.println("*** Error: Stack Overflow");
-						System.exit(1);
+						progressUpdater.update("");
+						progressUpdater.update("*** Error: Stack Overflow");
+						return;
 					}
 					HeightStack[SP] = height;
 					fromStack[SP] = fromPole;
@@ -75,9 +81,9 @@ public class DHPC_HanoiBench {
 				moveDisk(fromPole, toPole);
 				SP++;
 				if (SP > SUB) {
-					System.out.println();
-					System.out.println("*** Error: Stack Overflow");
-					System.exit(1);
+					progressUpdater.update("");
+					progressUpdater.update("*** Error: Stack Overflow");
+					return;
 				}
 				HeightStack[SP] = height;
 				fromStack[SP] = fromPole;

@@ -31,7 +31,7 @@ public abstract class ProgressUpdater {
         logger.write(msg);
     }
 
-    public void end(String payload) {
+    public void end() {
         Intent intent = new Intent();
 //        intent.putExtra("payload", payload);
         intent.putExtra("variant", variant);

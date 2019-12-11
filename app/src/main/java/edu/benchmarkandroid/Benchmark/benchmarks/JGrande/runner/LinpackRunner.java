@@ -4,18 +4,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-import edu.benchmarkandroid.Benchmark.benchmarks.JGrande.Runner;
 import edu.benchmarkandroid.Benchmark.benchmarks.JGrande.runner.linpack.Linpack;
 
 
 import android.os.Environment;
 import android.util.Log;
 
-public class LinpackRunner implements Runner {
+public class LinpackRunner {
 
 	private String tag="LinpackRunner";
 	
-	@Override
+
 	public void execute() {
 		Log.d(tag, "Starting runner...");
 		FileOutputStream ba=null;
