@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class ParamsRunStage {
 
+    //CPU
     @SerializedName("cpuLevel")
     @Expose
     private Double cpuLevel;
@@ -12,6 +13,7 @@ public class ParamsRunStage {
     @Expose
     private String screenState;
 
+    //JGrande
     @SerializedName("runs")
     @Expose
     private int runs;
@@ -23,6 +25,18 @@ public class ParamsRunStage {
     @SerializedName("FFT_datasizes")
     @Expose
     private int[] FFT_datasizes;
+    @SerializedName("n1")
+    @Expose
+    private int n1;
+    @SerializedName("n2")
+    @Expose
+    private int n2;
+    @SerializedName("n3")
+    @Expose
+    private int n3;
+    @SerializedName("iterations")
+    @Expose
+    private int iterations;
 
     //DHPC_Sieve
     @SerializedName("m")
@@ -39,8 +53,6 @@ public class ParamsRunStage {
     @SerializedName("Hanoi_datasizes")
     @Expose
     private int[] Hanoi_datasizes;
-
-
 
     //DHPC_EP
     @SerializedName("n")
@@ -68,6 +80,38 @@ public class ParamsRunStage {
 
     public void setFFT_datasizes(int[] FFT_datasizes) {
         this.FFT_datasizes = FFT_datasizes;
+    }
+
+    public int getN1() {
+        return n1;
+    }
+
+    public void setN1(int n1) {
+        this.n1 = n1;
+    }
+
+    public int getN2() {
+        return n2;
+    }
+
+    public void setN2(int n2) {
+        this.n2 = n2;
+    }
+
+    public int getN3() {
+        return n3;
+    }
+
+    public void setN3(int n3) {
+        this.n3 = n3;
+    }
+
+    public int getIterations() {
+        return iterations;
+    }
+
+    public void setIterations(int iterations) {
+        this.iterations = iterations;
     }
 
     public int getM() {

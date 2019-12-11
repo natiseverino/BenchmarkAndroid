@@ -47,7 +47,7 @@ public class DHPC_AllSizeA {
             for (int i = 0; i < runs; i++) {
                 long l = System.currentTimeMillis();
                 DHPC_SieveBench sb = new DHPC_SieveBench();
-                sb.JGFrun(size);
+                sb.JGFrun(size, paramsRunStage);
                 CPUSnapshots[i] = System.currentTimeMillis() - l;
             }
             progressUpdater.update("DHPC_SieveBench\t"
@@ -62,7 +62,7 @@ public class DHPC_AllSizeA {
             for (int i = 0; i < runs; i++) {
                 long l = System.currentTimeMillis();
                 DHPC_HanoiBench hb = new DHPC_HanoiBench();
-                hb.JGFrun(size, progressUpdater);
+                hb.JGFrun(size, progressUpdater, paramsRunStage);
                 CPUSnapshots[i] = System.currentTimeMillis() - l;
             }
             progressUpdater.update("DHPC_HanoiBench\t"
@@ -93,7 +93,7 @@ public class DHPC_AllSizeA {
             for (int i = 0; i < runs; i++) {
                 long l = System.currentTimeMillis();
                 DHPC_PrimeBench kb =new DHPC_PrimeBench();
-                kb.JGFrun(size);
+                kb.JGFrun(size, paramsRunStage);
                 CPUSnapshots[i] = System.currentTimeMillis() - l;
             }
             progressUpdater.update("DHPC_PrimeBench\t"
