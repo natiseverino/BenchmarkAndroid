@@ -116,10 +116,10 @@ public class ServerConnection {
         getRequestQueue(context).add(jsonObjectRequest);
     }
 
-    public void startBenchmarck(final Cb<Object> onSucessCb, final Cb<String> onErrorCb, Context context, String stateOfCharge) {
-        String newurl = stateOfCharge.equals(NOT_DEFINED) ? url + "?stage=postinit" : url + "?stage=postinit&requiredBatteryState=" + stateOfCharge;
-        Log.d(TAG, "startBenchmarck: url: " + newurl);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, newurl, null,
+    public void startBenchmark(final Cb<Object> onSucessCb, final Cb<String> onErrorCb, Context context, String stateOfCharge) {
+        String newUrl = stateOfCharge.equals(NOT_DEFINED) ? url + "?stage=postinit" : url + "?stage=postinit&requiredBatteryState=" + stateOfCharge;
+        Log.d(TAG, "startBenchmark: url: " + newUrl);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, newUrl, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
