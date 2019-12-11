@@ -72,7 +72,7 @@ public class Logger {
         } catch (Throwable throwable) {
             Log.d(TAG, "no logger initiated");
         }
-
+        fname ="";
         INSTANCE = null;
     }
 
