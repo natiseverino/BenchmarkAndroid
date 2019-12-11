@@ -1,7 +1,5 @@
 package edu.benchmarkandroid.Benchmark;
 
-import android.util.Log;
-
 import edu.benchmarkandroid.service.ThresholdNotificator;
 
 public class ConvergenceStopCondition implements StopCondition {

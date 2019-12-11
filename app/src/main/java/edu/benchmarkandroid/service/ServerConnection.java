@@ -67,7 +67,7 @@ public class ServerConnection {
     }
 
 
-    public synchronized void postUpdate(final UpdateData data, final Cb<JSONObject> onSucessCb, final Cb<String> onErrorCb, Context context) {
+    public synchronized void postUpdate(final UpdateData data, final Cb<JSONObject> onSucessBatteryUpdate, final Cb<String> onErrorCb, Context context) {
 
         Map<String, Object> params = new HashMap<>();
         params.put("cpu_mhz", data.getCpu_mhz());
@@ -81,7 +81,7 @@ public class ServerConnection {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        onSucessCb.run(response);
+                        onSucessBatteryUpdate.run(response);
                     }
                 },
                 new MyErrorListener(onErrorCb)) {
@@ -94,7 +94,7 @@ public class ServerConnection {
         getRequestQueue(context).add(jsonObjectRequest);
     }
 
-    public void getBenchmarks(final Cb<BenchmarkData> onSucessCb, final Cb<String> onErrorCb, Context context) {
+    public void getBenchmarks(final Cb<BenchmarkData> onSucessBenchmarkReceived, final Cb<String> onErrorCb, Context context) {
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url + "?stage=init", null,
                 new Response.Listener<JSONObject>() {
@@ -103,7 +103,7 @@ public class ServerConnection {
                         try {
                             if (response.get("message").equals(true)) {
                                 BenchmarkData result = gson.fromJson(response.get("benchmarkData").toString(), BenchmarkData.class);
-                                onSucessCb.run(result);
+                                onSucessBenchmarkReceived.run(result);
                             } else {
                                 onErrorCb.run("can't get the benchmarks yet");
                             }
@@ -116,7 +116,7 @@ public class ServerConnection {
         getRequestQueue(context).add(jsonObjectRequest);
     }
 
-    public void startBenchmark(final Cb<Object> onSucessCb, final Cb<String> onErrorCb, Context context, String stateOfCharge) {
+    public void startBenchmark(final Cb<Object> onSucessBenchmarkCanStart, final Cb<String> onErrorBenchmarkCanStart, Context context, String stateOfCharge) {
         String newUrl = stateOfCharge.equals(NOT_DEFINED) ? url + "?stage=postinit" : url + "?stage=postinit&requiredBatteryState=" + stateOfCharge;
         Log.d(TAG, "startBenchmark: url: " + newUrl);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, newUrl, null,
@@ -125,26 +125,26 @@ public class ServerConnection {
                     public void onResponse(JSONObject response) {
                         try {
                             if (response.get("message").equals(true)) {
-                                onSucessCb.run("NO_PARAM");
+                                onSucessBenchmarkCanStart.run("NO_PARAM");
                             } else {
                                 Log.d(TAG, "ServerConnection - onResponse: cant't start the benchmarks yet");
-                                onErrorCb.run("cant't start the benchmarks yet");
+                                onErrorBenchmarkCanStart.run("cant't start the benchmarks yet");
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                 },
-                new MyErrorListener(onErrorCb));
+                new MyErrorListener(onErrorBenchmarkCanStart));
         getRequestQueue(context).add(jsonObjectRequest);
     }
 
-    public void sendResult(final Cb<String> onSuccesCb, Cb<String> onErrorCb, Context context, byte[] result, String stage, String variant) {
+    public void sendResult(final Cb<String> onSucessresultSendCb, Cb<String> onErrorCb, Context context, byte[] result, String stage, String variant) {
 
         MultipartRequest multipartRequest = new MultipartRequest(url + "?fileName=" + stage + "-" + variant + ".txt", new MyErrorListener(onErrorCb), new Response.Listener<String>() {
             @Override
             public void onResponse(String useless) {
-                onSuccesCb.run("useless");
+                onSucessresultSendCb.run("useless");
             }
         }, result, stage + "-" + variant, context);
         multipartRequest.setRetryPolicy(new DefaultRetryPolicy(1000 * 60, DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
