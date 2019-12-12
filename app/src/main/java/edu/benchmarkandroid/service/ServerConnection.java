@@ -131,8 +131,8 @@ public class ServerConnection {
                             if (response.get("message").equals(true)) {
                                 onSuccessBenchmarkCanStart.run("NO_PARAM");
                             } else {
-                                Log.d(TAG, "ServerConnection - onResponse: cant't start the benchmarks yet");
-                                onErrorBenchmarkCanStart.run("cant't start the benchmarks yet");
+                                Log.d(TAG, "ServerConnection - onResponse: can't start the benchmarks yet");
+                                onErrorBenchmarkCanStart.run("can't start the benchmarks yet");
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

@@ -62,9 +62,11 @@ public class MainActivity extends Activity {
 
     public static final String PATH = "/sdcard/Download/";
 
-    // CHANGE THIS CONSTANT TO THE VALUE OF YOUR PREFERENCE
+    // CHANGE THIS CONSTANTS TO THE VALUE OF YOUR PREFERENCE
     public static final int INTERVAL_OFF_BATTERY_UPDATES = 5000;
     public static final int POLLING_INTERVAL = 5000;
+
+
     public static final String NOT_DEFINED = "notdefined";
     private static final int MY_PERMISSIONS_REQUEST_INTERNET = 53;
     private static final int MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE = 3;
@@ -106,8 +108,7 @@ public class MainActivity extends Activity {
     private TextView ipTextView;
     private TextView portTextView;
     private TextView modelTextView;
-    private Button setServerButton;
-    private Button requestBenchmarksButton;
+    private Button startButton;
     private Switch aSwitch;
     private TextView stateTextView;
 
@@ -141,13 +142,18 @@ public class MainActivity extends Activity {
     // Callbacks for error on benchmarks started
     final Cb<String> onErrorBenchmarkCanStart;
 
+    // Callback for first success to connect to server
+    final Cb<JSONObject> onFistSuccess;
+
 
     public MainActivity() {
         // Callbacks for errors
         onError = new Cb<String>() {
             @Override
             public void run(String errorMsg) {
-                Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                if (errorMsg != null)
+                    if (!errorMsg.equals(""))
+                        Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -155,8 +161,7 @@ public class MainActivity extends Activity {
         onSuccessBatteryUpdate = new Cb<JSONObject>() {
             @Override
             public void run(JSONObject jsonObject) {
-                //Toast.makeText(MainActivity.this, "Battery Update Complete :)", Toast.LENGTH_SHORT).show();
-                requestBenchmarksButton.setEnabled(true);
+
             }
         };
 
@@ -219,6 +224,13 @@ public class MainActivity extends Activity {
                 evaluating = false;
             }
         };
+
+        onFistSuccess = new Cb<JSONObject>() {
+            @Override
+            public void run(JSONObject useless) {
+                serverConnection.getBenchmarks(onSuccessBenchmarkReceived, onError, getApplicationContext());
+            }
+        };
     }
 
 
@@ -238,8 +250,7 @@ public class MainActivity extends Activity {
         modelTextView = findViewById(R.id.modelTextView);
         stateTextView = findViewById(R.id.stateTextView);
 
-        requestBenchmarksButton = findViewById(R.id.requestBenchmarksButton);
-        setServerButton = findViewById(R.id.setServerButton);
+        startButton = findViewById(R.id.startButton);
         aSwitch = findViewById(R.id.aSwitch);
 
         ipTextView.setText(httpAddress);
@@ -297,41 +308,23 @@ public class MainActivity extends Activity {
         this.benchmarkExecutor = new BenchmarkExecutor(getBaseContext());
         benchmarkExecutor.setStateTextView(stateTextView);
 
+        aSwitch.setEnabled(true);
 
         //bind button actions
-        setServerButton.setOnClickListener(new View.OnClickListener() {
+        startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (setServerButton.getText().equals("Edit Server Url")) {
-                    setServerButton.setText("Set Server Url");
-                    ipEditText.setEnabled(true);
-                    portEditText.setEnabled(true);
-                    requestBenchmarksButton.setEnabled(false);
-                    aSwitch.setEnabled(false);
+                httpAddress = String.valueOf(ipTextView.getText());
+                httpPort = String.valueOf(portTextView.getText());
+                String serverUrl = String.format("http://%s:%s/dewsim/%s", httpAddress, httpPort, model);
 
-                } else {
-                    httpAddress = String.valueOf(ipTextView.getText());
-                    httpPort = String.valueOf(portTextView.getText());
-                    String serverUrl = String.format("http://%s:%s/dewsim/%s", httpAddress, httpPort, model);
+                Log.d(TAG, "onClick: " + serverUrl);
+                serverConnection.registerServerUrl(serverUrl);
+                ipEditText.setEnabled(false);
+                portEditText.setEnabled(false);
+//                startButton.setEnabled(false);
+                serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onFistSuccess, onError, getApplicationContext());
 
-                    Log.d(TAG, "onClick: " + serverUrl);
-                    serverConnection.registerServerUrl(serverUrl);
-                    setServerButton.setText("Edit Server Url");
-                    ipEditText.setEnabled(false);
-                    portEditText.setEnabled(false);
-                    aSwitch.setEnabled(true);
-                    serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onSuccessBatteryUpdate, onError, getApplicationContext());
-
-                }
-            }
-        });
-
-
-        requestBenchmarksButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                serverConnection.getBenchmarks(onSuccessBenchmarkReceived, onError, getApplicationContext());
-                //startBenchmark();
             }
         });
 
@@ -411,7 +404,6 @@ public class MainActivity extends Activity {
             if (!evaluating && !running) {
                 evaluating = true;
                 Log.d(TAG, "MainActivity - startBenchmark: CAN START");
-                //preguntamos por el state
                 serverConnection.startBenchmark(onSuccessBenchmarkCanStart, onErrorBenchmarkCanStart, getApplicationContext(), stateOfCharge);
             }
         }
@@ -433,6 +425,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        benchmarkExecutor.stopBenchmark();
         this.unregisterReceiver(this.progressReceiver);
         this.unregisterReceiver(this.pollingReceiver);
         this.unregisterReceiver(this.batteryInfoReceiver);
@@ -514,9 +507,12 @@ public class MainActivity extends Activity {
                     if (benchmarkExecutor.hasMoreToExecute()) {
                         stateOfCharge = benchmarkExecutor.getNeededBatteryState();
                         minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
+                        benchmarkExecutor.alertBatteryStatus();
                         startBenchmark();
-                    } else
+                    } else {
                         Toast.makeText(context, "There are no more benchmarks", Toast.LENGTH_SHORT).show();
+                        startButton.setEnabled(true);
+                    }
                 }
             }
 
@@ -532,7 +528,6 @@ public class MainActivity extends Activity {
 
                     Toast.makeText(context, "Sampling finished", Toast.LENGTH_SHORT).show();
                     stateTextView.setText("Sampling finished");
-
                     String variant = intent.getStringExtra("variant");
                     String fname = intent.getStringExtra("file");
                     byte[] result = null;
@@ -551,6 +546,7 @@ public class MainActivity extends Activity {
                     if (benchmarkExecutor.hasMoreToExecute()) {
                         stateOfCharge = benchmarkExecutor.getNeededBatteryState();
                         minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
+                        benchmarkExecutor.alertBatteryStatus();
                         startBenchmark();
                     } else
                         Toast.makeText(context, "There are no more benchmarks", Toast.LENGTH_SHORT).show();

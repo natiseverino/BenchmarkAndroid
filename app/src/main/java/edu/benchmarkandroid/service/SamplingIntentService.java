@@ -18,10 +18,14 @@ import java.io.FileNotFoundException;
 
 public class SamplingIntentService extends IntentService {
 
+    private static final String TAG = "SamplingIntentService";
+
+
     public static final String PROGRESS_SAMPLING_ACTION = "progressSampling";
     public static final String END_SAMPLING_ACTION = "endSampling";
 
-    private static final String TAG = "SamplingIntentService";
+    private Benchmark benchmark;
+
 
     public SamplingIntentService() {
         super("SamplingIntentService");
@@ -36,14 +40,15 @@ public class SamplingIntentService extends IntentService {
         try {
             Class<Benchmark> benchmarkClass = (Class<Benchmark>) Class.forName(intent.getStringExtra("samplingName"));
             benchmark = benchmarkClass.getConstructor(Variant.class).newInstance(gson.fromJson(intent.getStringExtra("benchmarkVariant"), Variant.class));
+            this.benchmark = benchmark;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Logger.init("sampling-" +benchmark.getVariant().getVariantId()+".txt");
+        Logger.init("sampling-" + benchmark.getVariant().getVariantId() + ".txt");
         Logger logger = null;
         try {
             logger = Logger.getInstance();
-            Log.d(TAG, "onHandleIntent: "+logger.getFileName());
+            Log.d(TAG, "onHandleIntent: " + logger.getFileName());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -59,5 +64,14 @@ public class SamplingIntentService extends IntentService {
                 new ConvergenceStopCondition(benchmark.getVariant().getParamsSamplingStage().getConvergenceThreshold(), thresholdNotificator),
                 progressUpdater);
 
+    }
+
+
+    @Override
+    public void onDestroy() {
+        if (benchmark != null)
+            benchmark.gentleTermination();
+
+        super.onDestroy();
     }
 }

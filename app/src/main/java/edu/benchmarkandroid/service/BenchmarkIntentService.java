@@ -20,6 +20,8 @@ public class BenchmarkIntentService extends IntentService {
     public static final String PROGRESS_BENCHMARK_ACTION = "progressBenchmark";
     public static final String END_BENCHMARK_ACTION = "endBenchmark";
 
+    private Benchmark benchmark;
+
     public BenchmarkIntentService() {
         super("BenchmarkIntentService");
     }
@@ -33,6 +35,7 @@ public class BenchmarkIntentService extends IntentService {
         try {
             Class<Benchmark> benchmarkClass = (Class<Benchmark>) Class.forName(intent.getStringExtra("benchmarkName"));
             benchmark = benchmarkClass.getConstructor(Variant.class).newInstance(gson.fromJson(intent.getStringExtra("benchmarkVariant"), Variant.class));
+            this.benchmark = benchmark;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,5 +57,13 @@ public class BenchmarkIntentService extends IntentService {
                 new BatteryStopCondition(benchmark.getVariant().getEnergyPreconditionRunStage().getMinEndBatteryLevel(), batteryNotificator),
                 progressUpdater);
 
+    }
+
+    @Override
+    public void onDestroy() {
+        if(benchmark != null)
+            benchmark.gentleTermination();
+
+        super.onDestroy();
     }
 }

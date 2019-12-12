@@ -14,20 +14,20 @@ public class CPUBenchmark extends Benchmark {
 
     //private static final String EMPTY_PAYLOAD = "empty";
     private static final String TAG = "CPUBenchmark";
-    private CPUUserThread[] cpuUser;
+    private CPUUserThread[] cpuUsers;
 
     private static final int READING_TIMES = 30;
     private static final int WAITING = 300;
 
+    private static long sleep;
+    private static int cpus = Runtime.getRuntime().availableProcessors();
+    private double target = getVariant().getParamsRunStage().getCpuLevel();
+    private double threshold = getVariant().getParamsSamplingStage().getConvergenceThreshold();
+    private ProgressUpdater progressUpdater = null;
+
     public CPUBenchmark(Variant variant) {
         super(variant);
     }
-
-    private static int cpus = Runtime.getRuntime().availableProcessors();
-    private static long sleep;
-
-    private double target = getVariant().getParamsRunStage().getCpuLevel();
-    private double threshold = getVariant().getParamsSamplingStage().getConvergenceThreshold();
 
     public void setCPUs(int cpus) {
         this.cpus = cpus;
@@ -35,6 +35,9 @@ public class CPUBenchmark extends Benchmark {
 
     @Override
     public void runBenchmark(StopCondition stopCondition, ProgressUpdater progressUpdater) {
+
+        this.progressUpdater = progressUpdater;
+
         String msg;
         double cpuUsage;
 
@@ -44,11 +47,11 @@ public class CPUBenchmark extends Benchmark {
             runBenchmarkZero(stopCondition, progressUpdater);
         } else {
 
-            cpuUser = new CPUUserThread[this.cpus];
+            cpuUsers = new CPUUserThread[this.cpus];
             for (int i = 0; i < this.cpus; i++) {
-                cpuUser[i] = new CPUUserThread();
-                cpuUser[i].setSleep(sleep);
-                cpuUser[i].start();
+                cpuUsers[i] = new CPUUserThread();
+                cpuUsers[i].setSleep(sleep);
+                cpuUsers[i].start();
             }
 
             boolean stable = false;
@@ -83,7 +86,7 @@ public class CPUBenchmark extends Benchmark {
                 }
 
                 for (int i = 0; i < this.cpus; i++)
-                    cpuUser[i].setSleep(sleep);
+                    cpuUsers[i].setSleep(sleep);
 
 
                 if (nowStable) {
@@ -96,12 +99,17 @@ public class CPUBenchmark extends Benchmark {
             Log.d(TAG, "runBenchmark: END");
 
             for (int i = 0; i < this.cpus; i++)
-                cpuUser[i].kill();
+                cpuUsers[i].kill();
         }
+
         progressUpdater.end();
+        this.progressUpdater = null;
     }
 
     private void runBenchmarkZero(StopCondition stopCondition, ProgressUpdater progressUpdater) {
+
+        this.progressUpdater = progressUpdater;
+
         while (stopCondition.canContinue()) {
             synchronized (this) {
                 try {
@@ -132,12 +140,12 @@ public class CPUBenchmark extends Benchmark {
             return;
         }
 
-        cpuUser = new CPUUserThread[this.cpus];
+        cpuUsers = new CPUUserThread[this.cpus];
         //creates as many cpu consumers as available cores
         for (int i = 0; i < this.cpus; i++) {
-            cpuUser[i] = new CPUUserThread();
-            cpuUser[i].setSleep(sleep);
-            cpuUser[i].start();
+            cpuUsers[i] = new CPUUserThread();
+            cpuUsers[i].setSleep(sleep);
+            cpuUsers[i].start();
         }
 
         boolean nowStable;
@@ -175,7 +183,7 @@ public class CPUBenchmark extends Benchmark {
 
 
             for (int i = 0; i < this.cpus; i++)
-                cpuUser[i].setSleep(sleep);
+                cpuUsers[i].setSleep(sleep);
 
             iterations += 1;
             progressUpdater.update(msg);
@@ -184,9 +192,10 @@ public class CPUBenchmark extends Benchmark {
         Log.d(TAG, "runConvergence: END");
 
         for (int i = 0; i < this.cpus; i++)
-            cpuUser[i].kill();
+            cpuUsers[i].kill();
 
         progressUpdater.end();
+        this.progressUpdater = null;
     }
 
 
@@ -205,6 +214,20 @@ public class CPUBenchmark extends Benchmark {
         }
         return result / READING_TIMES;
     }
+
+
+    @Override
+    public void gentleTermination() {
+        for(CPUUserThread cpuUserThread : cpuUsers){
+            cpuUserThread.kill();
+        }
+
+        if (progressUpdater != null)
+            progressUpdater.end();
+
+    }
+
+
 
 }
 

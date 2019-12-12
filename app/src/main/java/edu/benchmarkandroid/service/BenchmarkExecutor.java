@@ -5,18 +5,23 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.TextView;
 
-import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkData;
-import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkDefinition;
-import edu.benchmarkandroid.Benchmark.jsonConfig.Variant;
-import edu.benchmarkandroid.utils.BatteryUtils;
-
 import com.google.gson.GsonBuilder;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkData;
+import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkDefinition;
+import edu.benchmarkandroid.Benchmark.jsonConfig.Variant;
+import edu.benchmarkandroid.utils.BatteryUtils;
+
 public class BenchmarkExecutor {
+
+    private static final String TAG = "BenchmarkExecutor";
+
+
+
     private List<Variant> variants;
     private String benchClassName;
     private int currentBenchmark;
@@ -26,9 +31,10 @@ public class BenchmarkExecutor {
     private String benchmarkName = "";
     private boolean keepScreenOn = true;
 
+    private Intent actualServiceIntent = null;
+
     private TextView stateTextView;
 
-    private static final String TAG = "BenchmarkExecutor";
 
     private Context context;
 
@@ -100,6 +106,7 @@ public class BenchmarkExecutor {
 
             stateTextView.setText("Running Sampling");
             Intent intent = new Intent(context, SamplingIntentService.class);
+            actualServiceIntent = intent;
             intent.putExtra("samplingName", benchClassName);
             intent.putExtra("benchmarkName", benchmarkName);
             intent.putExtra("benchmarkVariant", new GsonBuilder().create().toJson(variants.get(currentBenchmark)));
@@ -108,7 +115,6 @@ public class BenchmarkExecutor {
             this.neededBatteryState = variants.get(currentBenchmark).getEnergyPreconditionRunStage().getRequiredBatteryState();
             sampling = false;
 
-            alertBatteryStatus();
 
         } else {
 
@@ -116,6 +122,7 @@ public class BenchmarkExecutor {
 
             stateTextView.setText("Running Benchmark");
             Intent intent = new Intent(context, BenchmarkIntentService.class);
+            actualServiceIntent = intent;
             intent.putExtra("benchmarkName", benchClassName);
             intent.putExtra("benchmarkVariant", new GsonBuilder().create().toJson(variants.get(currentBenchmark)));
             context.startService(intent);
@@ -132,7 +139,6 @@ public class BenchmarkExecutor {
                     keepScreenOn = false;
             }
 
-            alertBatteryStatus();
 
         }
     }
@@ -146,7 +152,7 @@ public class BenchmarkExecutor {
     }
 
 
-    private void alertBatteryStatus(){
+    public void alertBatteryStatus() {
         if (!neededBatteryState.equalsIgnoreCase(BatteryUtils.getBatteryStatus(context))) {
             if (neededBatteryState.equalsIgnoreCase("charging")) {
                 Log.d(TAG, "execute:  battery status wrong - disconnect the device");
@@ -157,4 +163,11 @@ public class BenchmarkExecutor {
             }
         }
     }
+
+
+    public void stopBenchmark() {
+        if (actualServiceIntent != null)
+            context.stopService(actualServiceIntent);
+    }
+
 }

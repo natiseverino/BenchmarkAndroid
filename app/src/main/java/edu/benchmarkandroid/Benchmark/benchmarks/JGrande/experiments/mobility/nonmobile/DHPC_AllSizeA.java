@@ -1,5 +1,6 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile;
 
+import edu.benchmarkandroid.Benchmark.StopCondition;
 import edu.benchmarkandroid.service.ProgressUpdater;
 import edu.benchmarkandroid.Benchmark.jsonConfig.ParamsRunStage;
 
@@ -18,13 +19,15 @@ import edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.no
  */
 public class DHPC_AllSizeA {
 
-    public static void run(ProgressUpdater progressUpdater, ParamsRunStage paramsRunStage) {
+    public static void run(ProgressUpdater progressUpdater, ParamsRunStage paramsRunStage, StopCondition stopCondition) {
 
 
         int runs = paramsRunStage.getRuns();
         int size = paramsRunStage.getSize();
 
         double[] CPUSnapshots = new double[runs];
+
+        if(!stopCondition.canContinue()) return;
 
         try{
             for (int i = 0; i < runs; i++) {
@@ -41,6 +44,8 @@ public class DHPC_AllSizeA {
             //e.printStackTrace(System.out);
         }
 
+        if(!stopCondition.canContinue()) return;
+
         try{
             for (int i = 0; i < runs; i++) {
                 long l = System.currentTimeMillis();
@@ -55,6 +60,8 @@ public class DHPC_AllSizeA {
             progressUpdater.update("Error executing DHPC_SieveBench");
             //e.printStackTrace(System.out);
         }
+
+        if(!stopCondition.canContinue()) return;
 
         try{
             for (int i = 0; i < runs; i++) {
@@ -71,6 +78,7 @@ public class DHPC_AllSizeA {
             //e.printStackTrace(System.out);
         }
 
+        if(!stopCondition.canContinue()) return;
 
         try{
             for (int i = 0; i < runs; i++) {
@@ -86,6 +94,7 @@ public class DHPC_AllSizeA {
             //e.printStackTrace(System.out);
         }
 
+        if(!stopCondition.canContinue()) return;
 
         try{
             for (int i = 0; i < runs; i++) {

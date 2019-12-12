@@ -26,4 +26,6 @@ public abstract class Benchmark {
     public abstract void runSampling(StopCondition stopCondition, ProgressUpdater progressUpdater);
 
     public abstract void runBenchmark(StopCondition stopCondition, ProgressUpdater progressUpdater);
+
+    public abstract void gentleTermination();
 }

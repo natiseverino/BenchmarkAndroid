@@ -9,6 +9,8 @@ import edu.benchmarkandroid.service.ProgressUpdater;
 
 public class CBenchmark4Ever extends Benchmark {
 
+    private ProgressUpdater progressUpdater;
+
     public CBenchmark4Ever(Variant variant) {
         super(variant);
     }
@@ -21,12 +23,20 @@ public class CBenchmark4Ever extends Benchmark {
     @Override
     public void runBenchmark(StopCondition stopCondition, ProgressUpdater progressUpdater) {
 
-
+        this.progressUpdater = progressUpdater;
 
         while (stopCondition.canContinue())
-            DHPC_AllSizeA.run(progressUpdater, getVariant().getParamsRunStage());
+            DHPC_AllSizeA.run(progressUpdater, getVariant().getParamsRunStage(), stopCondition);
 
         progressUpdater.end();
+        this.progressUpdater = null;
+    }
+
+    @Override
+    public void gentleTermination() {
+
+        if(progressUpdater != null)
+            progressUpdater.end();
     }
 
 
