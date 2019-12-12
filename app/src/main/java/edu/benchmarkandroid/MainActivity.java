@@ -557,6 +557,7 @@ public class MainActivity extends Activity {
                         stateOfCharge = benchmarkExecutor.getNeededBatteryState();
                         minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
                         startBenchmark();
+                        stateTextView.setText("Running Benchmark");
                     } else
                         Toast.makeText(context, "There is no more benchmark", Toast.LENGTH_SHORT).show();
                 }

@@ -21,6 +21,8 @@ public class CBenchmark4Ever extends Benchmark {
     @Override
     public void runBenchmark(StopCondition stopCondition, ProgressUpdater progressUpdater) {
 
+
+
         while (stopCondition.canContinue())
             DHPC_AllSizeA.run(progressUpdater, getVariant().getParamsRunStage());
 
