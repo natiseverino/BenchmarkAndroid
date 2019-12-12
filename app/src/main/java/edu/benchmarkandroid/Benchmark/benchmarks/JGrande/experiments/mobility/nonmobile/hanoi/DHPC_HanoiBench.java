@@ -10,7 +10,7 @@ public class DHPC_HanoiBench {
 	private int size;
 	//TODO PARAMETROS
 
-	private int datasizes[] = { 28, 28, 28 };
+	private int datasizes[]/* = { 28, 28, 28 }*/;
 
 	private long result;
 

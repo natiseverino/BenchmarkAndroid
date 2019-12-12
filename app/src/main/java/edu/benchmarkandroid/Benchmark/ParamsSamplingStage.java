@@ -10,7 +10,10 @@ public class ParamsSamplingStage {
     private Double convergenceThreshold;
 
     public Double getConvergenceThreshold() {
-        return convergenceThreshold;
+        if (convergenceThreshold != null)
+            return convergenceThreshold;
+        else
+            return 0.0;
     }
 
     public void setConvergenceThreshold(Double convergenceThreshold) {
