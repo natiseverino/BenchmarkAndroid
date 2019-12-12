@@ -1,6 +1,6 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.prime;
 
-import edu.benchmarkandroid.Benchmark.ParamsRunStage;
+import edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig.ParamsRunStage;
 
 public class DHPC_PrimeBench {
 

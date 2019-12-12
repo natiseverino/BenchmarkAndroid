@@ -1,7 +1,7 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile;
 
 import edu.benchmarkandroid.service.ProgressUpdater;
-import edu.benchmarkandroid.Benchmark.ParamsRunStage;
+import edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig.ParamsRunStage;
 
 import edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.Statistics;
 import edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.ep.DHPC_EPBench;

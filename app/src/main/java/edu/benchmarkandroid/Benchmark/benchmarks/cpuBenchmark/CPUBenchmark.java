@@ -4,7 +4,7 @@ import android.util.Log;
 
 import edu.benchmarkandroid.Benchmark.Benchmark;
 import edu.benchmarkandroid.Benchmark.StopCondition;
-import edu.benchmarkandroid.Benchmark.Variant;
+import edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig.Variant;
 import edu.benchmarkandroid.service.ProgressUpdater;
 import edu.benchmarkandroid.service.ThresholdNotificator;
 import edu.benchmarkandroid.utils.CPUUtils;

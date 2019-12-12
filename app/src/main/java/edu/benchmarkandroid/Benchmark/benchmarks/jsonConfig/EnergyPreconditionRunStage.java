@@ -1,4 +1,4 @@
-package edu.benchmarkandroid.Benchmark;
+package edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

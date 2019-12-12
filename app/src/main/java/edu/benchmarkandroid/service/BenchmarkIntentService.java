@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 
 import edu.benchmarkandroid.Benchmark.BatteryStopCondition;
 import edu.benchmarkandroid.Benchmark.Benchmark;
-import edu.benchmarkandroid.Benchmark.Variant;
+import edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig.Variant;
 import edu.benchmarkandroid.utils.Logger;
 
 import com.google.gson.Gson;

@@ -3,7 +3,7 @@ package edu.benchmarkandroid.Benchmark.benchmarks.JGrande;
 
 import edu.benchmarkandroid.Benchmark.Benchmark;
 import edu.benchmarkandroid.Benchmark.StopCondition;
-import edu.benchmarkandroid.Benchmark.Variant;
+import edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig.Variant;
 import edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.DHPC_AllSizeA;
 import edu.benchmarkandroid.service.ProgressUpdater;
 

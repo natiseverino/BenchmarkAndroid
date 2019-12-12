@@ -1,7 +1,6 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.sieve;
 
-import edu.benchmarkandroid.Benchmark.ParamsRunStage;
-import edu.benchmarkandroid.service.ProgressUpdater;
+import edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig.ParamsRunStage;
 
 public class DHPC_SieveBench {
 
@@ -33,7 +32,7 @@ public class DHPC_SieveBench {
 
 	public void JGFrun(int size, ParamsRunStage paramsRunStage) {
 
-		this.datasizes = paramsRunStage.getSieve_datasizes();
+		//this.datasizes = paramsRunStage.getSieve_datasizes();
 		this.m = paramsRunStage.getM();
 		this.n = paramsRunStage.getN();
 

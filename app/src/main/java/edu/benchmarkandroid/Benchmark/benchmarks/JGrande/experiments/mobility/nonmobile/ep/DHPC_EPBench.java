@@ -1,8 +1,6 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.ep;
 
-import android.util.Log;
-
-import edu.benchmarkandroid.Benchmark.ParamsRunStage;
+import edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig.ParamsRunStage;
 import edu.benchmarkandroid.service.ProgressUpdater;
 
 public class DHPC_EPBench {
@@ -52,7 +50,7 @@ public class DHPC_EPBench {
 		n = paramsRunStage.getEP_n();
 		X = paramsRunStage.getX();
 		A = paramsRunStage.getA();
-		datasizes = paramsRunStage.getEP_datasizes();
+		//datasizes = paramsRunStage.getEP_datasizes();
 
 		JGFsetsize(size);
 		JGFinitialise();

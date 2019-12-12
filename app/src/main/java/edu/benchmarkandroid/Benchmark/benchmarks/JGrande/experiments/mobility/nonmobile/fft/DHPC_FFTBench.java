@@ -1,6 +1,6 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.fft;
 
-import edu.benchmarkandroid.Benchmark.ParamsRunStage;
+import edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig.ParamsRunStage;
 import edu.benchmarkandroid.service.ProgressUpdater;
 
 public class DHPC_FFTBench {
@@ -32,7 +32,7 @@ public class DHPC_FFTBench {
 	public void JGFrun(int size, ProgressUpdater progressUpdater, ParamsRunStage paramsRunStage) {
 
 		this.progressUpdater = progressUpdater;
-		this.datasizes = paramsRunStage.getFFT_datasizes();
+		//this.datasizes = paramsRunStage.getFFT_datasizes();
 		this.n1 = paramsRunStage.getN1();
 		this.n2 = paramsRunStage.getN2();
 		this.n3 = paramsRunStage.getN3();

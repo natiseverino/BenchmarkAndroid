@@ -3,10 +3,9 @@ package edu.benchmarkandroid.service;
 import android.content.Context;
 import android.content.Intent;
 
-import edu.benchmarkandroid.Benchmark.BenchmarkData;
-import edu.benchmarkandroid.Benchmark.BenchmarkDefinition;
-import edu.benchmarkandroid.Benchmark.Variant;
-import edu.benchmarkandroid.utils.Logger;
+import edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig.BenchmarkData;
+import edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig.BenchmarkDefinition;
+import edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig.Variant;
 
 import com.google.gson.GsonBuilder;
 
