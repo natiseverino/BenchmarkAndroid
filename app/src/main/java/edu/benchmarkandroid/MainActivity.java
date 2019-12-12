@@ -322,7 +322,7 @@ public class MainActivity extends Activity {
                 serverConnection.registerServerUrl(serverUrl);
                 ipEditText.setEnabled(false);
                 portEditText.setEnabled(false);
-//                startButton.setEnabled(false);
+                startButton.setEnabled(false);
                 serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onFistSuccess, onError, getApplicationContext());
 
             }
