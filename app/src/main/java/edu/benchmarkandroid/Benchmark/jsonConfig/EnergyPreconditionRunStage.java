@@ -7,13 +7,18 @@ public class EnergyPreconditionRunStage {
 
     @SerializedName("requiredBatteryState")
     @Expose
-    private String requiredBatteryState;
+    private String requiredBatteryState = "DISCHARGING";
+
     @SerializedName("minStartBatteryLevel")
     @Expose
-    private Double minStartBatteryLevel;
+    private Double minStartBatteryLevel = 1d;
+
     @SerializedName("minEndBatteryLevel")
     @Expose
-    private Double minEndBatteryLevel;
+    private Double minEndBatteryLevel = 0.03;
+
+
+
 
     public String getRequiredBatteryState() {
         return requiredBatteryState;

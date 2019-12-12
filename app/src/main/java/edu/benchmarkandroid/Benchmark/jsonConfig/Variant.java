@@ -3,23 +3,39 @@ package edu.benchmarkandroid.Benchmark.jsonConfig;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.UUID;
+
 public class Variant {
 
     @SerializedName("variantId")
     @Expose
-    private String variantId;
+    private String variantId = UUID.randomUUID().toString();
+
+
     @SerializedName("paramsSamplingStage")
     @Expose
     private ParamsSamplingStage paramsSamplingStage;
+
+
     @SerializedName("paramsRunStage")
     @Expose
     private ParamsRunStage paramsRunStage;
+
+
     @SerializedName("energyPreconditionSamplingStage")
     @Expose
     private EnergyPreconditionSamplingStage energyPreconditionSamplingStage;
+
+
     @SerializedName("energyPreconditionRunStage")
     @Expose
     private EnergyPreconditionRunStage energyPreconditionRunStage;
+
+
+
+
+
+
 
     public String getVariantId() {
         return variantId;
