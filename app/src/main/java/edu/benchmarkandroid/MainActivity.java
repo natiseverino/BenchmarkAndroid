@@ -492,6 +492,7 @@ public class MainActivity extends Activity {
                 minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
             } else {
                 if (intent.getAction().equals(END_BENCHMARK_ACTION)) {
+
                     Toast.makeText(context, "Run stage finished", Toast.LENGTH_SHORT).show();
                     stateTextView.setText("Run stage finished");
                     String variant = intent.getStringExtra("variant");
@@ -504,13 +505,10 @@ public class MainActivity extends Activity {
                         result = new byte[(int) file.length()];
                         fileInputStream.read(result);
                     } catch (IOException e) {
-                        Toast.makeText(context, "file not found", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "File not found", Toast.LENGTH_SHORT).show();
                     }
-                    if (result != null) {
-                        stateTextView.setText("send results");
-                        serverConnection.sendResult(onSuccessResultSendCb, onError, getApplicationContext(), result, "run", variant);
-                    } else
-                        Toast.makeText(context, "no results", Toast.LENGTH_SHORT).show();
+
+                    serverConnection.sendResult(onSuccessResultSendCb, onError, getApplicationContext(), result, "run", variant);
 
                     running = false;
                     if (benchmarkExecutor.hasMoreToExecute()) {
@@ -518,7 +516,7 @@ public class MainActivity extends Activity {
                         minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
                         startBenchmark();
                     } else
-                        Toast.makeText(context, "There is no more benchmark", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "There are no more benchmarks", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -531,9 +529,10 @@ public class MainActivity extends Activity {
             } else {
 
                 if (intent.getAction().equals(END_SAMPLING_ACTION)) {
+
                     Toast.makeText(context, "Sampling finished", Toast.LENGTH_SHORT).show();
-                    //stateTextView.setText("Sampling finished");
-                    //String result = intent.getStringExtra("payload");
+                    stateTextView.setText("Sampling finished");
+
                     String variant = intent.getStringExtra("variant");
                     String fname = intent.getStringExtra("file");
                     byte[] result = null;
@@ -543,14 +542,10 @@ public class MainActivity extends Activity {
                         result = new byte[(int) file.length()];
                         fileInputStream.read(result);
                     } catch (IOException e) {
-                        Toast.makeText(context, "file not found", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "File not found", Toast.LENGTH_SHORT).show();
                     }
 
-                    if (result != null) {
-                        Log.d(TAG, "onReceive: " + result.length);
-                        serverConnection.sendResult(onSuccessResultSendCb, onError, getApplicationContext(), result, "sampling", variant);
-                    } else
-                        Toast.makeText(context, "no results", Toast.LENGTH_SHORT).show();
+                    serverConnection.sendResult(onSuccessResultSendCb, onError, getApplicationContext(), result, "sampling", variant);
 
                     running = false;
                     if (benchmarkExecutor.hasMoreToExecute()) {
@@ -558,7 +553,7 @@ public class MainActivity extends Activity {
                         minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
                         startBenchmark();
                     } else
-                        Toast.makeText(context, "There is no more benchmark", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "There are no more benchmarks", Toast.LENGTH_SHORT).show();
                 }
             }
         }
