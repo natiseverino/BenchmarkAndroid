@@ -1,9 +1,9 @@
-package edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig;
+package edu.benchmarkandroid.Benchmark.jsonConfig;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class EnergyPreconditionRunStage {
+public class EnergyPreconditionSamplingStage {
 
     @SerializedName("requiredBatteryState")
     @Expose
@@ -11,9 +11,6 @@ public class EnergyPreconditionRunStage {
     @SerializedName("minStartBatteryLevel")
     @Expose
     private Double minStartBatteryLevel;
-    @SerializedName("minEndBatteryLevel")
-    @Expose
-    private Double minEndBatteryLevel;
 
     public String getRequiredBatteryState() {
         return requiredBatteryState;
@@ -31,11 +28,4 @@ public class EnergyPreconditionRunStage {
         this.minStartBatteryLevel = minStartBatteryLevel;
     }
 
-    public Double getMinEndBatteryLevel() {
-        return minEndBatteryLevel;
-    }
-
-    public void setMinEndBatteryLevel(Double minEndBatteryLevel) {
-        this.minEndBatteryLevel = minEndBatteryLevel;
-    }
 }

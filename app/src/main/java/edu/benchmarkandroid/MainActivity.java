@@ -34,7 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
-import edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig.BenchmarkData;
+import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkData;
 import edu.benchmarkandroid.utils.BatteryUtils;
 import edu.benchmarkandroid.utils.CPUUtils;
 import edu.benchmarkandroid.model.UpdateData;

@@ -1,6 +1,6 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.hanoi;
 
-import edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig.ParamsRunStage;
+import edu.benchmarkandroid.Benchmark.jsonConfig.ParamsRunStage;
 import edu.benchmarkandroid.service.ProgressUpdater;
 
 public class DHPC_HanoiBench {

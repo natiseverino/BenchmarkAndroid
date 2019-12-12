@@ -14,7 +14,7 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
-import edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig.BenchmarkData;
+import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkData;
 import edu.benchmarkandroid.model.UpdateData;
 import edu.benchmarkandroid.utils.Cb;
 

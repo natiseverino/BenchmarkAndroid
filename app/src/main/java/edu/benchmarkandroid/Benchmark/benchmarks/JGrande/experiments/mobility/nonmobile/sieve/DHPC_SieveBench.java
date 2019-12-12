@@ -1,6 +1,6 @@
 package edu.benchmarkandroid.Benchmark.benchmarks.JGrande.experiments.mobility.nonmobile.sieve;
 
-import edu.benchmarkandroid.Benchmark.benchmarks.jsonConfig.ParamsRunStage;
+import edu.benchmarkandroid.Benchmark.jsonConfig.ParamsRunStage;
 
 public class DHPC_SieveBench {
 
