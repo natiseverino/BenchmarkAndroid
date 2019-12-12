@@ -6,7 +6,6 @@ public class DHPC_SieveBench {
 
 	private int size;
 
-	//TODO PARAMETROS
 	private int datasizes[] = { 1, 1, 1 };
 	private int m; //100000
 	private int n; //8192
@@ -32,7 +31,7 @@ public class DHPC_SieveBench {
 
 	public void JGFrun(int size, ParamsRunStage paramsRunStage) {
 
-		//this.datasizes = paramsRunStage.getSieve_datasizes();
+		this.datasizes = paramsRunStage.getSieve_datasizes();
 		this.m = paramsRunStage.getM();
 		this.n = paramsRunStage.getN();
 

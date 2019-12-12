@@ -8,7 +8,6 @@ public class DHPC_HanoiBench {
 	private ProgressUpdater progressUpdater;
 
 	private int size;
-	//TODO PARAMETROS
 
 	private int datasizes[]/* = { 28, 28, 28 }*/;
 

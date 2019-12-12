@@ -9,8 +9,6 @@ public class DHPC_EPBench {
 
 	private ProgressUpdater progressUpdater;
 
-	//TODO PARAMETROS
-
 	static int n /*= 16777216*/; // Number of random numbers to generate
 
 	static double X /*= 271828183.0*/; // Inital seed
@@ -50,7 +48,7 @@ public class DHPC_EPBench {
 		n = paramsRunStage.getEP_n();
 		X = paramsRunStage.getX();
 		A = paramsRunStage.getA();
-		//datasizes = paramsRunStage.getEP_datasizes();
+		datasizes = paramsRunStage.getEP_datasizes();
 
 		JGFsetsize(size);
 		JGFinitialise();
