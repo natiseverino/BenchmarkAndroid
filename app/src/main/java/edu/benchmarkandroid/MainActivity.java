@@ -296,6 +296,7 @@ public class MainActivity extends Activity {
 
         //initialize benchmark service
         this.benchmarkExecutor = new BenchmarkExecutor();
+        benchmarkExecutor.setStateTextView(stateTextView);
 
 
         //bind button actions
