@@ -6,6 +6,7 @@ import android.content.Intent;
 import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkData;
 import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkDefinition;
 import edu.benchmarkandroid.Benchmark.jsonConfig.Variant;
+import edu.benchmarkandroid.utils.BatteryUtils;
 
 import com.google.gson.GsonBuilder;
 
@@ -61,6 +62,13 @@ public class BenchmarkExecutor {
     }
 
     public void execute(Context context) {
+        while (!neededBatteryState.equalsIgnoreCase(BatteryUtils.getBatteryStatus(context))) {
+            try {
+                wait(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         if (sampling) {
             // Sampling stage
 
@@ -73,7 +81,7 @@ public class BenchmarkExecutor {
             this.neededBatteryState = variants.get(currentBenchmark).getEnergyPreconditionRunStage().getRequiredBatteryState();
             sampling = false;
 
-        } else {
+        } else{
 
             // Benchmark stage
 

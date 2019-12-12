@@ -22,8 +22,6 @@ public class DHPC_AllSizeA {
 
 
         int runs = paramsRunStage.getRuns();
-        if (runs < 2)
-            runs = 2;
         int size = paramsRunStage.getSize();
 
         double[] CPUSnapshots = new double[runs];
