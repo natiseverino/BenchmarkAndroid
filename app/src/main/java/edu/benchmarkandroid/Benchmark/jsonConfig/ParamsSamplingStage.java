@@ -7,13 +7,10 @@ public class ParamsSamplingStage {
 
     @SerializedName("convergenceThreshold")
     @Expose
-    private Double convergenceThreshold;
+    private Double convergenceThreshold = 0.01;
 
     public Double getConvergenceThreshold() {
-        if (convergenceThreshold != null)
-            return convergenceThreshold;
-        else
-            return 0.0;
+        return convergenceThreshold;
     }
 
     public void setConvergenceThreshold(Double convergenceThreshold) {

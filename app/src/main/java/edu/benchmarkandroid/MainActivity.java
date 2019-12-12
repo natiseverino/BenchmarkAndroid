@@ -487,7 +487,6 @@ public class MainActivity extends Activity {
             //benchmarck run stage report
             if (intent.getAction().equals(PROGRESS_BENCHMARK_ACTION)) {
                 String prog = intent.getStringExtra("msg");
-//                Toast.makeText(context, prog, Toast.LENGTH_SHORT).show();
                 stateTextView.setText(prog);
                 minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
             } else {
@@ -526,7 +525,6 @@ public class MainActivity extends Activity {
             //benchmarck sampling stage report
             if (intent.getAction().equals(PROGRESS_SAMPLING_ACTION)) {
                 String prog = intent.getStringExtra("msg");
-//                Toast.makeText(context, prog, Toast.LENGTH_SHORT).show();
                 stateTextView.setText(prog);
                 minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
             } else {

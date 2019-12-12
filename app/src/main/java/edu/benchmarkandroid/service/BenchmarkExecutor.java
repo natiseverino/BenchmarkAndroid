@@ -24,7 +24,6 @@ public class BenchmarkExecutor {
     private boolean keepScreenOn = true;
 
 
-
     public String getNeededBatteryState() {
         return neededBatteryState;
     }
@@ -50,7 +49,7 @@ public class BenchmarkExecutor {
         this.neededBatteryState = variants.get(0).getEnergyPreconditionSamplingStage().getRequiredBatteryState();
 
         String screenState = variants.get(0).getParamsRunStage().getScreenState();
-        if(screenState.equalsIgnoreCase("on"))
+        if (screenState.equalsIgnoreCase("on"))
             keepScreenOn = true;
         else if (screenState.equalsIgnoreCase("off"))
             keepScreenOn = false;
@@ -89,7 +88,7 @@ public class BenchmarkExecutor {
                 this.neededBatteryState = variants.get(currentBenchmark).getEnergyPreconditionSamplingStage().getRequiredBatteryState();
 
                 String screenState = variants.get(0).getParamsRunStage().getScreenState();
-                if(screenState.equalsIgnoreCase("on"))
+                if (screenState.equalsIgnoreCase("on"))
                     keepScreenOn = true;
                 else if (screenState.equalsIgnoreCase("off"))
                     keepScreenOn = false;

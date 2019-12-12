@@ -7,10 +7,11 @@ public class EnergyPreconditionSamplingStage {
 
     @SerializedName("requiredBatteryState")
     @Expose
-    private String requiredBatteryState;
+    private String requiredBatteryState = "CHARGING";
+
     @SerializedName("minStartBatteryLevel")
     @Expose
-    private Double minStartBatteryLevel;
+    private Double minStartBatteryLevel = 0.10;
 
     public String getRequiredBatteryState() {
         return requiredBatteryState;

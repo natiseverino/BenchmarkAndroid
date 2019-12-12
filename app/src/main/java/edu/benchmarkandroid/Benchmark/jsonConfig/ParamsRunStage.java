@@ -8,70 +8,81 @@ public class ParamsRunStage {
     //CPU
     @SerializedName("cpuLevel")
     @Expose
-    private Double cpuLevel;
+    private Double cpuLevel = 0.0;
+
     @SerializedName("screenState")
     @Expose
-    private String screenState;
+    private String screenState = "on";
 
     //JGrande
     @SerializedName("runs")
     @Expose
-    private int runs;
+    private int runs = 2;
+
     @SerializedName("size")
     @Expose
-    private int size;
+    private int size = 0;
 
     //DHPC_FFT
     @SerializedName("FFT_datasizes")
     @Expose
-    private int[] FFT_datasizes;
+    private int[] FFT_datasizes = {256, 256, 256};
+
     @SerializedName("n1")
     @Expose
-    private int n1;
+    private int n1 = 64;
+
     @SerializedName("n2")
     @Expose
-    private int n2;
+    private int n2 = 64;
+
     @SerializedName("n3")
     @Expose
-    private int n3;
+    private int n3 = 64;
+
     @SerializedName("iterations")
     @Expose
-    private int iterations;
+    private int iterations = 60;
 
     //DHPC_Sieve
     @SerializedName("m")
     @Expose
-    private int m;
+    private int m = 100_000;
+
     @SerializedName("n")
     @Expose
-    private int n;
+    private int n = 8192;
+
     @SerializedName("Sieve_datasizes")
     @Expose
-    private int[] Sieve_datasizes;
+    private int[] Sieve_datasizes = {1, 1, 1};
 
     //DHPC_Hanoi
     @SerializedName("Hanoi_datasizes")
     @Expose
-    private int[] Hanoi_datasizes;
+    private int[] Hanoi_datasizes = {28, 28, 28};
 
     //DHPC_EP
     @SerializedName("EP_n")
     @Expose
-    private int EP_n;
+    private int EP_n = 16_777_216;
+
     @SerializedName("X")
     @Expose
-    private  double x;
+    private double x = 271_828_183.0;
+
     @SerializedName("A")
     @Expose
-    private double a;
+    private double a = 1_220_703_125.0;
+
     @SerializedName("EP_datasizes")
     @Expose
-    private int[] EP_datasizes;
+    private int[] EP_datasizes = {1, 2, 3};
 
     //DHPC_Prime
     @SerializedName("Prime_datasizes")
     @Expose
-    private int[] Prime_datasizes;
+    private int[] Prime_datasizes = {10_000_000, 10_000_000, 10_000_000};
 
 
     public int[] getFFT_datasizes() {
