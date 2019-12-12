@@ -164,8 +164,8 @@ public class MainActivity extends Activity {
         // Callbacks for results send
         onSuccessResultSendCb = new Cb<String>() {
             @Override
-            public void run(String useless) {
-                Toast.makeText(MainActivity.this, "send", Toast.LENGTH_SHORT).show();
+            public void run(String filename) {
+                Toast.makeText(MainActivity.this, "Sending file: "+filename, Toast.LENGTH_SHORT).show();
                 serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onSuccessBatteryUpdate, onError, getApplicationContext());
             }
         };
@@ -201,7 +201,7 @@ public class MainActivity extends Activity {
                         Toast.makeText(MainActivity.this, "Benchmark can start :)", Toast.LENGTH_SHORT).show();
                         if (benchmarkExecutor.hasMoreToExecute()) {
                             running = true;
-                            benchmarkExecutor.execute(getApplicationContext());
+                            benchmarkExecutor.execute();
                             minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
                             serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onSuccessBatteryUpdate, onError, getApplicationContext());
                         } else
@@ -295,7 +295,7 @@ public class MainActivity extends Activity {
         registerReceiver(pollingReceiver, filterPollingReceiver);
 
         //initialize benchmark service
-        this.benchmarkExecutor = new BenchmarkExecutor();
+        this.benchmarkExecutor = new BenchmarkExecutor(getBaseContext());
         benchmarkExecutor.setStateTextView(stateTextView);
 
 
@@ -412,6 +412,7 @@ public class MainActivity extends Activity {
             if (!evaluating && !running) {
                 evaluating = true;
                 Log.d(TAG, "MainActivity - startBenchmark: CAN START");
+                //preguntamos por el state
                 serverConnection.startBenchmark(onSuccessBenchmarkCanStart, onErrorBenchmarkCanStart, getApplicationContext(), stateOfCharge);
             }
         }
@@ -532,7 +533,7 @@ public class MainActivity extends Activity {
 
                 if (intent.getAction().equals(END_SAMPLING_ACTION)) {
                     Toast.makeText(context, "Sampling finished", Toast.LENGTH_SHORT).show();
-                    stateTextView.setText("Sampling finished");
+                    //stateTextView.setText("Sampling finished");
                     //String result = intent.getStringExtra("payload");
                     String variant = intent.getStringExtra("variant");
                     String fname = intent.getStringExtra("file");
@@ -548,7 +549,6 @@ public class MainActivity extends Activity {
 
                     if (result != null) {
                         Log.d(TAG, "onReceive: " + result.length);
-                        Toast.makeText(context, "Send Results Sampling", Toast.LENGTH_SHORT).show();
                         serverConnection.sendResult(onSuccessResultSendCb, onError, getApplicationContext(), result, "sampling", variant);
                     } else
                         Toast.makeText(context, "no results", Toast.LENGTH_SHORT).show();
@@ -558,7 +558,6 @@ public class MainActivity extends Activity {
                         stateOfCharge = benchmarkExecutor.getNeededBatteryState();
                         minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
                         startBenchmark();
-                        stateTextView.setText("Running Benchmark");
                     } else
                         Toast.makeText(context, "There is no more benchmark", Toast.LENGTH_SHORT).show();
                 }
@@ -601,6 +600,7 @@ public class MainActivity extends Activity {
                     Log.d(TAG, "battery: Logger not found - fname: " + Logger.fname);
                 }
             }
+
 
 
         }

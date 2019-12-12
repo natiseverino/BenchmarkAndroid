@@ -2,6 +2,7 @@ package edu.benchmarkandroid.service;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.TextView;
 
 import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkData;
@@ -27,6 +28,13 @@ public class BenchmarkExecutor {
 
     private TextView stateTextView;
 
+    private static final String TAG = "BenchmarkExecutor";
+
+    private Context context;
+
+    public BenchmarkExecutor(Context context) {
+        this.context = context;
+    }
 
     public TextView getStateTextView() {
         return stateTextView;
@@ -60,6 +68,8 @@ public class BenchmarkExecutor {
         this.neededBatteryLevelNextStep = variants.get(0).getEnergyPreconditionSamplingStage().getMinStartBatteryLevel();
         this.neededBatteryState = variants.get(0).getEnergyPreconditionSamplingStage().getRequiredBatteryState();
 
+        alertBatteryStatus();
+
         String screenState = variants.get(0).getParamsRunStage().getScreenState();
         if (screenState.equalsIgnoreCase("on"))
             keepScreenOn = true;
@@ -72,19 +82,23 @@ public class BenchmarkExecutor {
         return currentBenchmark < variants.size();
     }
 
-    public void execute(Context context) {
+    public void execute() {
+
+
         while (!neededBatteryState.equalsIgnoreCase(BatteryUtils.getBatteryStatus(context))) {
-            if (neededBatteryState.equalsIgnoreCase("charging"))
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+
+
         if (sampling) {
 
             // Sampling stage
 
+            stateTextView.setText("Running Sampling");
             Intent intent = new Intent(context, SamplingIntentService.class);
             intent.putExtra("samplingName", benchClassName);
             intent.putExtra("benchmarkName", benchmarkName);
@@ -94,10 +108,13 @@ public class BenchmarkExecutor {
             this.neededBatteryState = variants.get(currentBenchmark).getEnergyPreconditionRunStage().getRequiredBatteryState();
             sampling = false;
 
-        } else{
+            alertBatteryStatus();
+
+        } else {
 
             // Benchmark stage
 
+            stateTextView.setText("Running Benchmark");
             Intent intent = new Intent(context, BenchmarkIntentService.class);
             intent.putExtra("benchmarkName", benchClassName);
             intent.putExtra("benchmarkVariant", new GsonBuilder().create().toJson(variants.get(currentBenchmark)));
@@ -115,6 +132,8 @@ public class BenchmarkExecutor {
                     keepScreenOn = false;
             }
 
+            alertBatteryStatus();
+
         }
     }
 
@@ -124,5 +143,18 @@ public class BenchmarkExecutor {
 
     public void setKeepScreenOn(boolean keepScreenOn) {
         this.keepScreenOn = keepScreenOn;
+    }
+
+
+    private void alertBatteryStatus(){
+        if (!neededBatteryState.equalsIgnoreCase(BatteryUtils.getBatteryStatus(context))) {
+            if (neededBatteryState.equalsIgnoreCase("charging")) {
+                Log.d(TAG, "execute:  battery status wrong - disconnect the device");
+                stateTextView.setText("Please connect the device");
+            } else {
+                Log.d(TAG, "execute:  battery status wrong - disconnect the device");
+                stateTextView.setText("Please disconnect the device");
+            }
+        }
     }
 }

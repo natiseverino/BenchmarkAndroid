@@ -141,10 +141,11 @@ public class ServerConnection {
 
     public void sendResult(final Cb<String> onSuccessResultSendCb, Cb<String> onErrorCb, Context context, byte[] result, String stage, String variant) {
 
-        MultipartRequest multipartRequest = new MultipartRequest(url + "?fileName=" + stage + "-" + variant + ".txt", new MyErrorListener(onErrorCb), new Response.Listener<String>() {
+        final String filename = stage + "-" + variant + ".txt";
+        MultipartRequest multipartRequest = new MultipartRequest(url + "?fileName=" + filename, new MyErrorListener(onErrorCb), new Response.Listener<String>() {
             @Override
             public void onResponse(String useless) {
-                onSuccessResultSendCb.run("useless");
+                onSuccessResultSendCb.run(filename);
             }
         }, result, stage + "-" + variant, context);
         multipartRequest.setRetryPolicy(new DefaultRetryPolicy(1000 * 60, DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
