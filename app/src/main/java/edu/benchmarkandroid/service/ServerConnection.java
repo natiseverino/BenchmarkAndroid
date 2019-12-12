@@ -37,7 +37,7 @@ import static edu.benchmarkandroid.MainActivity.NOT_DEFINED;
 
 public class ServerConnection {
     private static ServerConnection serverConnectionInstance;
-    private String url;
+    private String url = null;
     private RequestQueue requestQueue;
     private Gson gson;
     private static final String TAG = "ServerConnection";
@@ -64,6 +64,10 @@ public class ServerConnection {
 
     public void registerServerUrl(String serverUrl) {
         this.url = serverUrl;
+    }
+
+    public boolean isConnected() {
+        return url!=null;
     }
 
 

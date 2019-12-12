@@ -165,7 +165,7 @@ public class MainActivity extends Activity {
         onSuccessResultSendCb = new Cb<String>() {
             @Override
             public void run(String filename) {
-                Toast.makeText(MainActivity.this, "Sending file: "+filename, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Sending file: " + filename, Toast.LENGTH_LONG).show();
                 serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onSuccessBatteryUpdate, onError, getApplicationContext());
             }
         };
@@ -198,14 +198,13 @@ public class MainActivity extends Activity {
             public void run(Object useless) {
                 synchronized (evaluating) {
                     if (!running) {
-                        Toast.makeText(MainActivity.this, "Benchmark can start :)", Toast.LENGTH_SHORT).show();
                         if (benchmarkExecutor.hasMoreToExecute()) {
                             running = true;
                             benchmarkExecutor.execute();
                             minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
                             serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onSuccessBatteryUpdate, onError, getApplicationContext());
                         } else
-                            Toast.makeText(MainActivity.this, "There is no more benchmark", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "There is no more benchmarks", Toast.LENGTH_LONG).show();
                         evaluating = false;
                     }
                 }
@@ -575,7 +574,8 @@ public class MainActivity extends Activity {
             batteryNotificator.updateBatteryLevel((level / (double) scale));
             if ((System.currentTimeMillis() - timeOfLastBatteryUpdate) > INTERVAL_OFF_BATTERY_UPDATES) {
                 timeOfLastBatteryUpdate = System.currentTimeMillis();
-                serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onSuccessBatteryUpdate, onError, getApplicationContext());
+                if (serverConnection.isConnected())
+                    serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onSuccessBatteryUpdate, onError, getApplicationContext());
             }
 
             if (running) {
@@ -600,7 +600,6 @@ public class MainActivity extends Activity {
                     Log.d(TAG, "battery: Logger not found - fname: " + Logger.fname);
                 }
             }
-
 
 
         }
