@@ -2,6 +2,7 @@ package edu.benchmarkandroid.service;
 
 import android.content.Context;
 import android.content.Intent;
+import android.widget.TextView;
 
 import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkData;
 import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkDefinition;
@@ -24,6 +25,16 @@ public class BenchmarkExecutor {
     private String benchmarkName = "";
     private boolean keepScreenOn = true;
 
+    private TextView stateTextView;
+
+
+    public TextView getStateTextView() {
+        return stateTextView;
+    }
+
+    public void setStateTextView(TextView stateTextView) {
+        this.stateTextView = stateTextView;
+    }
 
     public String getNeededBatteryState() {
         return neededBatteryState;
@@ -63,13 +74,14 @@ public class BenchmarkExecutor {
 
     public void execute(Context context) {
         while (!neededBatteryState.equalsIgnoreCase(BatteryUtils.getBatteryStatus(context))) {
-            try {
-                wait(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
         }
         if (sampling) {
+
             // Sampling stage
 
             Intent intent = new Intent(context, SamplingIntentService.class);
