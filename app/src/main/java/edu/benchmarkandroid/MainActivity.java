@@ -43,6 +43,7 @@ import edu.benchmarkandroid.service.BenchmarkExecutor;
 import edu.benchmarkandroid.service.PollingIntentService;
 import edu.benchmarkandroid.service.ServerConnection;
 import edu.benchmarkandroid.utils.Cb;
+import edu.benchmarkandroid.utils.LogGUI;
 import edu.benchmarkandroid.utils.Logger;
 
 import static android.Manifest.permission.INTERNET;
@@ -111,6 +112,7 @@ public class MainActivity extends Activity {
     private Button startButton;
     private Switch aSwitch;
     private TextView stateTextView;
+    private TextView logTextView;
 
     private PowerManager.WakeLock powerManagerWakeLock;
     private static final String POWER_MANAGER_TAG = "MainActivity:PowerManagerTag";
@@ -249,6 +251,9 @@ public class MainActivity extends Activity {
         portEditText = findViewById(R.id.portText);
         modelTextView = findViewById(R.id.modelTextView);
         stateTextView = findViewById(R.id.stateTextView);
+        logTextView= findViewById(R.id.logTextView);
+
+        LogGUI.init(logTextView);
 
         startButton = findViewById(R.id.startButton);
         aSwitch = findViewById(R.id.aSwitch);
@@ -257,6 +262,7 @@ public class MainActivity extends Activity {
         portTextView.setText(httpPort);
         modelTextView.setText(model);
         stateTextView.setText("Build.VERSION.SDK_INT: " + Build.VERSION.SDK_INT);
+        LogGUI.log("Build.VERSION.SDK_INT: " + Build.VERSION.SDK_INT);
 
 
         deviceBatteryMah = BatteryUtils.getBatteryCapacity(this);
@@ -339,11 +345,6 @@ public class MainActivity extends Activity {
                 }
             }
         });
-
-
-        //TODO eliminar test button
-        Button testButton = findViewById(R.id.testButton);
-        testButton.setVisibility(View.GONE);
 
     }
 
@@ -482,12 +483,14 @@ public class MainActivity extends Activity {
             if (intent.getAction().equals(PROGRESS_BENCHMARK_ACTION)) {
                 String prog = intent.getStringExtra("msg");
                 stateTextView.setText(prog);
+                LogGUI.log(prog);
                 minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
             } else {
                 if (intent.getAction().equals(END_BENCHMARK_ACTION)) {
 
                     Toast.makeText(context, "Run stage finished", Toast.LENGTH_SHORT).show();
                     stateTextView.setText("Run stage finished");
+                    LogGUI.log("Run stage finished");
                     String variant = intent.getStringExtra("variant");
                     String fname = intent.getStringExtra("file");
                     byte[] result = null;
@@ -521,6 +524,7 @@ public class MainActivity extends Activity {
             if (intent.getAction().equals(PROGRESS_SAMPLING_ACTION)) {
                 String prog = intent.getStringExtra("msg");
                 stateTextView.setText(prog);
+                LogGUI.log(prog);
                 minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
             } else {
 
@@ -528,6 +532,7 @@ public class MainActivity extends Activity {
 
                     Toast.makeText(context, "Sampling finished", Toast.LENGTH_SHORT).show();
                     stateTextView.setText("Sampling finished");
+                    LogGUI.log("Sampling finished");
                     String variant = intent.getStringExtra("variant");
                     String fname = intent.getStringExtra("file");
                     byte[] result = null;
@@ -587,6 +592,7 @@ public class MainActivity extends Activity {
 
                 try {
                     Logger.getInstance().write(st.toString());
+                    LogGUI.log(st.toString());
                 } catch (FileNotFoundException e) {
                     Log.d(TAG, "battery: Logger not found - fname: " + Logger.fname);
                 }

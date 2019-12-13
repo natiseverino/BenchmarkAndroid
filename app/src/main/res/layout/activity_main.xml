@@ -33,6 +33,25 @@
 
     </LinearLayout>
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_weight="1"
+        android:background="#ffffff">
+
+        <TextView
+            android:id="@+id/logTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </ScrollView>
+
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="16dp" />
+
 
     <EditText
         android:id="@+id/IpText"
@@ -50,9 +69,6 @@
         android:inputType="textPersonName"
         android:text="1080" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="40dp" />
 
     <LinearLayout
         android:id="@+id/constraintLayout2"
@@ -99,10 +115,6 @@
 
     </LinearLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="40dp" />
-
 
     <Button
         android:id="@+id/startButton"
@@ -110,9 +122,6 @@
         android:layout_height="wrap_content"
         android:text="Start!" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="40dp" />
 
     <Switch
         android:id="@+id/aSwitch"
@@ -123,13 +132,7 @@
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="40dp" />
-
-    <Button
-        android:id="@+id/testButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TestButon" />
+        android:layout_height="16dp" />
 
 
 </LinearLayout>

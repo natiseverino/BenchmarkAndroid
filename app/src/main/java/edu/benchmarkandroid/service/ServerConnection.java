@@ -16,6 +16,7 @@ import com.android.volley.toolbox.Volley;
 
 import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkData;
 import edu.benchmarkandroid.model.UpdateData;
+import edu.benchmarkandroid.utils.BatteryUtils;
 import edu.benchmarkandroid.utils.Cb;
 
 import com.google.gson.Gson;
@@ -120,7 +121,7 @@ public class ServerConnection {
         getRequestQueue(context).add(jsonObjectRequest);
     }
 
-    public void startBenchmark(final Cb<Object> onSuccessBenchmarkCanStart, final Cb<String> onErrorBenchmarkCanStart, Context context, String stateOfCharge) {
+    public void startBenchmark(final Cb<Object> onSuccessBenchmarkCanStart, final Cb<String> onErrorBenchmarkCanStart, final Context context, String stateOfCharge) {
         String newUrl = stateOfCharge.equals(NOT_DEFINED) ? url + "?stage=postinit" : url + "?stage=postinit&requiredBatteryState=" + stateOfCharge;
         Log.d(TAG, "startBenchmark: url: " + newUrl);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, newUrl, null,

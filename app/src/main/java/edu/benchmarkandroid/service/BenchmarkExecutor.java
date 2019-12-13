@@ -15,11 +15,11 @@ import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkData;
 import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkDefinition;
 import edu.benchmarkandroid.Benchmark.jsonConfig.Variant;
 import edu.benchmarkandroid.utils.BatteryUtils;
+import edu.benchmarkandroid.utils.LogGUI;
 
 public class BenchmarkExecutor {
 
     private static final String TAG = "BenchmarkExecutor";
-
 
 
     private List<Variant> variants;
@@ -42,9 +42,11 @@ public class BenchmarkExecutor {
         this.context = context;
     }
 
+
     public TextView getStateTextView() {
         return stateTextView;
     }
+
 
     public void setStateTextView(TextView stateTextView) {
         this.stateTextView = stateTextView;
@@ -105,6 +107,9 @@ public class BenchmarkExecutor {
             // Sampling stage
 
             stateTextView.setText("Running Sampling");
+            LogGUI.log("");
+            LogGUI.log("Running Sampling");
+
             Intent intent = new Intent(context, SamplingIntentService.class);
             actualServiceIntent = intent;
             intent.putExtra("samplingName", benchClassName);
@@ -121,6 +126,8 @@ public class BenchmarkExecutor {
             // Benchmark stage
 
             stateTextView.setText("Running Benchmark");
+            LogGUI.log("");
+            LogGUI.log("Running Benchmark");
             Intent intent = new Intent(context, BenchmarkIntentService.class);
             actualServiceIntent = intent;
             intent.putExtra("benchmarkName", benchClassName);
@@ -157,9 +164,11 @@ public class BenchmarkExecutor {
             if (neededBatteryState.equalsIgnoreCase("charging")) {
                 Log.d(TAG, "execute:  battery status wrong - disconnect the device");
                 stateTextView.setText("Please connect the device");
+                LogGUI.log("Please connect the device");
             } else {
                 Log.d(TAG, "execute:  battery status wrong - disconnect the device");
                 stateTextView.setText("Please disconnect the device");
+                LogGUI.log("Please disconnect the device");
             }
         }
     }
