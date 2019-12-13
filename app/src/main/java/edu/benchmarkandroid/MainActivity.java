@@ -511,7 +511,8 @@ public class MainActivity extends Activity {
                         startBenchmark();
                     } else {
                         Toast.makeText(context, "There are no more benchmarks", Toast.LENGTH_SHORT).show();
-                        startButton.setEnabled(true);
+                        //startButton.setEnabled(true);
+                        finish();
                     }
                 }
             }
