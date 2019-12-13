@@ -121,7 +121,7 @@ public class MainActivity extends Activity {
     public int deviceCpuMhz;
     public int deviceBatteryMah;
 
-    private static final String model = Build.MANUFACTURER + "-" + Build.MODEL;
+    private static String model;
     private String httpAddress = "192.168.0.";
     private String httpPort = "1080";
 
@@ -244,14 +244,20 @@ public class MainActivity extends Activity {
         checkPermissions();
         acquirePowerManagerWakeLock();
 
+        model = Build.MANUFACTURER + "_" + Build.MODEL;
+        model = model.replace(" ", "_")
+                .replace(")", "")
+                .replace("(", "")
+                .replace("-", "_");
+
 
         ipEditText = findViewById(R.id.IpText);
-        ipTextView = findViewById(R.id.textViewIP);
-        portTextView = findViewById(R.id.textViewPort);
+        ipTextView = findViewById(R.id.ipTextView);
+        portTextView = findViewById(R.id.portTextView);
         portEditText = findViewById(R.id.portText);
         modelTextView = findViewById(R.id.modelTextView);
         stateTextView = findViewById(R.id.stateTextView);
-        logTextView= findViewById(R.id.logTextView);
+        logTextView = findViewById(R.id.logTextView);
 
         LogGUI.init(logTextView);
 
