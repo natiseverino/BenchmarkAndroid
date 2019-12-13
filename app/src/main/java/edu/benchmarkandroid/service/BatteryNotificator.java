@@ -17,7 +17,7 @@ public class BatteryNotificator {
         this.currentLevel = level;
     }
 
-    public double getCurrentLevel() {
+    public synchronized double getCurrentLevel() {
         return currentLevel;
     }
 }

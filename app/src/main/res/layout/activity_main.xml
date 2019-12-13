@@ -53,23 +53,6 @@
         android:layout_height="16dp" />
 
 
-    <EditText
-        android:id="@+id/IpText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="192.168.0." />
-
-    <EditText
-        android:id="@+id/portText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="1080" />
-
-
     <LinearLayout
         android:id="@+id/constraintLayout2"
         android:layout_width="wrap_content"
@@ -113,7 +96,25 @@
             android:layout_height="wrap_content"
             android:text="MODEL" />
 
-    </LinearLayout>
+    </LinearLayout>|
+
+    <EditText
+        android:id="@+id/IpText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="192.168.0." />
+
+    <EditText
+        android:id="@+id/portText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="1080" />
+
+
 
 
     <Button

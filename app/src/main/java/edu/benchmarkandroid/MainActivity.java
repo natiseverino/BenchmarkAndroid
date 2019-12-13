@@ -345,6 +345,7 @@ public class MainActivity extends Activity {
                 }
             }
         });
+        aSwitch.setVisibility(View.GONE);
 
     }
 
