@@ -517,7 +517,6 @@ public class MainActivity extends Activity {
                     if (benchmarkExecutor.hasMoreToExecute()) {
                         stateOfCharge = benchmarkExecutor.getNeededBatteryState();
                         minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-                        benchmarkExecutor.alertBatteryStatus();
                         startBenchmark();
                     } else {
                         Toast.makeText(context, "There are no more benchmarks", Toast.LENGTH_SHORT).show();
@@ -559,7 +558,6 @@ public class MainActivity extends Activity {
                     if (benchmarkExecutor.hasMoreToExecute()) {
                         stateOfCharge = benchmarkExecutor.getNeededBatteryState();
                         minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-                        benchmarkExecutor.alertBatteryStatus();
                         startBenchmark();
                     } else
                         Toast.makeText(context, "There are no more benchmarks", Toast.LENGTH_SHORT).show();
