@@ -52,7 +52,7 @@ import static edu.benchmarkandroid.service.SamplingIntentService.END_SAMPLING_AC
 import static edu.benchmarkandroid.service.SamplingIntentService.PROGRESS_SAMPLING_ACTION;
 
 
-public class |MainActivity extends Activity {
+public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
 
