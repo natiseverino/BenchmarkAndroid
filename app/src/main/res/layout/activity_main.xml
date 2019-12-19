@@ -64,43 +64,44 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="http://"
-            android:textSize="12dp"/>
+            android:textSize="12dp" />
 
         <TextView
             android:id="@+id/ipTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="IP"
-            android:textSize="12dp"/>
+            android:textSize="12dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=":"
-            android:textSize="12dp"/>
+            android:textSize="12dp" />
 
         <TextView
             android:id="@+id/portTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="PORT"
-            android:textSize="12dp"/>
+            android:textSize="12dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="/dewsim/"
-            android:textSize="12dp"/>
+            android:textSize="12dp" />
 
         <TextView
             android:id="@+id/modelTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="MODEL"
             android:maxLines="1"
-            android:textSize="12dp"/>
+            android:text="MODEL"
+            android:textSize="12dp" />
 
-    </LinearLayout>|
+    </LinearLayout>
+    |
 
     <EditText
         android:id="@+id/IpText"
@@ -119,21 +120,12 @@
         android:text="1080" />
 
 
-
-
     <Button
         android:id="@+id/startButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start!" />
 
-
-    <Switch
-        android:id="@+id/aSwitch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:enabled="false"
-        android:text="Polling" />
 
     <Space
         android:layout_width="match_parent"

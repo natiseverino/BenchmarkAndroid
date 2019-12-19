@@ -13,12 +13,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-
-import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkData;
-import edu.benchmarkandroid.model.UpdateData;
-import edu.benchmarkandroid.utils.BatteryUtils;
-import edu.benchmarkandroid.utils.Cb;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -32,6 +26,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkData;
+import edu.benchmarkandroid.model.UpdateData;
+import edu.benchmarkandroid.utils.Cb;
 
 import static edu.benchmarkandroid.MainActivity.NOT_DEFINED;
 
@@ -68,7 +66,7 @@ public class ServerConnection {
     }
 
     public boolean isConnected() {
-        return url!=null;
+        return url != null;
     }
 
 

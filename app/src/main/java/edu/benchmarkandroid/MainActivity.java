@@ -17,9 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,13 +33,12 @@ import java.io.IOException;
 import java.util.Properties;
 
 import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarkData;
-import edu.benchmarkandroid.utils.BatteryUtils;
-import edu.benchmarkandroid.utils.CPUUtils;
 import edu.benchmarkandroid.model.UpdateData;
 import edu.benchmarkandroid.service.BatteryNotificator;
 import edu.benchmarkandroid.service.BenchmarkExecutor;
-import edu.benchmarkandroid.service.PollingIntentService;
 import edu.benchmarkandroid.service.ServerConnection;
+import edu.benchmarkandroid.utils.BatteryUtils;
+import edu.benchmarkandroid.utils.CPUUtils;
 import edu.benchmarkandroid.utils.Cb;
 import edu.benchmarkandroid.utils.LogGUI;
 import edu.benchmarkandroid.utils.Logger;
@@ -51,12 +48,11 @@ import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static edu.benchmarkandroid.service.BenchmarkIntentService.END_BENCHMARK_ACTION;
 import static edu.benchmarkandroid.service.BenchmarkIntentService.PROGRESS_BENCHMARK_ACTION;
-import static edu.benchmarkandroid.service.PollingIntentService.POLLING_ACTION;
 import static edu.benchmarkandroid.service.SamplingIntentService.END_SAMPLING_ACTION;
 import static edu.benchmarkandroid.service.SamplingIntentService.PROGRESS_SAMPLING_ACTION;
 
 
-public class MainActivity extends Activity {
+public class |MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
 
@@ -100,8 +96,6 @@ public class MainActivity extends Activity {
     // Receiver for updates from the benchmark run
     private BatteryInfoReceiver batteryInfoReceiver;
 
-    // Receiver for updates from the polling service
-    private PollingReceiver pollingReceiver;
 
     // View components
     private EditText ipEditText;
@@ -110,7 +104,6 @@ public class MainActivity extends Activity {
     private TextView portTextView;
     private TextView modelTextView;
     private Button startButton;
-    private Switch aSwitch;
     private TextView stateTextView;
     private TextView logTextView;
 
@@ -187,10 +180,7 @@ public class MainActivity extends Activity {
                 minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
                 stateOfCharge = benchmarkExecutor.getNeededBatteryState();
                 serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onSuccessBatteryUpdate, onError, getApplicationContext());
-                if (doPolling)
-                    startPolling();
-                else
-                    startBenchmark();
+                startBenchmark();
 
                 if (benchmarkExecutor.isKeepScreenOn())
                     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -262,7 +252,6 @@ public class MainActivity extends Activity {
         LogGUI.init(logTextView);
 
         startButton = findViewById(R.id.startButton);
-        aSwitch = findViewById(R.id.aSwitch);
 
         ipTextView.setText(httpAddress);
         portTextView.setText(httpPort);
@@ -310,17 +299,9 @@ public class MainActivity extends Activity {
         progressReceiver = new ProgressReceiver();
         registerReceiver(progressReceiver, filterProgressReceiver);
 
-        //set receiver for polling service's updates to the main thread
-        IntentFilter filterPollingReceiver = new IntentFilter();
-        filterPollingReceiver.addAction(POLLING_ACTION);
-        pollingReceiver = new PollingReceiver();
-        registerReceiver(pollingReceiver, filterPollingReceiver);
-
         //initialize benchmark service
         this.benchmarkExecutor = new BenchmarkExecutor(getBaseContext());
         benchmarkExecutor.setStateTextView(stateTextView);
-
-        aSwitch.setEnabled(true);
 
         //bind button actions
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -340,18 +321,6 @@ public class MainActivity extends Activity {
             }
         });
 
-
-        aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-//                    startPolling();
-                    doPolling = true;
-                } else {
-                    stopPolling();
-                }
-            }
-        });
-        aSwitch.setVisibility(View.GONE);
 
     }
 
@@ -417,17 +386,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void startPolling() {
-        Intent intent = new Intent(this, PollingIntentService.class);
-        PollingIntentService.setShouldContinue(true);
-        this.startService(intent);
-    }
-
-    private void stopPolling() {
-        PollingIntentService.setShouldContinue(false);
-        doPolling = false;
-    }
-
 
     //unregister the battery monitor
     @Override
@@ -435,7 +393,6 @@ public class MainActivity extends Activity {
         super.onDestroy();
         benchmarkExecutor.stopBenchmark();
         this.unregisterReceiver(this.progressReceiver);
-        this.unregisterReceiver(this.pollingReceiver);
         this.unregisterReceiver(this.batteryInfoReceiver);
     }
 
@@ -469,17 +426,6 @@ public class MainActivity extends Activity {
     }
 
     // Receiver Clases -----------------------------------------------------------------------------
-
-    public class PollingReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //polling try
-            if (intent.getAction().equals(POLLING_ACTION)) {
-                startBenchmark();
-            }
-        }
-    }
-
 
     public class ProgressReceiver extends BroadcastReceiver {
 

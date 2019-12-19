@@ -69,11 +69,11 @@ public class BenchmarkExecutor implements BenchmarkExecutorRunCB {
     }
 
     public void execute() {
-        if(checkPreconditions())
+        if (checkPreconditions())
             start();
     }
 
-    private boolean checkPreconditions(){
+    private boolean checkPreconditions() {
         if (BatteryUtils.getBatteryLevel(context) < neededBatteryLevelNextStep) {
             alertMinBattery();
             BenchmarkExecutorWaitTask waitTask = new BenchmarkExecutorWaitTask(context, this, neededBatteryLevelNextStep, neededBatteryState, true);
@@ -92,7 +92,7 @@ public class BenchmarkExecutor implements BenchmarkExecutorRunCB {
 
     @Override
     public void notifyFinishWaiting() {
-        if(checkPreconditions())
+        if (checkPreconditions())
             start();
     }
 
@@ -101,7 +101,7 @@ public class BenchmarkExecutor implements BenchmarkExecutorRunCB {
         if (BatteryUtils.getBatteryLevel(context) < neededBatteryLevelNextStep) {
             LogGUI.log("");
             String msg = "Charge the device until " + (neededBatteryLevelNextStep * 100) + "%";
-            Log.d(TAG, "alertMinBattery: "+msg);
+            Log.d(TAG, "alertMinBattery: " + msg);
             stateTextView.setText(msg);
             LogGUI.log(msg);
         }
@@ -113,13 +113,13 @@ public class BenchmarkExecutor implements BenchmarkExecutorRunCB {
                 LogGUI.log("");
 
                 String msg = "Please connect the device";
-                Log.d(TAG, "alertBatteryState: "+msg);
+                Log.d(TAG, "alertBatteryState: " + msg);
                 stateTextView.setText(msg);
                 LogGUI.log(msg);
             } else {
                 LogGUI.log("");
                 String msg = "Please disconnect the device";
-                Log.d(TAG, "alertBatteryState: "+msg);
+                Log.d(TAG, "alertBatteryState: " + msg);
                 stateTextView.setText(msg);
                 LogGUI.log(msg);
 

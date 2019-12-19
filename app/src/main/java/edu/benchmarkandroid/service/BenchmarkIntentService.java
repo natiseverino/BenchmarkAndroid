@@ -5,15 +5,15 @@ import android.content.Intent;
 
 import androidx.annotation.Nullable;
 
-import edu.benchmarkandroid.Benchmark.BatteryStopCondition;
-import edu.benchmarkandroid.Benchmark.Benchmark;
-import edu.benchmarkandroid.Benchmark.jsonConfig.Variant;
-import edu.benchmarkandroid.utils.Logger;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.FileNotFoundException;
+
+import edu.benchmarkandroid.Benchmark.BatteryStopCondition;
+import edu.benchmarkandroid.Benchmark.Benchmark;
+import edu.benchmarkandroid.Benchmark.jsonConfig.Variant;
+import edu.benchmarkandroid.utils.Logger;
 
 public class BenchmarkIntentService extends IntentService {
 
@@ -39,7 +39,7 @@ public class BenchmarkIntentService extends IntentService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Logger.init("run-" +benchmark.getVariant().getVariantId()+".txt");
+        Logger.init("run-" + benchmark.getVariant().getVariantId() + ".txt");
         Logger logger = null;
         try {
             logger = Logger.getInstance();
@@ -61,7 +61,7 @@ public class BenchmarkIntentService extends IntentService {
 
     @Override
     public void onDestroy() {
-        if(benchmark != null)
+        if (benchmark != null)
             benchmark.gentleTermination();
 
         super.onDestroy();
