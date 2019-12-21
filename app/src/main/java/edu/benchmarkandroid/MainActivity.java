@@ -57,11 +57,10 @@ public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
 
 
-    public static final String PATH = "/sdcard/Download/";
 
     // CHANGE THIS CONSTANTS TO THE VALUE OF YOUR PREFERENCE
+    public static final String PATH = "/sdcard/Download/";
     public static final int INTERVAL_OFF_BATTERY_UPDATES = 5000;
-    public static final int POLLING_INTERVAL = 5000;
 
 
     public static final String NOT_DEFINED = "notdefined";
@@ -181,13 +180,9 @@ public class MainActivity extends Activity {
                 stateOfCharge = benchmarkExecutor.getNeededBatteryState();
                 serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onSuccessBatteryUpdate, onError, getApplicationContext());
                 startBenchmark();
-
-                if (benchmarkExecutor.isKeepScreenOn())
-                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                else
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         };
+
 
         // Callbacks for benchmarks started
         onSuccessBenchmarkCanStart = new Cb<Object>() {
@@ -381,6 +376,10 @@ public class MainActivity extends Activity {
             if (!evaluating && !running) {
                 evaluating = true;
                 Log.d(TAG, "MainActivity - startBenchmark: CAN START");
+                if (benchmarkExecutor.isKeepScreenOn())
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                else
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 serverConnection.startBenchmark(onSuccessBenchmarkCanStart, onErrorBenchmarkCanStart, getApplicationContext(), stateOfCharge);
             }
         }
