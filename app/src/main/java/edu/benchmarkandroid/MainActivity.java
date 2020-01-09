@@ -376,6 +376,7 @@ public class MainActivity extends Activity {
             if (!evaluating && !running) {
                 evaluating = true;
                 Log.d(TAG, "MainActivity - startBenchmark: CAN START");
+                //TODO Prender pantalla si esta apagada!!!
                 if (benchmarkExecutor.isKeepScreenOn())
                     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 else
@@ -399,6 +400,7 @@ public class MainActivity extends Activity {
     // Private init methods ------------------------------------------------------------------------
 
     private void checkPermissions() {
+        //TODO recargar serverProperties despues de obtener permisos
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), INTERNET)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,

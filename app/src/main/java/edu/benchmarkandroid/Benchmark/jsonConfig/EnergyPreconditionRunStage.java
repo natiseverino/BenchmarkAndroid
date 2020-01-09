@@ -18,8 +18,6 @@ public class EnergyPreconditionRunStage {
     private Double minEndBatteryLevel = 0.03;
 
 
-
-
     public String getRequiredBatteryState() {
         return requiredBatteryState;
     }

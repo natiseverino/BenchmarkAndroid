@@ -145,6 +145,9 @@ public class ServerConnection {
     public void sendResult(final Cb<String> onSuccessResultSendCb, Cb<String> onErrorCb, Context context, byte[] result, String stage, String variant) {
 
         final String filename = stage + "-" + variant + ".txt";
+
+        //TODO MultipartRequest depreated refactor
+
         MultipartRequest multipartRequest = new MultipartRequest(url + "?fileName=" + filename, new MyErrorListener(onErrorCb), new Response.Listener<String>() {
             @Override
             public void onResponse(String useless) {

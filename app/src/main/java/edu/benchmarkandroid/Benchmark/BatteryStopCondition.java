@@ -13,6 +13,9 @@ public class BatteryStopCondition implements StopCondition {
 
     @Override
     public boolean canContinue() {
+        //TODO curva de bateria de carga (si el start el menor al end es una curva de carga)
         return batteryMinLevel <= batteryNotificator.getCurrentLevel();
     }
+
+
 }
