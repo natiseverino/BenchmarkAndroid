@@ -262,19 +262,7 @@ public class MainActivity extends Activity {
         bindInputToDisplayText(ipEditText, ipTextView);
         bindInputToDisplayText(portEditText, portTextView);
 
-        try {
-            Properties serverConfigProperties = new Properties();
-            serverConfigProperties.load(new FileInputStream(new File(PATH + "serverConfig.properties")));
-            httpAddress = serverConfigProperties.getProperty("httpAddress");
-            httpPort = serverConfigProperties.getProperty("httpPort");
-            ipEditText.setText(httpAddress);
-            portEditText.setText(httpPort);
-        } catch (IOException e) {
-            Log.e(TAG, "onCreate: Doesn't found " + PATH + "serverConfig.properties", e);
-            ipEditText.setText(httpAddress);
-            portEditText.setText(httpPort);
-        }
-
+        loadServerConfigProperties();
 
         //set service to interact with the server
         serverConnection = ServerConnection.getService();
@@ -319,6 +307,21 @@ public class MainActivity extends Activity {
 
     }
 
+    private void loadServerConfigProperties(){
+        try {
+            Properties serverConfigProperties = new Properties();
+            serverConfigProperties.load(new FileInputStream(new File(PATH + "serverConfig.properties")));
+            httpAddress = serverConfigProperties.getProperty("httpAddress");
+            httpPort = serverConfigProperties.getProperty("httpPort");
+            ipEditText.setText(httpAddress);
+            portEditText.setText(httpPort);
+        } catch (IOException e) {
+            Log.e(TAG, "onCreate: Doesn't found " + PATH + "serverConfig.properties", e);
+            ipEditText.setText(httpAddress);
+            portEditText.setText(httpPort);
+        }
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -341,7 +344,8 @@ public class MainActivity extends Activity {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "STORAGE Permission Granted", Toast.LENGTH_SHORT).show();
-                    recreate();
+//                    recreate();
+                    loadServerConfigProperties();
                 } else {
                     Toast.makeText(this, "We need this permission", Toast.LENGTH_SHORT).show();
                     ActivityCompat.requestPermissions(this,
@@ -400,7 +404,6 @@ public class MainActivity extends Activity {
     // Private init methods ------------------------------------------------------------------------
 
     private void checkPermissions() {
-        //TODO recargar serverProperties despues de obtener permisos
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), INTERNET)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
