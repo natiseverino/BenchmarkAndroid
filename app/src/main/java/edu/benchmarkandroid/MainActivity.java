@@ -2,7 +2,9 @@ package edu.benchmarkandroid;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -15,6 +17,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,6 +49,9 @@ import edu.benchmarkandroid.utils.Logger;
 import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static android.os.PowerManager.ACQUIRE_CAUSES_WAKEUP;
+import static android.os.PowerManager.PARTIAL_WAKE_LOCK;
+import static android.os.PowerManager.SCREEN_DIM_WAKE_LOCK;
 import static edu.benchmarkandroid.service.BenchmarkIntentService.END_BENCHMARK_ACTION;
 import static edu.benchmarkandroid.service.BenchmarkIntentService.PROGRESS_BENCHMARK_ACTION;
 import static edu.benchmarkandroid.service.SamplingIntentService.END_SAMPLING_ACTION;
@@ -55,7 +61,6 @@ import static edu.benchmarkandroid.service.SamplingIntentService.PROGRESS_SAMPLI
 public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
-
 
 
     // CHANGE THIS CONSTANTS TO THE VALUE OF YOUR PREFERENCE
@@ -106,7 +111,10 @@ public class MainActivity extends Activity {
     private TextView stateTextView;
     private TextView logTextView;
 
-    private PowerManager.WakeLock powerManagerWakeLock;
+
+    public static PowerManager.WakeLock WAKE_LOCK;
+    public static PowerManager.WakeLock LOCK_SCREEN;
+
     private static final String POWER_MANAGER_TAG = "MainActivity:PowerManagerTag";
     private boolean doPolling = false;
 
@@ -179,7 +187,7 @@ public class MainActivity extends Activity {
                 minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
                 stateOfCharge = benchmarkExecutor.getNeededBatteryState();
                 serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onSuccessBatteryUpdate, onError, getApplicationContext());
-                startBenchmark();
+                startBenchmark(getBaseContext());
             }
         };
 
@@ -227,6 +235,12 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         checkPermissions();
+
+        ComponentName mDeviceAdminSample = new ComponentName(this, AdminReceiver.class);
+        Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, mDeviceAdminSample);
+        this.startActivityForResult(intent, 0);
+
         acquirePowerManagerWakeLock();
 
         model = Build.MANUFACTURER + "_" + Build.MODEL;
@@ -307,7 +321,7 @@ public class MainActivity extends Activity {
 
     }
 
-    private void loadServerConfigProperties(){
+    private void loadServerConfigProperties() {
         try {
             Properties serverConfigProperties = new Properties();
             serverConfigProperties.load(new FileInputStream(new File(PATH + "serverConfig.properties")));
@@ -375,20 +389,23 @@ public class MainActivity extends Activity {
     }
 
 
-    private void startBenchmark() {
+    private void startBenchmark(Context context) {
         synchronized (evaluating) {
             if (!evaluating && !running) {
                 evaluating = true;
                 Log.d(TAG, "MainActivity - startBenchmark: CAN START");
-                //TODO Prender pantalla si esta apagada!!!
-                if (benchmarkExecutor.isKeepScreenOn())
-                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                else
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+                if (benchmarkExecutor.isKeepScreenOn()) {
+                    turnScreenOn();
+                } else {
+                    turnScreenOff();
+                }
                 serverConnection.startBenchmark(onSuccessBenchmarkCanStart, onErrorBenchmarkCanStart, getApplicationContext(), stateOfCharge);
             }
         }
     }
+
+    //TODO notificaciones de please connect and disconncect the device
 
 
     //unregister the battery monitor
@@ -396,6 +413,10 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         benchmarkExecutor.stopBenchmark();
+        if (LOCK_SCREEN.isHeld())
+            LOCK_SCREEN.release();
+        if (WAKE_LOCK.isHeld())
+            WAKE_LOCK.release();
         this.unregisterReceiver(this.progressReceiver);
         this.unregisterReceiver(this.batteryInfoReceiver);
     }
@@ -403,6 +424,7 @@ public class MainActivity extends Activity {
 
     // Private init methods ------------------------------------------------------------------------
 
+    //TODO para poder leer el puerto y agregarlo al serverConfig.properties es necesario instalar jq (sudo apt install jq)
     private void checkPermissions() {
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), INTERNET)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -421,12 +443,44 @@ public class MainActivity extends Activity {
 
     private void acquirePowerManagerWakeLock() {
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        powerManagerWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, POWER_MANAGER_TAG);
 
-        if (powerManagerWakeLock.isHeld()) {
-            powerManagerWakeLock.release();
+        WAKE_LOCK = powerManager.newWakeLock(PARTIAL_WAKE_LOCK, "Service:Lock");
+        LOCK_SCREEN = powerManager.newWakeLock(SCREEN_DIM_WAKE_LOCK | ACQUIRE_CAUSES_WAKEUP, "Service:Screen");
+
+
+        if (WAKE_LOCK.isHeld()) {
+            WAKE_LOCK.release();
         }
-        powerManagerWakeLock.acquire();
+        WAKE_LOCK.acquire();
+    }
+
+
+    private void turnScreenOn() {
+        Log.d(TAG, "turnScreenOn: ");
+
+        if (!LOCK_SCREEN.isHeld())
+            LOCK_SCREEN.acquire();
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+
+    }
+
+    private void turnScreenOff() {
+        Log.d(TAG, "turnScreenOff: ");
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        if (LOCK_SCREEN.isHeld()) {
+            LOCK_SCREEN.release();
+        }
+
+
+        if (!WAKE_LOCK.isHeld()) {
+            WAKE_LOCK.acquire(); // En caso de que lo alla perdido
+        }
+
+        DevicePolicyManager devicePolicyManager = (DevicePolicyManager) this.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        devicePolicyManager.lockNow();
     }
 
     // Receiver Clases -----------------------------------------------------------------------------
@@ -467,7 +521,7 @@ public class MainActivity extends Activity {
                     if (benchmarkExecutor.hasMoreToExecute()) {
                         stateOfCharge = benchmarkExecutor.getNeededBatteryState();
                         minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-                        startBenchmark();
+                        startBenchmark(getBaseContext());
                     } else {
                         Toast.makeText(context, "There are no more benchmarks", Toast.LENGTH_SHORT).show();
                         //startButton.setEnabled(true);
@@ -508,7 +562,7 @@ public class MainActivity extends Activity {
                     if (benchmarkExecutor.hasMoreToExecute()) {
                         stateOfCharge = benchmarkExecutor.getNeededBatteryState();
                         minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-                        startBenchmark();
+                        startBenchmark(getBaseContext());
                     } else
                         Toast.makeText(context, "There are no more benchmarks", Toast.LENGTH_SHORT).show();
                 }

@@ -166,7 +166,8 @@ public class BenchmarkExecutor implements BenchmarkExecutorRunCB {
                 sampling = true;
                 this.neededBatteryLevelNextStep = variants.get(currentBenchmark).getEnergyPreconditionSamplingStage().getMinStartBatteryLevel();
                 this.neededBatteryState = variants.get(currentBenchmark).getEnergyPreconditionSamplingStage().getRequiredBatteryState();
-                String screenState = variants.get(0).getParamsRunStage().getScreenState();
+                String screenState = variants.get(currentBenchmark).getParamsRunStage().getScreenState();
+
                 if (screenState.equalsIgnoreCase("on"))
                     keepScreenOn = true;
                 else if (screenState.equalsIgnoreCase("off"))
