@@ -1,11 +1,14 @@
 package edu.benchmarkandroid.Benchmark.jsonConfig;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.UUID;
 
-public class Variant {
+public class Variant implements Parcelable {
 
     @SerializedName("variantId")
     @Expose
@@ -32,10 +35,25 @@ public class Variant {
     private EnergyPreconditionRunStage energyPreconditionRunStage;
 
 
+    protected Variant(Parcel in) {
+        variantId = in.readString();
+        paramsSamplingStage = in.readParcelable(ParamsSamplingStage.class.getClassLoader());
+        paramsRunStage = in.readParcelable(ParamsRunStage.class.getClassLoader());
+        energyPreconditionSamplingStage = in.readParcelable(EnergyPreconditionSamplingStage.class.getClassLoader());
+        energyPreconditionRunStage = in.readParcelable(EnergyPreconditionRunStage.class.getClassLoader());
+    }
 
+    public static final Creator<Variant> CREATOR = new Creator<Variant>() {
+        @Override
+        public Variant createFromParcel(Parcel in) {
+            return new Variant(in);
+        }
 
-
-
+        @Override
+        public Variant[] newArray(int size) {
+            return new Variant[size];
+        }
+    };
 
     public String getVariantId() {
         return variantId;
@@ -77,4 +95,17 @@ public class Variant {
         this.energyPreconditionRunStage = energyPreconditionRunStage;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(variantId);
+        dest.writeParcelable(paramsSamplingStage, flags);
+        dest.writeParcelable(paramsRunStage, flags);
+        dest.writeParcelable(energyPreconditionSamplingStage, flags);
+        dest.writeParcelable(energyPreconditionRunStage, flags);
+    }
 }

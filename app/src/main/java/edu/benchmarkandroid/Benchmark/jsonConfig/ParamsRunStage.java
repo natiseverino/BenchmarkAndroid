@@ -1,9 +1,12 @@
 package edu.benchmarkandroid.Benchmark.jsonConfig;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ParamsRunStage {
+public class ParamsRunStage implements Parcelable {
 
     //CPU
     @SerializedName("cpuLevel")
@@ -84,6 +87,43 @@ public class ParamsRunStage {
     @Expose
     private int[] Prime_datasizes = {10_000_000, 10_000_000, 10_000_000};
 
+
+    protected ParamsRunStage(Parcel in) {
+        if (in.readByte() == 0) {
+            cpuLevel = null;
+        } else {
+            cpuLevel = in.readDouble();
+        }
+        screenState = in.readString();
+        runs = in.readInt();
+        size = in.readInt();
+        FFT_datasizes = in.createIntArray();
+        n1 = in.readInt();
+        n2 = in.readInt();
+        n3 = in.readInt();
+        iterations = in.readInt();
+        m = in.readInt();
+        n = in.readInt();
+        Sieve_datasizes = in.createIntArray();
+        Hanoi_datasizes = in.createIntArray();
+        EP_n = in.readInt();
+        x = in.readDouble();
+        a = in.readDouble();
+        EP_datasizes = in.createIntArray();
+        Prime_datasizes = in.createIntArray();
+    }
+
+    public static final Creator<ParamsRunStage> CREATOR = new Creator<ParamsRunStage>() {
+        @Override
+        public ParamsRunStage createFromParcel(Parcel in) {
+            return new ParamsRunStage(in);
+        }
+
+        @Override
+        public ParamsRunStage[] newArray(int size) {
+            return new ParamsRunStage[size];
+        }
+    };
 
     public int[] getFFT_datasizes() {
         return FFT_datasizes;
@@ -227,6 +267,38 @@ public class ParamsRunStage {
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (cpuLevel == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(cpuLevel);
+        }
+        dest.writeString(screenState);
+        dest.writeInt(runs);
+        dest.writeInt(size);
+        dest.writeIntArray(FFT_datasizes);
+        dest.writeInt(n1);
+        dest.writeInt(n2);
+        dest.writeInt(n3);
+        dest.writeInt(iterations);
+        dest.writeInt(m);
+        dest.writeInt(n);
+        dest.writeIntArray(Sieve_datasizes);
+        dest.writeIntArray(Hanoi_datasizes);
+        dest.writeInt(EP_n);
+        dest.writeDouble(x);
+        dest.writeDouble(a);
+        dest.writeIntArray(EP_datasizes);
+        dest.writeIntArray(Prime_datasizes);
     }
 }
 
