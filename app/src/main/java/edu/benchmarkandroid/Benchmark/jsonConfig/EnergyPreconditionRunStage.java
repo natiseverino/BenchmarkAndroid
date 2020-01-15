@@ -18,7 +18,7 @@ public class EnergyPreconditionRunStage implements Parcelable {
 
     @SerializedName("minEndBatteryLevel")
     @Expose
-    private Double minEndBatteryLevel = 0.03;
+    private Double minEndBatteryLevel = 0.01;
 
 
     protected EnergyPreconditionRunStage(Parcel in) {
@@ -64,6 +64,8 @@ public class EnergyPreconditionRunStage implements Parcelable {
     }
 
     public Double getMinEndBatteryLevel() {
+        if (minEndBatteryLevel == 0.0)
+            minEndBatteryLevel = 0.01;
         return minEndBatteryLevel;
     }
 

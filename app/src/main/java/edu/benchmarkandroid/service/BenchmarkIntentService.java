@@ -54,7 +54,7 @@ public class BenchmarkIntentService extends IntentService {
                 logger);
 
         benchmark.runBenchmark(
-                new BatteryStopCondition(benchmark.getVariant().getEnergyPreconditionRunStage().getMinEndBatteryLevel(), batteryNotificator),
+                new BatteryStopCondition(benchmark.getVariant().getEnergyPreconditionRunStage().getMinStartBatteryLevel(), benchmark.getVariant().getEnergyPreconditionRunStage().getMinEndBatteryLevel(), batteryNotificator),
                 progressUpdater);
 
     }

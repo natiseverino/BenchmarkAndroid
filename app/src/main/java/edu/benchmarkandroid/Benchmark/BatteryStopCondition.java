@@ -3,19 +3,42 @@ package edu.benchmarkandroid.Benchmark;
 import edu.benchmarkandroid.service.BatteryNotificator;
 
 public class BatteryStopCondition implements StopCondition {
-    private double batteryMinLevel;
+    private double startBatteryLevel;
+    private double endBatteryLevel;
     private BatteryNotificator batteryNotificator;
+    private Comp comparator;
 
-    public BatteryStopCondition(double batteryMinLevel, BatteryNotificator batteryNotificator) {
-        this.batteryMinLevel = batteryMinLevel;
+
+    public BatteryStopCondition(double startBatteryLevel, double endBatteryLevel, BatteryNotificator batteryNotificator) {
+        this.startBatteryLevel = startBatteryLevel;
+        this.endBatteryLevel = endBatteryLevel;
         this.batteryNotificator = batteryNotificator;
+
+        if (this.startBatteryLevel >= this.endBatteryLevel) // discharging
+            this.comparator = new Comp() {
+                @Override
+                public boolean compare(double end, double level) {
+                    return end <= level;
+                }
+            };
+        else //charging
+            this.comparator = new Comp() {
+                @Override
+                public boolean compare(double end, double level) {
+                    return end > level;
+                }
+            };
+
     }
 
     @Override
     public boolean canContinue() {
-        //TODO curva de bateria de carga (si el start el menor al end es una curva de carga)
-        return batteryMinLevel <= batteryNotificator.getCurrentLevel();
+        return comparator.compare(this.endBatteryLevel, batteryNotificator.getCurrentLevel());
     }
 
+
+    private interface Comp {
+        boolean compare(double end, double level);
+    }
 
 }
