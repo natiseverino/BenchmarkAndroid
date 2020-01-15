@@ -13,6 +13,8 @@ public interface ServerListener {
     void onSuccessStartBenchmark();
     void onFailureStartBenchmark();
 
+    void onSuccessPostResult();
+    void onFailurePostResult();
 
 
 }

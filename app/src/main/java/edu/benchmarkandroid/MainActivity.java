@@ -356,6 +356,7 @@ public class MainActivity extends Activity {
 
     private void sendTestFile() {
         String localFilePath = "/sdcard/Download/serverConfig.properties";
+
         connectionHandler.postResult("testfile.txt",localFilePath);
     }
 
@@ -727,6 +728,16 @@ public class MainActivity extends Activity {
             Log.d(TAG, "onFailureStartBenchmark: ");
             evaluating = false;
         }
+
+        @Override
+        public void onSuccessPostResult() {
+
+        }
+
+        @Override
+        public void onFailurePostResult() {
+
+        }
     }
 
 
@@ -799,6 +810,16 @@ public class MainActivity extends Activity {
         public void onFailureStartBenchmark() {
             Log.d(TAG, "onFailureStartBenchmark: ");
             evaluating = false;
+        }
+
+        @Override
+        public void onSuccessPostResult() {
+
+        }
+
+        @Override
+        public void onFailurePostResult() {
+
         }
     }
 

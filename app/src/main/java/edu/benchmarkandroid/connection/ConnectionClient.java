@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import edu.benchmarkandroid.Benchmark.jsonConfig.BenchmarksResponse;
 import edu.benchmarkandroid.model.UpdateData;
 import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -33,11 +32,7 @@ public interface ConnectionClient {
     @PUT("{model}")
     Call<JsonObject> putUpdateBatteryState(@Path("model") String model, @Body UpdateData updateData);
 
-//    @Headers({"Content-Type: application/octet-stream"})
-//    @POST("")
-//    void postResult(@Query("filename") String filename, @Body RequestBody requestBody);
 
-    @Headers({"Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW"})
     @Multipart
     @POST("{model}")
     Call<ResponseBody> postResult(@Path("model") String model, @Query("fileName") String filename, @Part MultipartBody.Part body);

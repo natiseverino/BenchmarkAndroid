@@ -1,8 +1,6 @@
 package edu.benchmarkandroid.connection;
 
 import android.content.Context;
-import android.net.Uri;
-import android.os.FileUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -136,27 +134,29 @@ public class ConnectionHandler {
 
     public void postResult(String filename, String localFilePath) {
 
-        File originalFile = new File(localFilePath);
-
-        RequestBody filenamePart = RequestBody.create(MultipartBody.FORM, localFilePath);
-
-        MultipartBody.Part body = MultipartBody.Part.createFormData("data", originalFile.getName(), filenamePart);
+        File file = new File(localFilePath);
+        RequestBody requestFile = RequestBody.create(MediaType.parse("*/*"), file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("data", file.getName(), requestFile);
 
 
         Call<ResponseBody> call = connectionClient.postResult(model, filename, body);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if(response.isSuccessful())
+                if(response.isSuccessful()){
                     Log.d(TAG, "onResponsePostResult: isSuccessful");
-                else
+                    listener.onSuccessPostResult();
+                }
+                else{
                     Log.d(TAG, "onResponsePostResult: notSuccessful");
+                    listener.onFailurePostResult();
+                }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.d(TAG, "onFailurePostResult: ");
-
+                listener.onFailurePostResult();
             }
         });
 
