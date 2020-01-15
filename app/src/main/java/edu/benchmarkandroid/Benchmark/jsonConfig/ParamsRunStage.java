@@ -6,6 +6,8 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Arrays;
+
 public class ParamsRunStage implements Parcelable {
 
     //CPU
@@ -299,6 +301,14 @@ public class ParamsRunStage implements Parcelable {
         dest.writeDouble(a);
         dest.writeIntArray(EP_datasizes);
         dest.writeIntArray(Prime_datasizes);
+    }
+
+    @Override
+    public String toString() {
+        return "ParamsRunStage{" +
+                "cpuLevel=" + cpuLevel +
+                ", screenState='" + screenState + '\'' +
+                '}';
     }
 }
 

@@ -108,4 +108,16 @@ public class Variant implements Parcelable {
         dest.writeParcelable(energyPreconditionSamplingStage, flags);
         dest.writeParcelable(energyPreconditionRunStage, flags);
     }
+
+
+    @Override
+    public String toString() {
+        return "Variant{" +
+                "variantId='" + variantId + '\'' +
+                ", paramsSamplingStage=" + paramsSamplingStage +
+                ", paramsRunStage=" + paramsRunStage +
+                ", energyPreconditionSamplingStage=" + energyPreconditionSamplingStage +
+                ", energyPreconditionRunStage=" + energyPreconditionRunStage +
+                '}';
+    }
 }

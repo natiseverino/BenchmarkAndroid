@@ -59,4 +59,12 @@ public class BenchmarkData implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeStringList(runOrder);
     }
+
+    @Override
+    public String toString() {
+        return "BenchmarkData{" +
+                "benchmarkDefinitions=" + benchmarkDefinitions +
+                ", runOrder=" + runOrder +
+                '}';
+    }
 }

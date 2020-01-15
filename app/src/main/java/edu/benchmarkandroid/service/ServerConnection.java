@@ -2,16 +2,17 @@ package edu.benchmarkandroid.service;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -142,20 +143,33 @@ public class ServerConnection {
         getRequestQueue(context).add(jsonObjectRequest);
     }
 
+
     public void sendResult(final Cb<String> onSuccessResultSendCb, Cb<String> onErrorCb, Context context, byte[] result, String stage, String variant) {
 
         final String filename = stage + "-" + variant + ".txt";
 
         //TODO MultipartRequest depreated refactor
 
-        MultipartRequest multipartRequest = new MultipartRequest(url + "?fileName=" + filename, new MyErrorListener(onErrorCb), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String useless) {
-                onSuccessResultSendCb.run(filename);
-            }
-        }, result, stage + "-" + variant, context);
-        multipartRequest.setRetryPolicy(new DefaultRetryPolicy(1000 * 60, DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        MultipartRequest multipartRequest = new MultipartRequest(
+                url + "?fileName=" + filename,
+                new MyErrorListener(onErrorCb),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String useless) {
+                        onSuccessResultSendCb.run(filename);
+                    }
+                },
+                result,
+                stage + "-" + variant,
+                context);
+
+
+        multipartRequest.setRetryPolicy(
+                new DefaultRetryPolicy(
+                        1000 * 60,
+                        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
+        );
 
         getRequestQueue(context).add(multipartRequest);
     }
@@ -173,6 +187,7 @@ public class ServerConnection {
             onErrorCb.run(error.getMessage());
         }
     }
+
 
     public class MultipartRequest extends Request<String> {
 

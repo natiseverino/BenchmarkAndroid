@@ -68,4 +68,12 @@ public class EnergyPreconditionSamplingStage implements Parcelable {
             dest.writeDouble(minStartBatteryLevel);
         }
     }
+
+    @Override
+    public String toString() {
+        return "EnergyPreconditionSamplingStage{" +
+                "requiredBatteryState='" + requiredBatteryState + '\'' +
+                ", minStartBatteryLevel=" + minStartBatteryLevel +
+                '}';
+    }
 }

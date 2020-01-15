@@ -71,4 +71,13 @@ public class BenchmarkDefinition implements Parcelable {
         dest.writeString(benchmarkId);
         dest.writeString(benchmarkClass);
     }
+
+    @Override
+    public String toString() {
+        return "BenchmarkDefinition{" +
+                "benchmarkId='" + benchmarkId + '\'' +
+                ", benchmarkClass='" + benchmarkClass + '\'' +
+                ", variants=" + variants +
+                '}';
+    }
 }

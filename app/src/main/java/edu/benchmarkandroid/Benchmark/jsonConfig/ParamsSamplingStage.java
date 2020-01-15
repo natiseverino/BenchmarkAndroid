@@ -54,4 +54,11 @@ public class ParamsSamplingStage implements Parcelable {
             dest.writeDouble(convergenceThreshold);
         }
     }
+
+    @Override
+    public String toString() {
+        return "ParamsSamplingStage{" +
+                "convergenceThreshold=" + convergenceThreshold +
+                '}';
+    }
 }
