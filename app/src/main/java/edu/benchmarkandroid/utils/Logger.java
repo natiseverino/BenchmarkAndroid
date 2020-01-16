@@ -65,9 +65,6 @@ public class Logger {
 
 
     public void finish() {
-
-        INSTANCE.write("END");
-
         try {
             this.flush();
             bw.close();

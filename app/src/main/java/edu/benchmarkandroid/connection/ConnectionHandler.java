@@ -1,6 +1,5 @@
 package edu.benchmarkandroid.connection;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -30,13 +29,12 @@ public class ConnectionHandler {
     private ServerListener listener;
     private String model;
     private ConnectionClient connectionClient;
-    private Context context;
 
 
-    public ConnectionHandler(ServerListener listener, String baseUrl, String model, Context context) {
+
+    public ConnectionHandler(ServerListener listener, String baseUrl, String model) {
         this.listener = listener;
         this.model = model;
-        this.context = context;
 
         Gson gson = new GsonBuilder()
                 .setLenient()
@@ -91,10 +89,15 @@ public class ConnectionHandler {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Log.d(TAG, "onResponse: startBenchmark");
 
-                if (response.isSuccessful() && response.body().get("message").equals(true)) {
+                if(response.isSuccessful()){
+                    Log.d(TAG, "onResponse: startBenchmark: isSuccessful: \n"+response.body());
+                }
+
+
+                if (response.isSuccessful() && response.body().get("message").getAsBoolean() == true) {
                     listener.onSuccessStartBenchmark();
                 } else {
-                    Log.d(TAG, "onResponse: response.isSuccessful() == " + response.isSuccessful() + " && response.body().get(\"message\") == " + response.body().get("message").equals(true));
+                    Log.d(TAG, "onResponse: startBenchmark: response.isSuccessful() == " + response.isSuccessful() + " && response.body().get(\"message\") == " + (response.body().get("message").getAsBoolean() == true));
                     listener.onFailureStartBenchmark();
                 }
 
@@ -144,18 +147,18 @@ public class ConnectionHandler {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if(response.isSuccessful()){
-                    Log.d(TAG, "onResponsePostResult: isSuccessful");
+                    Log.d(TAG, "onResponse: postResult: isSuccessful");
                     listener.onSuccessPostResult();
                 }
                 else{
-                    Log.d(TAG, "onResponsePostResult: notSuccessful");
+                    Log.d(TAG, "onResponse_ postResult: notSuccessful");
                     listener.onFailurePostResult();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.d(TAG, "onFailurePostResult: ");
+                Log.d(TAG, "onFailure: postResult: ");
                 listener.onFailurePostResult();
             }
         });

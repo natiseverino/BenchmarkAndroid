@@ -40,10 +40,8 @@ import edu.benchmarkandroid.connection.ServerListener;
 import edu.benchmarkandroid.model.UpdateData;
 import edu.benchmarkandroid.service.BatteryNotificator;
 import edu.benchmarkandroid.service.BenchmarkExecutor;
-import edu.benchmarkandroid.service.ServerConnection;
 import edu.benchmarkandroid.utils.BatteryUtils;
 import edu.benchmarkandroid.utils.CPUUtils;
-import edu.benchmarkandroid.utils.Cb;
 import edu.benchmarkandroid.utils.LogGUI;
 import edu.benchmarkandroid.utils.Logger;
 
@@ -75,7 +73,6 @@ public class MainActivity extends Activity {
 
 
     // Services
-    private ServerConnection serverConnection;
     private BatteryNotificator batteryNotificator;
 
     private long timeOfLastBatteryUpdate;
@@ -127,112 +124,8 @@ public class MainActivity extends Activity {
     private String httpPort = "1080";
 
 
-    // Callbacks for errors
-    final Cb<String> onError;
-
-    // Callbacks for battery updates
-    final Cb<JSONObject> onSuccessBatteryUpdate;
-
-    // Callbacks for results send
-    final Cb<String> onSuccessResultSendCb;
-
-    // Callbacks for benchmarks received
-    final Cb<BenchmarkData> onSuccessBenchmarkReceived;
-
-    // Callbacks for benchmarks started
-    final Cb<Object> onSuccessBenchmarkCanStart;
-
-    // Callbacks for error on benchmarks started
-    final Cb<String> onErrorBenchmarkCanStart;
-
-    // Callback for first success to connect to server
-    final Cb<JSONObject> onFirstSuccess;
-
-
     boolean firstSuccess = false;
     ConnectionHandler connectionHandler;
-
-
-    public MainActivity() {
-        // Callbacks for errors
-        onError = new Cb<String>() {
-            @Override
-            public void run(String errorMsg) {
-                if (errorMsg != null)
-                    if (!errorMsg.equals(""))
-                        Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
-            }
-        };
-
-        // Callbacks for battery updates
-        onSuccessBatteryUpdate = new Cb<JSONObject>() {
-            @Override
-            public void run(JSONObject jsonObject) {
-
-            }
-        };
-
-
-        // Callbacks for results send
-        onSuccessResultSendCb = new Cb<String>() {
-            @Override
-            public void run(String filename) {
-                Toast.makeText(MainActivity.this, "Sending file: " + filename, Toast.LENGTH_LONG).show();
-                serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onSuccessBatteryUpdate, onError, getApplicationContext());
-            }
-        };
-
-
-        // Callbacks for benchmarks received
-        onSuccessBenchmarkReceived = new Cb<BenchmarkData>() {
-            @Override
-            public void run(BenchmarkData benchmarkData) {
-                Toast.makeText(MainActivity.this, "Benchmarks received :)", Toast.LENGTH_SHORT).show();
-                benchmarkExecutor.setBenchmarkData(benchmarkData);
-                minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-                stateOfCharge = benchmarkExecutor.getNeededBatteryState();
-                serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onSuccessBatteryUpdate, onError, getApplicationContext());
-                startBenchmark(getBaseContext());
-            }
-        };
-
-
-        // Callbacks for benchmarks started
-        onSuccessBenchmarkCanStart = new Cb<Object>() {
-            @Override
-            public void run(Object useless) {
-                synchronized (evaluating) {
-                    if (!running) {
-                        if (benchmarkExecutor.hasMoreToExecute()) {
-                            running = true;
-                            benchmarkExecutor.execute();
-                            minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-                            serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onSuccessBatteryUpdate, onError, getApplicationContext());
-                        } else
-                            Toast.makeText(MainActivity.this, "There is no more benchmarks", Toast.LENGTH_LONG).show();
-                        evaluating = false;
-                    }
-                }
-            }
-        };
-
-        // Callbacks for error on benchmarks started
-        onErrorBenchmarkCanStart = new Cb<String>() {
-            @Override
-            public void run(String error) {
-                Toast.makeText(MainActivity.this, error, Toast.LENGTH_SHORT).show();
-                evaluating = false;
-            }
-        };
-
-        onFirstSuccess = new Cb<JSONObject>() {
-            @Override
-            public void run(JSONObject useless) {
-                firstSuccess = true;
-                serverConnection.getBenchmarks(onSuccessBenchmarkReceived, onError, getApplicationContext());
-            }
-        };
-    }
 
 
     @Override
@@ -284,9 +177,6 @@ public class MainActivity extends Activity {
 
         loadServerConfigProperties();
 
-        //set service to interact with the server
-        serverConnection = ServerConnection.getService();
-
         //initialize battery intents receiver
         this.batteryNotificator = BatteryNotificator.getInstance();
         batteryInfoReceiver = new BatteryInfoReceiver();
@@ -307,17 +197,16 @@ public class MainActivity extends Activity {
         benchmarkExecutor.setStateTextView(stateTextView);
 
 
-        final ServerListener listener = new ConnectionListenerTest();
+        final ServerListener listener = new ConnectionListener();
 
-        Button testButton = findViewById(R.id.testButton);
-        testButton.setOnClickListener(new View.OnClickListener() {
+        startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!firstSuccess) {
                     httpAddress = String.valueOf(ipTextView.getText());
                     httpPort = String.valueOf(portTextView.getText());
                     String serverUrl = String.format("http://%s:%s/dewsim/", httpAddress, httpPort);
-                    connectionHandler = new ConnectionHandler(listener, serverUrl, model, getBaseContext());
+                    connectionHandler = new ConnectionHandler(listener, serverUrl, model);
                     connectionHandler.putUpdateBatteryState(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()));
                 } else {
                     connectionHandler.getBenchmarks();
@@ -325,54 +214,6 @@ public class MainActivity extends Activity {
             }
         });
 
-        //bind button actions
-        startButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                httpAddress = String.valueOf(ipTextView.getText());
-                httpPort = String.valueOf(portTextView.getText());
-                String serverUrl = String.format("http://%s:%s/dewsim/%s", httpAddress, httpPort, model);
-                Log.d(TAG, "onClick: " + serverUrl);
-                serverConnection.registerServerUrl(serverUrl);
-
-
-                if (connectionHandler == null)
-                    connectionHandler = new ConnectionHandler(listener, String.format("http://%s:%s/dewsim/", httpAddress, httpPort), model, getBaseContext());
-
-                ipEditText.setEnabled(false);
-                portEditText.setEnabled(false);
-                startButton.setEnabled(false);
-                if (!firstSuccess) {
-                    serverConnection.postUpdate(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()), onFirstSuccess, onError, getApplicationContext());
-                } else {
-                    Log.d(TAG, "onClick: startButton firstSuccess = true");
-                    onFirstSuccess.run(null);
-                }
-            }
-        });
-
-
-    }
-
-    private void sendTestFile() {
-        String localFilePath = "/sdcard/Download/serverConfig.properties";
-
-        connectionHandler.postResult("testfile.txt",localFilePath);
-    }
-
-    private void loadServerConfigProperties() {
-        try {
-            Properties serverConfigProperties = new Properties();
-            serverConfigProperties.load(new FileInputStream(new File(PATH + "serverConfig.properties")));
-            httpAddress = serverConfigProperties.getProperty("httpAddress");
-            httpPort = serverConfigProperties.getProperty("httpPort");
-            ipEditText.setText(httpAddress);
-            portEditText.setText(httpPort);
-        } catch (IOException e) {
-            Log.e(TAG, "onCreate: Doesn't found " + PATH + "serverConfig.properties", e);
-            ipEditText.setText(httpAddress);
-            portEditText.setText(httpPort);
-        }
     }
 
 
@@ -397,7 +238,6 @@ public class MainActivity extends Activity {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "STORAGE Permission Granted", Toast.LENGTH_SHORT).show();
-//                    recreate();
                     loadServerConfigProperties();
                 } else {
                     Toast.makeText(this, "We need this permission", Toast.LENGTH_SHORT).show();
@@ -409,7 +249,6 @@ public class MainActivity extends Activity {
     }
 
 
-    //L&F related
     private void bindInputToDisplayText(final EditText input, final TextView display) {
         input.addTextChangedListener(
                 new TextWatcher() {
@@ -427,24 +266,7 @@ public class MainActivity extends Activity {
         );
     }
 
-
     private void startBenchmark(Context context) {
-        synchronized (evaluating) {
-            if (!evaluating && !running) {
-                evaluating = true;
-                Log.d(TAG, "MainActivity - startBenchmark: CAN START");
-
-                if (benchmarkExecutor.isKeepScreenOn()) {
-                    turnScreenOn();
-                } else {
-                    turnScreenOff();
-                }
-                serverConnection.startBenchmark(onSuccessBenchmarkCanStart, onErrorBenchmarkCanStart, getApplicationContext(), stateOfCharge);
-            }
-        }
-    }
-
-    private void startBenchmarkNew(Context context) {
         synchronized (evaluating) {
             if (!evaluating && !running) {
                 evaluating = true;
@@ -479,7 +301,21 @@ public class MainActivity extends Activity {
 
     // Private init methods ------------------------------------------------------------------------
 
-    //TODO para poder leer el puerto y agregarlo al serverConfig.properties es necesario instalar jq (sudo apt install jq)
+    private void loadServerConfigProperties() {
+        try {
+            Properties serverConfigProperties = new Properties();
+            serverConfigProperties.load(new FileInputStream(new File(PATH + "serverConfig.properties")));
+            httpAddress = serverConfigProperties.getProperty("httpAddress");
+            httpPort = serverConfigProperties.getProperty("httpPort");
+            ipEditText.setText(httpAddress);
+            portEditText.setText(httpPort);
+        } catch (IOException e) {
+            Log.e(TAG, "onCreate: Doesn't found " + PATH + "serverConfig.properties", e);
+            ipEditText.setText(httpAddress);
+            portEditText.setText(httpPort);
+        }
+    }
+
     private void checkPermissions() {
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), INTERNET)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -570,8 +406,9 @@ public class MainActivity extends Activity {
                         Toast.makeText(context, "File not found", Toast.LENGTH_SHORT).show();
                     }
 
-                    serverConnection.sendResult(onSuccessResultSendCb, onError, getApplicationContext(), result, "run", variant);
-//                    serverConnection.newSendRequest(context,"run",variant,fname);
+                    String stage = "run";
+                    String filename = stage + "-" + variant + ".txt";
+                    connectionHandler.postResult(filename, fname);
 
                     running = false;
                     if (benchmarkExecutor.hasMoreToExecute()) {
@@ -612,7 +449,11 @@ public class MainActivity extends Activity {
                         Toast.makeText(context, "File not found", Toast.LENGTH_SHORT).show();
                     }
 
-                    serverConnection.sendResult(onSuccessResultSendCb, onError, getApplicationContext(), result, "sampling", variant);
+
+                    String stage = "sampling";
+                    String filename = stage + "-" + variant + ".txt";
+                    connectionHandler.postResult(filename, fname);
+
 
                     running = false;
                     if (benchmarkExecutor.hasMoreToExecute()) {
@@ -636,7 +477,7 @@ public class MainActivity extends Activity {
             batteryNotificator.updateBatteryLevel((level / (double) scale));
             if ((System.currentTimeMillis() - timeOfLastBatteryUpdate) > INTERVAL_OFF_BATTERY_UPDATES) {
                 timeOfLastBatteryUpdate = System.currentTimeMillis();
-                if (connectionHandler != null) //TODO is connected???
+                if (connectionHandler != null)
                     connectionHandler.putUpdateBatteryState(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()));
             }
 
@@ -669,13 +510,12 @@ public class MainActivity extends Activity {
     }
 
 
-    private class ConnectionListener implements ServerListener{
+    private class ConnectionListener implements ServerListener {
 
         private static final String TAG = "ConnectionListener";
 
         @Override
         public void onSuccessUpdateBatteryState() {
-            Log.d(TAG, "onSuccessUpdateBatteryState: ");
             if (!firstSuccess) {
                 firstSuccess = true;
                 connectionHandler.getBenchmarks();
@@ -685,95 +525,12 @@ public class MainActivity extends Activity {
 
         @Override
         public void onFailureUpdateBatteryState() {
-            Log.d(TAG, "onFailureUpdateBatteryState: ");
+
         }
+
 
         @Override
         public void onSuccessGetBenchmarks(BenchmarkData benchmarkData) {
-            Log.d(TAG, "onSuccessGetBenchmarks: ");
-            Toast.makeText(MainActivity.this, "Benchmarks received :)", Toast.LENGTH_SHORT).show();
-            benchmarkExecutor.setBenchmarkData(benchmarkData);
-            minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-            stateOfCharge = benchmarkExecutor.getNeededBatteryState();
-            connectionHandler.putUpdateBatteryState(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()));
-            startBenchmarkNew(getBaseContext());
-
-        }
-
-        @Override
-        public void onFailureGetBenchmarks() {
-            Log.d(TAG, "onFailureGetBenchmarks: ");
-
-        }
-
-        @Override
-        public void onSuccessStartBenchmark() {
-            Log.d(TAG, "onSuccessStartBenchmark: ");
-            synchronized (evaluating) {
-                if (!running) {
-                    if (benchmarkExecutor.hasMoreToExecute()) {
-                        running = true;
-                        benchmarkExecutor.execute();
-                        minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-                        connectionHandler.putUpdateBatteryState(new UpdateData(deviceCpuMhz, deviceBatteryMah, minBatteryLevel, batteryNotificator.getCurrentLevel()));
-                    } else
-                        Toast.makeText(MainActivity.this, "There is no more benchmarks", Toast.LENGTH_LONG).show();
-                    evaluating = false;
-                }
-            }
-        }
-
-        @Override
-        public void onFailureStartBenchmark() {
-            Log.d(TAG, "onFailureStartBenchmark: ");
-            evaluating = false;
-        }
-
-        @Override
-        public void onSuccessPostResult() {
-
-        }
-
-        @Override
-        public void onFailurePostResult() {
-
-        }
-    }
-
-
-
-
-
-
-
-
-    private class ConnectionListenerTest implements ServerListener{
-
-        private static final String TAG = "ConnectionListener";
-
-        @Override
-        public void onSuccessUpdateBatteryState() {
-            Log.d(TAG, "onSuccessUpdateBatteryState: ");
-            if (!firstSuccess) {
-                firstSuccess = true;
-
-                sendTestFile();
-
-
-
-
-            }
-
-        }
-
-        @Override
-        public void onFailureUpdateBatteryState() {
-            Log.d(TAG, "onFailureUpdateBatteryState: ");
-        }
-
-        @Override
-        public void onSuccessGetBenchmarks(BenchmarkData benchmarkData) {
-            Log.d(TAG, "onSuccessGetBenchmarks: ");
             Toast.makeText(MainActivity.this, "Benchmarks received :)", Toast.LENGTH_SHORT).show();
             benchmarkExecutor.setBenchmarkData(benchmarkData);
             minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
@@ -785,13 +542,12 @@ public class MainActivity extends Activity {
 
         @Override
         public void onFailureGetBenchmarks() {
-            Log.d(TAG, "onFailureGetBenchmarks: ");
 
         }
 
+
         @Override
         public void onSuccessStartBenchmark() {
-            Log.d(TAG, "onSuccessStartBenchmark: ");
             synchronized (evaluating) {
                 if (!running) {
                     if (benchmarkExecutor.hasMoreToExecute()) {
@@ -808,9 +564,9 @@ public class MainActivity extends Activity {
 
         @Override
         public void onFailureStartBenchmark() {
-            Log.d(TAG, "onFailureStartBenchmark: ");
             evaluating = false;
         }
+
 
         @Override
         public void onSuccessPostResult() {
@@ -822,5 +578,6 @@ public class MainActivity extends Activity {
 
         }
     }
+
 
 }
