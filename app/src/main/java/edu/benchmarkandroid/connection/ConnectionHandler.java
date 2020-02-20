@@ -31,7 +31,6 @@ public class ConnectionHandler {
     private ConnectionClient connectionClient;
 
 
-
     public ConnectionHandler(ServerListener listener, String baseUrl, String model) {
         this.listener = listener;
         this.model = model;
@@ -87,17 +86,11 @@ public class ConnectionHandler {
         response.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.d(TAG, "onResponse: startBenchmark");
-
-                if(response.isSuccessful()){
-                    Log.d(TAG, "onResponse: startBenchmark: isSuccessful: \n"+response.body());
-                }
-
 
                 if (response.isSuccessful() && response.body().get("message").getAsBoolean() == true) {
                     listener.onSuccessStartBenchmark();
+
                 } else {
-                    Log.d(TAG, "onResponse: startBenchmark: response.isSuccessful() == " + response.isSuccessful() + " && response.body().get(\"message\") == " + (response.body().get("message").getAsBoolean() == true));
                     listener.onFailureStartBenchmark();
                 }
 
@@ -128,7 +121,7 @@ public class ConnectionHandler {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.d(TAG, "onFailure:  putUpdateBatteryState");
+                Log.d(TAG, "onFailure:  putUpdateBatteryState ");
                 listener.onFailureUpdateBatteryState();
             }
         });
@@ -143,14 +136,15 @@ public class ConnectionHandler {
 
 
         Call<ResponseBody> call = connectionClient.postResult(model, filename, body);
+        Log.d(TAG, "postResult: FILE EXISTS:" + file.exists() +" - "+ file.length());
+        Log.d(TAG, "postResult: fname: "+ filename+ " path: "+ localFilePath);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     Log.d(TAG, "onResponse: postResult: isSuccessful");
                     listener.onSuccessPostResult();
-                }
-                else{
+                } else {
                     Log.d(TAG, "onResponse_ postResult: notSuccessful");
                     listener.onFailurePostResult();
                 }

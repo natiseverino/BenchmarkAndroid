@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -108,6 +109,7 @@ public class MainActivity extends Activity {
     private Button startButton;
     private TextView stateTextView;
     private TextView logTextView;
+    private ScrollView scrollView;
 
 
     public static PowerManager.WakeLock WAKE_LOCK;
@@ -156,8 +158,9 @@ public class MainActivity extends Activity {
         modelTextView = findViewById(R.id.modelTextView);
         stateTextView = findViewById(R.id.stateTextView);
         logTextView = findViewById(R.id.logTextView);
+        scrollView = findViewById(R.id.scrollView);
 
-        LogGUI.init(logTextView);
+        LogGUI.init(logTextView, scrollView);
 
         startButton = findViewById(R.id.startButton);
 
@@ -211,6 +214,7 @@ public class MainActivity extends Activity {
                 } else {
                     connectionHandler.getBenchmarks();
                 }
+                startButton.setEnabled(false);
             }
         });
 
@@ -410,16 +414,15 @@ public class MainActivity extends Activity {
                     String filename = stage + "-" + variant + ".txt";
                     connectionHandler.postResult(filename, fname);
 
-                    running = false;
-                    if (benchmarkExecutor.hasMoreToExecute()) {
-                        stateOfCharge = benchmarkExecutor.getNeededBatteryState();
-                        minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-                        startBenchmark(getBaseContext());
-                    } else {
-                        Toast.makeText(context, "There are no more benchmarks", Toast.LENGTH_SHORT).show();
-                        //startButton.setEnabled(true);
-                        finish();
-                    }
+//                    running = false;
+//                    if (benchmarkExecutor.hasMoreToExecute()) {
+//                        stateOfCharge = benchmarkExecutor.getNeededBatteryState();
+//                        minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
+//                        startBenchmark(getBaseContext());
+//                    } else {
+//                        Toast.makeText(context, "There are no more benchmarks", Toast.LENGTH_SHORT).show();
+//                        finish();
+//                    }
                 }
             }
 
@@ -455,14 +458,15 @@ public class MainActivity extends Activity {
                     connectionHandler.postResult(filename, fname);
 
 
-                    running = false;
-                    if (benchmarkExecutor.hasMoreToExecute()) {
-                        stateOfCharge = benchmarkExecutor.getNeededBatteryState();
-                        minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-                        startBenchmark(getBaseContext());
-                    } else
-                        Toast.makeText(context, "There are no more benchmarks", Toast.LENGTH_SHORT).show();
+//                    running = false;
+//                    if (benchmarkExecutor.hasMoreToExecute()) {
+//                        stateOfCharge = benchmarkExecutor.getNeededBatteryState();
+//                        minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
+//                        startBenchmark(getBaseContext());
+//                    } else
+//                        Toast.makeText(context, "There are no more benchmarks", Toast.LENGTH_SHORT).show();
                 }
+
             }
         }
     }
@@ -542,7 +546,8 @@ public class MainActivity extends Activity {
 
         @Override
         public void onFailureGetBenchmarks() {
-
+            Log.d(TAG, "onFailureGetBenchmarks: retrying");
+            connectionHandler.getBenchmarks();
         }
 
 
@@ -570,12 +575,20 @@ public class MainActivity extends Activity {
 
         @Override
         public void onSuccessPostResult() {
-
+            running = false;
+            if (benchmarkExecutor.hasMoreToExecute()) {
+                stateOfCharge = benchmarkExecutor.getNeededBatteryState();
+                minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
+                startBenchmark(getBaseContext());
+            } else {
+                Toast.makeText(getBaseContext(), "There are no more benchmarks", Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
 
         @Override
         public void onFailurePostResult() {
-
+            Toast.makeText(getBaseContext(), "error on post", Toast.LENGTH_LONG).show();
         }
     }
 

@@ -1,16 +1,19 @@
 package edu.benchmarkandroid.utils;
 
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class LogGUI {
 
     private static TextView logTextView = null;
+    private static ScrollView scrollView = null;
     private static StringBuilder stringBuilder;
     private static final int MAX_STRING_BUILDER = 1_000_000;
 
 
-    public static void init(TextView logTextView) {
+    public static void init(TextView logTextView, ScrollView scrollView) {
         LogGUI.logTextView = logTextView;
+        LogGUI.scrollView = scrollView;
         stringBuilder = new StringBuilder();
     }
 
@@ -25,6 +28,8 @@ public class LogGUI {
             stringBuilder.append(line).append("\n");
             checkStringBuilderLength();
             logTextView.setText(stringBuilder.toString());
+
+            scrollView.fullScroll(ScrollView.FOCUS_DOWN);
         }
 
     }
