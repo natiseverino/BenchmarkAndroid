@@ -18,7 +18,7 @@ public class BatteryStopCondition implements StopCondition {
             this.comparator = new Comp() {
                 @Override
                 public boolean compare(double end, double level) {
-                    return end <= level;
+                    return end < level;
                 }
             };
         else //charging

@@ -156,7 +156,7 @@ public class CPUBenchmark extends Benchmark {
 
         ThresholdNotificator thresholdNotificator = ThresholdNotificator.getInstance();
 
-        while (stopCondition.canContinue() || iterations < 10) { //var "progress" to avoid early convergence
+        while (stopCondition.canContinue() || iterations < 5) { //var "progress" to avoid early convergence
             cpuUsage = cpuUsage();
 
             diff = cpuUsage / target;
