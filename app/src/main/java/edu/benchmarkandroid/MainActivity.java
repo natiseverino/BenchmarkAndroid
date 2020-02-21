@@ -107,6 +107,7 @@ public class MainActivity extends Activity {
     private TextView portTextView;
     private TextView modelTextView;
     private Button startButton;
+    private Button stopButton;
     private TextView stateTextView;
     private TextView logTextView;
     private ScrollView scrollView;
@@ -128,6 +129,9 @@ public class MainActivity extends Activity {
 
     boolean firstSuccess = false;
     ConnectionHandler connectionHandler;
+
+    private static String FILENAME;
+    private static String FNAME;
 
 
     @Override
@@ -163,6 +167,8 @@ public class MainActivity extends Activity {
         LogGUI.init(logTextView, scrollView);
 
         startButton = findViewById(R.id.startButton);
+        stopButton = findViewById(R.id.stopButton);
+        stopButton.setEnabled(false);
 
         ipTextView.setText(httpAddress);
         portTextView.setText(httpPort);
@@ -215,6 +221,14 @@ public class MainActivity extends Activity {
                     connectionHandler.getBenchmarks();
                 }
                 startButton.setEnabled(false);
+                stopButton.setEnabled(true);
+            }
+        });
+
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
             }
         });
 
@@ -397,8 +411,12 @@ public class MainActivity extends Activity {
                     Toast.makeText(context, "Run stage finished", Toast.LENGTH_SHORT).show();
                     stateTextView.setText("Run stage finished");
                     LogGUI.log("Run stage finished");
+                    scrollView.fullScroll(ScrollView.FOCUS_DOWN);
                     String variant = intent.getStringExtra("variant");
                     String fname = intent.getStringExtra("file");
+
+                    FNAME = intent.getStringExtra("file");
+
                     byte[] result = null;
 
                     try {
@@ -411,18 +429,11 @@ public class MainActivity extends Activity {
                     }
 
                     String stage = "run";
-                    String filename = stage + "-" + variant + ".txt";
-                    connectionHandler.postResult(filename, fname);
+//                    String filename = stage + "-" + variant + ".txt";
+//                    connectionHandler.postResult(filename, fname);
+                    FILENAME = stage + "-" + variant + ".txt";
+                    connectionHandler.postResult(FILENAME, FNAME);
 
-//                    running = false;
-//                    if (benchmarkExecutor.hasMoreToExecute()) {
-//                        stateOfCharge = benchmarkExecutor.getNeededBatteryState();
-//                        minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-//                        startBenchmark(getBaseContext());
-//                    } else {
-//                        Toast.makeText(context, "There are no more benchmarks", Toast.LENGTH_SHORT).show();
-//                        finish();
-//                    }
                 }
             }
 
@@ -440,8 +451,12 @@ public class MainActivity extends Activity {
                     Toast.makeText(context, "Sampling finished", Toast.LENGTH_SHORT).show();
                     stateTextView.setText("Sampling finished");
                     LogGUI.log("Sampling finished");
+                    scrollView.fullScroll(ScrollView.FOCUS_DOWN);
                     String variant = intent.getStringExtra("variant");
                     String fname = intent.getStringExtra("file");
+
+                    FNAME = intent.getStringExtra("file");
+
                     byte[] result = null;
                     try {
                         File file = new File(fname);
@@ -454,17 +469,12 @@ public class MainActivity extends Activity {
 
 
                     String stage = "sampling";
-                    String filename = stage + "-" + variant + ".txt";
-                    connectionHandler.postResult(filename, fname);
+//                    String filename = stage + "-" + variant + ".txt";
+//                    connectionHandler.postResult(filename, fname);
+                    FILENAME = stage + "-" + variant + ".txt";
+                    connectionHandler.postResult(FILENAME, FNAME);
 
 
-//                    running = false;
-//                    if (benchmarkExecutor.hasMoreToExecute()) {
-//                        stateOfCharge = benchmarkExecutor.getNeededBatteryState();
-//                        minBatteryLevel = benchmarkExecutor.getNeededBatteryLevelNextStep();
-//                        startBenchmark(getBaseContext());
-//                    } else
-//                        Toast.makeText(context, "There are no more benchmarks", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -589,6 +599,7 @@ public class MainActivity extends Activity {
         @Override
         public void onFailurePostResult() {
             Toast.makeText(getBaseContext(), "error on post", Toast.LENGTH_LONG).show();
+            connectionHandler.postResult(FILENAME, FNAME);
         }
     }
 
