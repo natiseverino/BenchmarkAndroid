@@ -2,6 +2,7 @@ package edu.benchmarkandroid.service;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -142,7 +143,11 @@ public class BenchmarkExecutor implements BenchmarkExecutorRunCB {
             intent.putExtra("samplingName", benchClassName);
             intent.putExtra("benchmarkName", benchmarkName);
             intent.putExtra("benchmarkVariant", new GsonBuilder().create().toJson(variants.get(currentBenchmark)));
-            context.startService(intent);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                context.startForegroundService(intent);
+            else
+                context.startService(intent);
             this.neededBatteryLevelNextStep = variants.get(currentBenchmark).getEnergyPreconditionRunStage().getMinStartBatteryLevel();
             this.neededBatteryState = variants.get(currentBenchmark).getEnergyPreconditionRunStage().getRequiredBatteryState();
             sampling = false;
@@ -160,7 +165,12 @@ public class BenchmarkExecutor implements BenchmarkExecutorRunCB {
             actualServiceIntent = intent;
             intent.putExtra("benchmarkName", benchClassName);
             intent.putExtra("benchmarkVariant", new GsonBuilder().create().toJson(variants.get(currentBenchmark)));
-            context.startService(intent);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                context.startForegroundService(intent);
+            else
+                context.startService(intent);
+
             currentBenchmark++;
             if (hasMoreToExecute()) {
                 sampling = true;
